@@ -2,6 +2,7 @@ package com.pedroedrasousa.tiling;
 
 import com.pedroedrasousa.tiling.comparator.SolutionComparatorFactory;
 import com.pedroedrasousa.tiling.comparator.SolutionMostNbrTilesComparator;
+import com.pedroedrasousa.tiling.comparator.SolutionSmallestCenterOfMassDistToOriginComparator;
 import com.pedroedrasousa.tiling.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -226,7 +227,7 @@ public class CutListService {
 
                 if (solutions.get(0).getNoFitTiles().size() == 0) {
                     // TODO: To break or not to break - if not try all permutations and then choose best
-                    break;
+                    //break;
                 }
 
                 logger.info("nbrCuts[{}] maxDepth[{}] nbrNoFitTiles[{}]", solutions.get(0).getNbrCuts(), solutions.get(0).getMaxDepth(), solutions.get(0).getNoFitTiles().size());

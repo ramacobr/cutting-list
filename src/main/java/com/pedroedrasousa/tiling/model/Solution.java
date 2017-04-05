@@ -1,6 +1,9 @@
 package com.pedroedrasousa.tiling.model;
 
+import com.pedroedrasousa.tiling.CutListService;
 import com.pedroedrasousa.tiling.StockSolution;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,6 +11,8 @@ import java.util.Comparator;
 import java.util.List;
 
 public class Solution {
+
+
 
     private long elapsedTime;
 
@@ -235,5 +240,14 @@ public class Solution {
         }
 
         return biggestUnusedArea;
+    }
+
+    public float getCenterOfMassDistanceToOrigin() {
+        float centerOfMassDistToOrigin = 0;
+        for (Mosaic mosaic : mosaics) {
+            centerOfMassDistToOrigin += mosaic.getCenterOfMassDistanceToOrigin();
+        }
+
+        return centerOfMassDistToOrigin / (float)getNbrMosaics();
     }
 }

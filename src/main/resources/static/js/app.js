@@ -24,9 +24,9 @@ app.service('TilingService', function($http, $location, TilingData, DrawService)
 
     var taskId;
 
-    this.requestTiling = function(tiles, baseTiles, cfg, callback, canceler) {
+    this.requestTiling = function(tiles, stockTiles, cfg, callback, canceler) {
 
-        var data = {tiles: tiles, baseTiles: baseTiles, configuration: cfg};
+        var data = {tiles: tiles, baseTiles: stockTiles, configuration: cfg};
 
         // Generate an unique task id
         taskId = "" + new Date().getTime() + JSON.stringify(data).hashCode();
@@ -89,7 +89,7 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
 
         $scope.isGridReloding = true;
         setupTilesGrid();
-        setupBaseTilesGrid();
+        setupStockTilesGrid();
 
         $timeout(function() {
             $scope.isGridReloding = false;
@@ -118,7 +118,7 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
      * Handle window resizing
      */
     angular.element($window).bind('resize', function() {
-        redraw();
+        render();
     });
 
     $scope.isTilesGridVisible = false;
@@ -135,7 +135,7 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
     $scope.toggleIsTilingInfoVisible = function() {
         $scope.isTilingInfoVisible = !$scope.isTilingInfoVisible;
         $timeout(function() {
-            redraw();
+            render();
         });
     };
 
@@ -147,9 +147,27 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
             allowTileRotation: true,
             forceOneBaseTile: false,
             accuracyFactor: 0,  // TODO: Only for debug purposes
-            priorities: ["LEAST_WASTED_AREA", "LEAST_NBR_CUTS", "LEAST_NBR_UNUSED_TILES", "MOST_UNUSED_PANEL_AREA", "MOST_HV_DISCREPANCY", "MOST_NBR_MOSAICS"]
+            priorities: [
+                "LEAST_WASTED_AREA",
+                "LEAST_NBR_CUTS",
+                "LEAST_NBR_UNUSED_TILES",
+                "SMALLEST_CENTER_OF_MASS_DIST_TO_ORIGIN",
+                "MOST_UNUSED_PANEL_AREA",
+                "MOST_HV_DISCREPANCY",
+                "MOST_NBR_MOSAICS"]
         };
     }
+
+    /*****************************************************************************************************
+     * Watchers
+     *****************************************************************************************************/
+
+    $scope.$watchCollection('cfg.priorities', function(newValue, oldValue) {
+        if (newValue !== oldValue) {
+            $scope.invalidData = true;
+            saveDataLocalStorage();
+        }
+    });
 
     $scope.$watchGroup(['cfg.accuracyFactor', 'cfg.cutThickness', 'cfg.allowTileRotation', 'cfg.forceOneBaseTile', 'cfg.priorities'], function(newValue, oldValue) {
         if (newValue !== oldValue) {
@@ -163,43 +181,36 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
             }
 
             $scope.invalidData = true;
+            saveDataLocalStorage();
         }
     });
-
-
-    /**
-     * Watchers
-     */
 
     /**
      * Redraw canvas if data is changed
      */
     $scope.$watch('tiling',function(newValue,oldValue) {
-        redraw();
+        render();
     }, true);
-
-    $scope.$watchCollection('cfg.priorities', function(newValue, oldValue) {
-        if (newValue !== oldValue) {
-            $scope.invalidData = true;
-            saveData();
-        }
-    });
 
     $scope.$watch('tiles', function(newValue, oldValue) {
         if (newValue !== oldValue) {
             validateTilesArray();
             $scope.invalidData = true;
-            saveData();
+            saveDataLocalStorage();
         }
     }, true);
 
-    $scope.$watch('baseTiles', function(newValue, oldValue) {
+    $scope.$watch('stockTiles', function(newValue, oldValue) {
         if (newValue !== oldValue) {
             validateStockTilesArray();
             $scope.invalidData = true;
-            saveData();
+            saveDataLocalStorage();
         }
     }, true);
+
+
+
+
 
     function addNewTile() {
         var tileId = -1;
@@ -209,7 +220,7 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
         $scope.tiles.push({width: null, height: null, count: null, enabled: true, id: tileId + 1});
     }
 
-    function addNewBaseTile() {
+    function addNewStockTile() {
         $scope.stockTiles.push({width: null, height: null, count: null, enabled: true});
     }
 
@@ -231,7 +242,7 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
      * Gets the number of used and valid base tiles.
      * @returns {number}
      */
-    function getNbrUsedBaseTiles() {
+    function getNbrUsedStockTiles() {
         var count = 0;
         angular.forEach($scope.stockTiles, function(tile) {
             if (tile.width && tile.height) {
@@ -313,7 +324,7 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
                         obj.enabled = true;
                     });
                     $scope.invalidData = true;
-                    saveData();
+                    saveDataLocalStorage();
                 },
                 order: 300
             },
@@ -324,7 +335,7 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
                         obj.enabled = false;
                     });
                     $scope.invalidData = true;
-                    saveData();
+                    saveDataLocalStorage();
                 },
                 order: 301
             },
@@ -374,7 +385,7 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
         data: $scope.stockTiles
     };
 
-    function setupBaseTilesGrid() {
+    function setupStockTilesGrid() {
 
         $scope.stockGridOptions.gridMenuCustomItems = [
             {
@@ -384,7 +395,7 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
                         obj.enabled = true;
                     });
                     $scope.invalidData = true;
-                    saveData();
+                    saveDataLocalStorage();
                 },
                 order: 1
             },
@@ -395,7 +406,7 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
                         obj.enabled = false;
                     });
                     $scope.invalidData = true;
-                    saveData();
+                    saveDataLocalStorage();
                 },
                 order: 2
             },
@@ -430,7 +441,7 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
             { name: ' ', displayName: ' ', width: '30%', allowCellFocus : false, enableCellEdit: false, enableColumnMenu: false, enableSorting: false, cellTemplate: 'template/stock-tile-options-cell-template.html'}
         ];
     }
-    setupBaseTilesGrid();
+    setupStockTilesGrid();
 
     $scope.saveRow = function(rowEntity) {
         // Create a fake promise - normally you'd use the promise returned by $http or $resource
@@ -478,31 +489,54 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
         while ($scope.tiles.length < 5) {
             addNewTile();
         }
+
+        $scope.tiles.forEach(function(tile) {
+            if (tile.width && tile.height && !tile.count) {
+                tile.count = 1;
+            }
+        });
     }
 
     function validateStockTilesArray() {
-        if (getNbrUsedBaseTiles() > $scope.stockTiles.length - 1) {
-            addNewBaseTile();
+        if (getNbrUsedStockTiles() > $scope.stockTiles.length - 1) {
+            addNewStockTile();
         }
 
         while ($scope.stockTiles.length < 5) {
-            addNewBaseTile();
+            addNewStockTile();
         }
 
-        angular.forEach($scope.stockTiles, function(tile) {
+        $scope.stockTiles.forEach(function(tile) {
             if (tile.width && tile.height && tile.count === null) {
                 tile.count = 1;
             }
         });
     }
 
+    $scope.removeTile = function(tile) {
+        var index = $scope.tiles.indexOf(tile);
+        $scope.tiles.splice(index, 1);
+        validateTilesArray();
+        $scope.invalidData = true;
+        saveDataLocalStorage();
+    };
 
-
-
+    $scope.removeStockTile = function(tile) {
+        var index = $scope.stockTiles.indexOf(tile);
+        $scope.stockTiles.splice(index, 1);
+        validateStockTilesArray();
+        $scope.invalidData = true;
+        saveDataLocalStorage();
+    };
 
     $scope.zoomIn = function() {
         DrawService.setZoom(DrawService.getZoom() + 0.1);
-        redraw();
+        render();
+    };
+
+    $scope.zoomOut = function() {
+        DrawService.setZoom(DrawService.getZoom() - 0.1);
+        render();
     };
 
     $scope.print = function(divName) {
@@ -510,38 +544,16 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
     };
 
 
-    $scope.zoomOut = function() {
-        DrawService.setZoom(DrawService.getZoom() - 0.1);
-        redraw();
-    };
-
-
-    $scope.removeTile = function(tile) {
-        var index = $scope.tiles.indexOf(tile);
-        $scope.tiles.splice(index, 1);
-        validateTilesArray();
-        $scope.invalidData = true;
-        saveData();
-    };
-
-    $scope.removeBaseTile = function(tile) {
-        var index = $scope.stockTiles.indexOf(tile);
-        $scope.stockTiles.splice(index, 1);
-        validateStockTilesArray();
-        $scope.invalidData = true;
-        saveData();
-    };
-
     $scope.toggleTile = function(tile) {
         tile.enabled = !tile.enabled;
         $scope.invalidData = true;
-        saveData();
+        saveDataLocalStorage();
     };
 
     $scope.toggleBaseTile = function(tile) {
         tile.enabled = !tile.enabled;
         $scope.invalidData = true;
-        saveData();
+        saveDataLocalStorage();
     };
 
     $scope.compute = function() {
@@ -555,18 +567,13 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
 
     $scope.cancelTilingRequest = function() {
         $scope.isLoading = false;
+        $scope.invalidData = false;
         canceler.resolve();
         TilingService.cancelTiling();
     };
 
     function requestTilling() {
         $scope.isLoading = true;
-
-        $scope.tiles.forEach(function(tile) {
-            if (tile.width && tile.height && !tile.count) {
-                tile.count = 1;
-            }
-        });
 
         canceler = $q.defer();
 
@@ -595,26 +602,24 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
                     }
                 }
 
-                if (!data) {
+                if (!data && $scope.isLoading) {
                     console.error("Tried to request status for a server nonexistent task");
-                    $timeout(function () {
-                        $scope.invalidData = false;
-                        $scope.isLoading = false;
-                    })
+                    $scope.invalidData = false;
+                    $scope.isLoading = false;
                 }
             });
         };
         $timeout(poller, 1000);
     }
 
-    function saveData() {
+    function saveDataLocalStorage() {
         $window.localStorage.setItem("tiles" + localStorageKeySuffix, angular.toJson($scope.tiles));
         $window.localStorage.setItem("baseTiles" + localStorageKeySuffix, angular.toJson($scope.stockTiles));
         $window.localStorage.setItem("cfg" + localStorageKeySuffix, angular.toJson($scope.cfg));
     }
 
-    function redraw() {
-        saveData();
+    function render() {
+        saveDataLocalStorage();
         $scope.visibleTileInfoIdx = 0;
 
         $timeout(function() {

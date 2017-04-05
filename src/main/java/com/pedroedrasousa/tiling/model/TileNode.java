@@ -231,6 +231,27 @@ public class TileNode {
         }
     }
 
+    public List<TileNode> getFinalTiles() {
+        List<TileNode> finalTiles = new ArrayList<>();
+        getFinalTiles(finalTiles);
+        return finalTiles;
+    }
+
+    public void getFinalTiles(List<TileNode> finalTiles) {
+
+        if (isFinal()) {
+            finalTiles.add(this);
+        }
+
+        if (this.getChild1() != null) {
+            this.getChild1().getFinalTiles(finalTiles);
+        }
+
+        if (this.getChild2() != null) {
+            this.getChild2().getFinalTiles(finalTiles);
+        }
+    }
+
     public int getUnusedArea() {
         return getArea() - getUsedArea();
     }

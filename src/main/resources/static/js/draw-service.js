@@ -105,7 +105,7 @@ app.factory('DrawService', function(TilingData, $window) {
     function init() {
 
         // Get div element
-        var div = document.getElementById("canvas-0");
+        var div = document.getElementById("svg-canvas");
         if (!div) {
             return;
         }
@@ -148,9 +148,9 @@ app.factory('DrawService', function(TilingData, $window) {
 
 
 
-        d3.select("#canvas-" + 0).select("svg").remove();
+        d3.select("#svg-canvas").select("svg").remove();
 
-        var svgContainer2 = d3.select("#canvas-" + 0).append("svg")
+        var svgContainer2 = d3.select("#svg-canvas").append("svg")
             .attr("width", divWidth)
             .attr("height", canvasHeight)
             .append("g");
@@ -176,7 +176,7 @@ app.factory('DrawService', function(TilingData, $window) {
     }
 
     function clear() {
-        d3.select("#canvas-" + 0).select("svg").remove();
+        d3.select("#svg-canvas").select("svg").remove();
     }
 
 
@@ -192,7 +192,7 @@ app.factory('DrawService', function(TilingData, $window) {
             drawBaseTile(mosaic);
             drawBaseDimensions(mosaic);
             drawTiles(mosaic);
-            //DrawService.drawCutAnimation(mosaic);
+            //drawCutAnimation(mosaic);
         });
 
         if (isDimensionsVisible) {

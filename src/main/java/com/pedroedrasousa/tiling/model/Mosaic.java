@@ -1,10 +1,15 @@
 package com.pedroedrasousa.tiling.model;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
 public class Mosaic {
+
+    private final static Logger logger = LoggerFactory.getLogger(Mosaic.class);
 
     private TileNode rootTileNode;
 
@@ -68,6 +73,10 @@ public class Mosaic {
         return rootTileNode.getDistictTileSet();
     }
 
+    public int getUsedArea() {
+        return rootTileNode.getUsedArea();
+    }
+
     public int getUnusedArea() {
         return rootTileNode.getUnusedArea();
     }
@@ -89,5 +98,26 @@ public class Mosaic {
         }
 
         return biggestUnusedTile;
+    }
+
+    public float getCenterOfMassDistanceToOrigin() {
+
+        if (getUsedArea() == 0) {
+            return 0f;
+        }
+
+        List<TileNode> finalTiles = getRootTileNode().getFinalTiles();
+
+        float x = 0f, y = 0f;
+
+        for (TileNode tileNode : finalTiles) {
+            x += tileNode.getArea() * ((float)tileNode.getX1() + (float)tileNode.getWidth() * 0.5f);
+            y += tileNode.getArea() * ((float)tileNode.getY1() + (float)tileNode.getHeight() * 0.5f);
+        }
+
+        x = x / getUsedArea();
+        y = y / getUsedArea();
+
+        return (float)Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2)) / (float)Math.sqrt(Math.pow(getRootTileNode().getWidth(), 2) + Math.pow(getRootTileNode().getHeight(), 2));
     }
 }

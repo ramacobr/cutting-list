@@ -22,6 +22,8 @@ public class SolutionComparatorFactory {
             return new SolutionLeastNbrUnusedTilesComparator();
         } else if(comparatorType.equalsIgnoreCase("MOST_UNUSED_PANEL_AREA")) {
             return new SolutionMostUnusedPanelAreaComparator();
+        } else if(comparatorType.equalsIgnoreCase("SMALLEST_CENTER_OF_MASS_DIST_TO_ORIGIN")) {
+            return new SolutionSmallestCenterOfMassDistToOriginComparator();
         }
 
         return null;

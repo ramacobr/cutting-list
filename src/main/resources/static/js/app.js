@@ -20,7 +20,7 @@ app.config(['$translateProvider', '$windowProvider', function($translateProvider
 app.service('TilingService', function($http, $location, TilingData, DrawService) {
 
     this.serverBaseUrl = $location.protocol() + '://'+ $location.host() +':'+  $location.port();
-    this.serverBaseUrl = 'http://localhost:8080';
+    //this.serverBaseUrl = 'http://localhost:8080';
 
     var taskId;
 
@@ -468,18 +468,6 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
         $scope.gridApiBaseTiles = gridApi;
         gridApi.rowEdit.on.saveRow($scope, $scope.saveBaseTileRow);
     };
-
-
-
-
-
-
-
-
-
-
-
-
 
     function validateTilesArray() {
         if (getNbrUsedTiles() > $scope.tiles.length - 1) {

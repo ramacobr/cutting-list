@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.view.tiles3.TilesConfigurer;
 
 import java.util.*;
 
@@ -138,7 +139,9 @@ public class CutListService {
             return tillingResponseDTO;
         }
 
-        logger.info("STARTING... nbrTilesToFit[" + tilesToFit.size() + "] nbrBaseTiles[" + stockTiles.size() + "]");
+        logger.info("Task[" + cfg.getTaskId() + "] STARTING... nbrTilesToFit[" + tilesToFit.size() + "] nbrBaseTiles[" + stockTiles.size() + "]");
+
+
         long startTime = System.currentTimeMillis();
 
         // Create task
@@ -148,13 +151,36 @@ public class CutListService {
         List<Solution> allSolutions = new ArrayList<>();
 
         // Create a list with all distinct tile dimensions
-        HashSet<String> distincTileDimensions = new HashSet<>();
+        HashMap<String, Integer> distincTileDimensions = new HashMap<>();
         for (TileDimensions tileDimensions : tilesToFit) {
-            distincTileDimensions.add(tileDimensions.toString());
+            String tileDimensionsStr = tileDimensions.toString();
+            distincTileDimensions.put(tileDimensionsStr, distincTileDimensions.get(tileDimensionsStr) != null ? distincTileDimensions.get(tileDimensionsStr) + 1 : 1);
         }
 
+        StringBuilder sb = new StringBuilder();
+        for (String tileDimensions : distincTileDimensions.keySet()) {
+            sb.append(tileDimensions + "*" + distincTileDimensions.get(tileDimensions) + " ");
+        }
+        logger.info("Task[{}] TilesToFit: {}", cfg.getTaskId(), sb);
+
+
+        // Create a list with all distinct stock tile dimensions
+        HashMap<String, Integer> distincStockTileDimensions = new HashMap<>();
+        for (TileDimensions tileDimensions : stockTiles) {
+            String tileDimensionsStr = tileDimensions.toString();
+            distincStockTileDimensions.put(tileDimensionsStr, distincStockTileDimensions.get(tileDimensionsStr) != null ? distincStockTileDimensions.get(tileDimensionsStr) + 1 : 1);
+        }
+
+        sb.setLength(0);
+        for (String tileDimensions : distincStockTileDimensions.keySet()) {
+            sb.append(tileDimensions + "*" + distincStockTileDimensions.get(tileDimensions) + " ");
+        }
+        logger.info("Task[{}] StockTiles: {}", cfg.getTaskId(), sb);
+
+
+
         // Get all possible combinations by permuting the order in witch the tiles are fited
-        List<List<String>> combinations = Permutation.<String>generatePermutations(new ArrayList<>(distincTileDimensions));
+        List<List<String>> combinations = Permutation.<String>generatePermutations(new ArrayList<>(distincTileDimensions.keySet()));
 
         // Create lists sorted according to the calculated permutations
         List<List<TileDimensions>> tilesPermutations = new ArrayList<>();
@@ -162,6 +188,8 @@ public class CutListService {
             ArrayList<TileDimensions> solutionPermutation = new ArrayList<>(tilesToFit);
             tilesPermutations.add(solutionPermutation);
             Collections.sort(solutionPermutation, Comparator.comparingInt(o -> combination.indexOf(o.toString())));
+            // TODO: For testing
+            //solutionPermutation.add(0, new TileDimensions(-1, 963, 360, true));
         }
 
         List<StockSolution> stockSolutionsToExclude = new ArrayList<>();
@@ -198,10 +226,7 @@ public class CutListService {
             if (cfg.getAccuracyFactor() > 0) {
                 discardAbove = cfg.getAccuracyFactor();
             }
-            logger.info("Used area [{}] accuracy[{}]", usedArea, discardAbove);
-
-            logger.info("Trying stock {}", stockSolution);
-
+            logger.info("Task[{}] Trying stock {} usedArea[{}] discardAbove[{}]", cfg.getTaskId(), stockSolution, usedArea, discardAbove);
 
 
             // Iterate through all permutations
@@ -209,7 +234,6 @@ public class CutListService {
             for (List<TileDimensions> tilesPermutation : tilesPermutations) {
                 permutationIndex++;
 
-                logger.info("Permutation {}/{} on stock {} discardAbove[{}]", permutationIndex + 1, tilesPermutations.size(), stockSolution, discardAbove);
                 RunningTasks.Task task2 = runningTasks.getTask(cfg.getTaskId());
                 if (task2 != null) {
                     task2.setStatusMessage("Trying permutation " + (permutationIndex  + 1) + "/" + tilesPermutations.size() + " on stock " + stockSolution);
@@ -230,12 +254,22 @@ public class CutListService {
                     //break;
                 }
 
-                logger.info("nbrCuts[{}] maxDepth[{}] nbrNoFitTiles[{}]", solutions.get(0).getNbrCuts(), solutions.get(0).getMaxDepth(), solutions.get(0).getNoFitTiles().size());
+                logger.info("Task[{}] Permutation {}/{} on stock {} discardAbove[{}] - usedAreaRatio[{}] nbrCuts[{}] maxDepth[{}] nbrNoFitTiles[{}]",
+                        cfg.getTaskId(),
+                        permutationIndex + 1,
+                        tilesPermutations.size(),
+                        stockSolution,
+                        discardAbove,
+                        Math.round(solutions.get(0).getUsedAreaRatio() * 100f) / 100f,
+                        solutions.get(0).getNbrCuts(),
+                        solutions.get(0).getMaxDepth(),
+                        solutions.get(0).getNoFitTiles().size());
+
                 RunningTasks.Task task = runningTasks.getTask(cfg.getTaskId());
                 if (task != null) {
                     task.setSolution((new TilingResponseDTOBuilder()).setSolutions(allSolutions.get(0)).setInfo(null).build());
                 } else {
-                    logger.info("Tried to update solution for a canceled task. Stopping...");
+                    logger.info("Task[{}] was deliberately stopped", cfg.getTaskId());
                     break;
                 }
             }
@@ -253,7 +287,7 @@ public class CutListService {
         long elapsedTime = System.currentTimeMillis() - startTime;
 
 
-        logger.info("Elapsed: " + elapsedTime + " ms");
+        logger.info("Task[{}] Elapsed time: {} ms", cfg.getTaskId(), elapsedTime);
         allSolutions.get(0).setElapsedTime(elapsedTime);
 
         runningTasks.removeTask(cfg.getTaskId());
@@ -361,17 +395,17 @@ public class CutListService {
                 // Vertically split the tile resulting from the horizontal split.
                 cuts.add(splitVertically(tileNode.getChild1(), tileDimensions.getHeight(), cutThickness, tileDimensions.getId()));
                 // 1st child from vertical split of the 1st child from the horizontal split is the final tile.
-                tileNode.getChild1().getChild1().setFinal(true);
+                tileNode.getChild1().getChild1().setFinal(!tileDimensions.isPlaceHolder());
             } else {
                 // No need to split vertically, the 1st child from horizontal split will be the final tile.
-                tileNode.getChild1().setFinal(true);
+                tileNode.getChild1().setFinal(!tileDimensions.isPlaceHolder());
                 tileNode.getChild1().setExternalId(tileDimensions.getId());
             }
 
         } else {
             // No need to split horizontally, just split vertically and the 1st child will be the final tile.
             cuts.add(splitVertically(tileNode, tileDimensions.getHeight(), cutThickness, tileDimensions.getId()));
-            tileNode.getChild1().setFinal(true);
+            tileNode.getChild1().setFinal(!tileDimensions.isPlaceHolder());
         }
 
         return cuts;
@@ -396,17 +430,17 @@ public class CutListService {
                 // Vertically split the two tiles resulting from the horizontal split.
                 cuts.add(splitHorizontally(tileNode.getChild1(), tileDimensions.getWidth(), cutThickness, tileDimensions.getId()));
                 // 1st child from vertical split of the 1st child from the horizontal split is the final tile.
-                tileNode.getChild1().getChild1().setFinal(true);
+                tileNode.getChild1().getChild1().setFinal(!tileDimensions.isPlaceHolder());
             } else {
                 // No need to split vertically, the 1st child from horizontal split will be the final tile.
-                tileNode.getChild1().setFinal(true);
+                tileNode.getChild1().setFinal(!tileDimensions.isPlaceHolder());
                 tileNode.getChild1().setExternalId(tileDimensions.getId());
             }
 
         } else {
             // No need to split horizontally, just split vertically and the 1st child will be the final tile.
             cuts.add(splitHorizontally(tileNode, tileDimensions.getWidth(), cutThickness, tileDimensions.getId()));
-            tileNode.getChild1().setFinal(true);
+            tileNode.getChild1().setFinal(!tileDimensions.isPlaceHolder());
         }
 
         return cuts;

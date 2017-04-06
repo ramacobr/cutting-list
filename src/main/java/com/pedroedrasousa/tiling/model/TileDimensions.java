@@ -8,22 +8,34 @@ public class TileDimensions {
 
     private final int height;
 
-    public TileDimensions(TileDimensions tileDimensions) {
-        this.id = tileDimensions.id;
-        this.width = tileDimensions.width;
-        this.height = tileDimensions.height;
+    private final boolean isPlaceHolder;
+
+    public TileDimensions(TileDimensions that) {
+        this.id = that.id;
+        this.width = that.width;
+        this.height = that.height;
+        this.isPlaceHolder = that.isPlaceHolder;
+    }
+
+    public TileDimensions(int id, int width, int height, boolean isPlaceHolder) {
+        this.id = id;
+        this.width = width;
+        this.height = height;
+        this.isPlaceHolder = isPlaceHolder;
     }
 
     public TileDimensions(int id, int width, int height) {
         this.id = id;
         this.width = width;
         this.height = height;
+        this.isPlaceHolder = false;
     }
 
     public TileDimensions(int width, int height) {
         this.id = -1;
         this.width = width;
         this.height = height;
+        this.isPlaceHolder = false;
     }
 
     public int getId() {
@@ -36,6 +48,10 @@ public class TileDimensions {
 
     public int getHeight() {
         return height;
+    }
+
+    public boolean isPlaceHolder() {
+        return isPlaceHolder;
     }
 
     public int getMaxDimension() {
@@ -56,7 +72,7 @@ public class TileDimensions {
 
     @Override
     public String toString() {
-        return "" + id + "[" + width + "x" + height + ']';
+        return "id=" + id + "[" + width + "x" + height + ']';
     }
 
     /**

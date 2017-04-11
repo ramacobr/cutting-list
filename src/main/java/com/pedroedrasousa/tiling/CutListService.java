@@ -23,32 +23,35 @@ public class CutListService {
     @Autowired
     private RunningTasks runningTasks;
 
-    private void sort(List<Solution> solutions, Configuration cfg) {
+    private void sort(List<Solution> solutions, Configuration cfg, boolean isFinalSort) {
 
         List<Comparator> solutionComparators = new ArrayList<>();
+
+        List<String> criterias = new ArrayList<>(cfg.getPriorities());
+
+        if (!isFinalSort) {
+            criterias.remove("SMALLEST_CENTER_OF_MASS_DIST_TO_ORIGIN");
+        }
 
         // Solutions without all fitted tiles will go last
         solutionComparators.add(new SolutionMostNbrTilesComparator());
 
-        for (String priotity : cfg.getPriorities()) {
+        for (String priotity : criterias) {
             solutionComparators.add(SolutionComparatorFactory.getSolutionComparator(priotity));
         }
 
-        Collections.sort(solutions, new Comparator<Solution>() {
-            @Override
-            public int compare(Solution o1, Solution o2) {
+        Collections.sort(solutions, (o1, o2) -> {
 
-                int diff = 0;
+            int diff = 0;
 
-                for (Comparator<Solution> solutionComparator : solutionComparators) {
-                    diff = solutionComparator.compare(o1, o2);
-                    if (diff != 0) {
-                        break;
-                    }
+            for (Comparator<Solution> solutionComparator : solutionComparators) {
+                diff = solutionComparator.compare(o1, o2);
+                if (diff != 0) {
+                    break;
                 }
-
-                return diff;
             }
+
+            return diff;
         });
     }
 
@@ -65,15 +68,6 @@ public class CutListService {
             // Loop through all solutions to fit the tiles
             for (Iterator<Solution> iterator = solutions.iterator(); iterator.hasNext(); ) {
                 Solution solution = iterator.next();
-
-                // DEBUG: start
-                String key = String.format("%1$20s", solution.getBasesAsString()) + " - depth[" + solution.getMaxDepth() + "]";
-                if (depths.containsKey(key)) {
-                    depths.put(key, depths.get(key) + 1);
-                } else {
-                    depths.put(key, 1);
-                }
-                // DEBUG: end
 
                 for (Mosaic mosaic : solution.getMosaics()) {
 
@@ -99,23 +93,61 @@ public class CutListService {
                 }
             }
 
-// TODO:
-//            for (Solution solution : newSolutions) {
-//                solution.convertTilesToImmutable();
-//            }
-
             solutions.addAll(newSolutions);
 
             List<Solution> solutionsToRemove = new ArrayList<>();
-            sort(solutions, cfg);
+            sort(solutions, cfg, false);
             solutionsToRemove.addAll(solutions.subList(Math.min(solutions.size() - 1, accuracyFactor/*(int) (accuracyFactor * 500.0f)*/), solutions.size() - 1));
 
             solutions.removeAll(solutionsToRemove);
-
-            for (String depth : depths.keySet()) {
-                //logger.info(depth + " - qty[" + depths.get(depth) + "]");
-            }
         }
+    }
+
+    private List<List<TileDimensions>> getPlaceHolders(List<TileDimensions> tilesToFit) {
+        List<TileDimensions> placeholders = new ArrayList<>();
+        List<TileDimensions> placeholders2 = new ArrayList<>();
+
+        // Create a list with all distinct tile dimensions
+        HashMap<TileDimensions, Integer> distinctTileDimensions = new HashMap<>();
+        for (TileDimensions tileDimensions : tilesToFit) {
+            distinctTileDimensions.put(tileDimensions, distinctTileDimensions.get(tileDimensions) != null ? distinctTileDimensions.get(tileDimensions) + 1 : 1);
+        }
+
+        // Loop through all distinct tile dimensions and build a placeholder
+        for (Map.Entry<TileDimensions, Integer> tileDimensions : distinctTileDimensions.entrySet()) {
+
+            // The number of tiles having the dimensions being considered in current iteration
+            int nbrTiles = tileDimensions.getValue();
+
+            // Get the number of horizontal tiles to fit in the placeholder
+            int x = (int)Math.sqrt(nbrTiles);
+
+            // Decrement the number of tiles to be fitted in the placeholder until all can be correctly placed
+            while ((double)nbrTiles / (double)x % 1.0 != 0.0) {
+                nbrTiles--;
+            }
+
+            // Get the number of vertical tiles to fit in the placeholder
+            int y = nbrTiles / x;
+
+            // Build the placeholder TileDimensions object
+            TileDimensions placeholder = new TileDimensions(tileDimensions.getKey().getWidth() * x, tileDimensions.getKey().getHeight() * y, true);
+            placeholders.add(placeholder);
+            placeholders2.add(new TileDimensions(tileDimensions.getKey().getHeight() * y, tileDimensions.getKey().getWidth() * x, true));
+
+            logger.info("x= " + x);
+            logger.info("y= " + y);
+            logger.info("nbrTiles= " + nbrTiles);
+            logger.info("placeholder= " + placeholder);
+
+
+        }
+
+        List<List<TileDimensions>> placeholdersList = new ArrayList<>();
+        placeholdersList.add(placeholders);
+        placeholdersList.add(placeholders2);
+
+        return placeholdersList;
     }
 
     /**
@@ -179,6 +211,12 @@ public class CutListService {
 
 
 
+
+        List<List<TileDimensions>> placeHolders = getPlaceHolders(tilesToFit);
+
+
+
+
         // Get all possible combinations by permuting the order in witch the tiles are fited
         List<List<String>> combinations = Permutation.<String>generatePermutations(new ArrayList<>(distincTileDimensions.keySet()));
 
@@ -188,9 +226,35 @@ public class CutListService {
             ArrayList<TileDimensions> solutionPermutation = new ArrayList<>(tilesToFit);
             tilesPermutations.add(solutionPermutation);
             Collections.sort(solutionPermutation, Comparator.comparingInt(o -> combination.indexOf(o.toString())));
-            // TODO: For testing
-            //solutionPermutation.add(0, new TileDimensions(-1, 963, 360, true));
+
+            for (List<TileDimensions> placeholders : placeHolders) {
+                // Build additional permutations foreach placeholder
+                for (TileDimensions tileDimensions : placeholders) {
+                    ArrayList<TileDimensions> solutionPermutationPlaceholders = new ArrayList<>(solutionPermutation);
+                    solutionPermutationPlaceholders.add(0, tileDimensions);
+                    tilesPermutations.add(solutionPermutationPlaceholders);
+                }
+
+                // Build an additional permutation containing all placeholders
+                if (placeHolders.size() > 1) {
+                    ArrayList<TileDimensions> solutionPermutationPlaceholders = new ArrayList<>(solutionPermutation);
+                    solutionPermutationPlaceholders.addAll(0, placeholders);
+                    tilesPermutations.add(solutionPermutationPlaceholders);
+                }
+            }}
+
+        // Log permutations
+        int permutationIndex = 0;
+        for (List<TileDimensions> permutation : tilesPermutations) {
+            permutationIndex++;
+            sb.setLength(0);
+            sb.append("Permutation " + permutationIndex + "/" + tilesPermutations.size() + ":");
+            for (TileDimensions tileDimensions : permutation) {
+                sb.append(" " + tileDimensions);
+            }
+            logger.info(sb.toString());
         }
+
 
         List<StockSolution> stockSolutionsToExclude = new ArrayList<>();
 
@@ -230,7 +294,7 @@ public class CutListService {
 
 
             // Iterate through all permutations
-            int permutationIndex = -1;
+            permutationIndex = -1;
             for (List<TileDimensions> tilesPermutation : tilesPermutations) {
                 permutationIndex++;
 
@@ -247,7 +311,7 @@ public class CutListService {
                 computeSolutions(tilesPermutation, solutions, cfg, discardAbove);
 
                 allSolutions.addAll(solutions);
-                sort(allSolutions, cfg);
+                sort(allSolutions, cfg, false);
 
                 if (solutions.get(0).getNoFitTiles().size() == 0) {
                     // TODO: To break or not to break - if not try all permutations and then choose best
@@ -274,7 +338,7 @@ public class CutListService {
                 }
             }
 
-            sort(allSolutions, cfg);
+            sort(allSolutions, cfg, true);
 
             if (runningTasks.getTask(cfg.getTaskId()) == null || (allSolutions.get(0).getNoFitTiles().size() == 0 && startWith > 3)) {
                 break;
@@ -319,7 +383,7 @@ public class CutListService {
                 TileNode candidateCopy = possibilitiy.findTile(candidate);
 
                 candidateCopy.setExternalId(tileToAdd.getId());
-                candidateCopy.setFinal(true);
+                candidateCopy.setFinal(!tileToAdd.isPlaceHolder());
 
 
                 Mosaic newMosaic = new Mosaic(possibilitiy);

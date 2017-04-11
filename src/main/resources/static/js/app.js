@@ -20,7 +20,7 @@ app.config(['$translateProvider', '$windowProvider', function($translateProvider
 app.service('TilingService', function($http, $location, TilingData, DrawService) {
 
     this.serverBaseUrl = $location.protocol() + '://'+ $location.host() +':'+  $location.port();
-    //this.serverBaseUrl = 'http://localhost:8080';
+    this.serverBaseUrl = 'http://localhost:8080';
 
     var taskId;
 

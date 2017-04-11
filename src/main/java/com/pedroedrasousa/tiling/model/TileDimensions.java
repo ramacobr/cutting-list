@@ -24,6 +24,13 @@ public class TileDimensions {
         this.isPlaceHolder = isPlaceHolder;
     }
 
+    public TileDimensions(int width, int height, boolean isPlaceHolder) {
+        this.id = -1;
+        this.width = width;
+        this.height = height;
+        this.isPlaceHolder = isPlaceHolder;
+    }
+
     public TileDimensions(int id, int width, int height) {
         this.id = id;
         this.width = width;
@@ -63,11 +70,15 @@ public class TileDimensions {
     }
 
     public TileDimensions rotate90() {
-        return new TileDimensions(this.id, this.height, this.width);
+        return new TileDimensions(this.id, this.height, this.width, this.isPlaceHolder);
     }
 
     public boolean isSquare() {
         return this.width == this.height;
+    }
+
+    public boolean isHorizontal() {
+        return this.width > this.height;
     }
 
     @Override

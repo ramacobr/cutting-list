@@ -7,6 +7,10 @@ import com.pedroedrasousa.tiling.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.core.task.TaskExecutor;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.view.tiles3.TilesConfigurer;
 
@@ -18,10 +22,16 @@ public class CutListService {
     private final static Logger logger = LoggerFactory.getLogger(CutListService.class);
 
     @Autowired
+    private ApplicationContext context;
+
+    @Autowired
     private StockPanelPicker stockPanelPicker;
 
     @Autowired
     private RunningTasks runningTasks;
+
+    @Autowired
+    private ThreadPoolTaskExecutor taskExecutor;
 
     private void sort(List<Solution> solutions, Configuration cfg, boolean isFinalSort) {
 
@@ -103,13 +113,13 @@ public class CutListService {
         }
     }
 
-    private List<List<TileDimensions>> getPlaceHolders(List<TileDimensions> tilesToFit) {
+    private List<List<TileDimensions>> getPlaceHolders(List<GroupedTileDimensions> tilesToFit) {
         List<TileDimensions> placeholders = new ArrayList<>();
         List<TileDimensions> placeholders2 = new ArrayList<>();
 
         // Create a list with all distinct tile dimensions
         HashMap<TileDimensions, Integer> distinctTileDimensions = new HashMap<>();
-        for (TileDimensions tileDimensions : tilesToFit) {
+        for (GroupedTileDimensions tileDimensions : tilesToFit) {
             distinctTileDimensions.put(tileDimensions, distinctTileDimensions.get(tileDimensions) != null ? distinctTileDimensions.get(tileDimensions) + 1 : 1);
         }
 
@@ -133,8 +143,9 @@ public class CutListService {
             // Build the placeholder TileDimensions object
             TileDimensions placeholder = new TileDimensions(tileDimensions.getKey().getWidth() * x, tileDimensions.getKey().getHeight() * y, true);
             placeholders.add(placeholder);
-            placeholders2.add(new TileDimensions(tileDimensions.getKey().getHeight() * y, tileDimensions.getKey().getWidth() * x, true));
+            placeholders2.add(new TileDimensions(tileDimensions.getKey().getHeight() * x, tileDimensions.getKey().getWidth() * y, true));
 
+            logger.info("tile: " + tileDimensions);
             logger.info("x= " + x);
             logger.info("y= " + y);
             logger.info("nbrTiles= " + nbrTiles);
@@ -180,7 +191,9 @@ public class CutListService {
         runningTasks.getTasks().add(new RunningTasks.Task(cfg.getTaskId(), "Initializing..."));
 
 
-        List<Solution> allSolutions = new ArrayList<>();
+
+
+
 
         // Create a list with all distinct tile dimensions
         HashMap<String, Integer> distincTileDimensions = new HashMap<>();
@@ -194,6 +207,46 @@ public class CutListService {
             sb.append(tileDimensions + "*" + distincTileDimensions.get(tileDimensions) + " ");
         }
         logger.info("Task[{}] TilesToFit: {}", cfg.getTaskId(), sb);
+
+
+
+
+
+
+        List<GroupedTileDimensions> g = new ArrayList<>();
+        HashMap<String, Integer> map = new HashMap<>();
+        int groupNbr = 0;
+        for (TileDimensions tileDimensions : tilesToFit) {
+            map.put(tileDimensions.toString() + groupNbr, map.get(tileDimensions.toString() + groupNbr) != null ? map.get(tileDimensions.toString() + groupNbr) + 1 : 1);
+            GroupedTileDimensions groupedTileDimensions = new GroupedTileDimensions(tileDimensions, groupNbr);
+            g.add(groupedTileDimensions);
+            if (map.get(tileDimensions.toString() + groupNbr) > distincTileDimensions.get(tileDimensions.toString()) / 2) {
+                groupNbr++;
+            }
+        }
+
+        // Create a list with all distinct tile dimensions
+        HashMap<GroupedTileDimensions, Integer> distincGroupTileDimensions = new HashMap<>();
+        for (GroupedTileDimensions tileDimensions : g) {
+            //String tileDimensionsStr = tileDimensions.toString();
+            distincGroupTileDimensions.put(tileDimensions, distincGroupTileDimensions.get(tileDimensions) != null ? distincGroupTileDimensions.get(tileDimensions) + 1 : 1);
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        List<Solution> allSolutions = new ArrayList<>();
+
 
 
         // Create a list with all distinct stock tile dimensions
@@ -212,20 +265,24 @@ public class CutListService {
 
 
 
-        List<List<TileDimensions>> placeHolders = getPlaceHolders(tilesToFit);
+        List<List<TileDimensions>> placeHolders = getPlaceHolders(g);
 
 
 
 
         // Get all possible combinations by permuting the order in witch the tiles are fited
-        List<List<String>> combinations = Permutation.<String>generatePermutations(new ArrayList<>(distincTileDimensions.keySet()));
+        List<List<GroupedTileDimensions>> combinations = Permutation.<GroupedTileDimensions>generatePermutations(new ArrayList<>(distincGroupTileDimensions.keySet()));
+
+
+
+
 
         // Create lists sorted according to the calculated permutations
         List<List<TileDimensions>> tilesPermutations = new ArrayList<>();
-        for (List<String> combination : combinations) {
-            ArrayList<TileDimensions> solutionPermutation = new ArrayList<>(tilesToFit);
+        for (List<GroupedTileDimensions> combination : combinations) {
+            ArrayList<TileDimensions> solutionPermutation = new ArrayList<>(g);
             tilesPermutations.add(solutionPermutation);
-            Collections.sort(solutionPermutation, Comparator.comparingInt(o -> combination.indexOf(o.toString())));
+            Collections.sort(solutionPermutation, Comparator.comparingInt(o -> combination.indexOf(o)));
 
             for (List<TileDimensions> placeholders : placeHolders) {
                 // Build additional permutations foreach placeholder
@@ -234,14 +291,33 @@ public class CutListService {
                     solutionPermutationPlaceholders.add(0, tileDimensions);
                     tilesPermutations.add(solutionPermutationPlaceholders);
                 }
-
-                // Build an additional permutation containing all placeholders
-                if (placeHolders.size() > 1) {
-                    ArrayList<TileDimensions> solutionPermutationPlaceholders = new ArrayList<>(solutionPermutation);
-                    solutionPermutationPlaceholders.addAll(0, placeholders);
-                    tilesPermutations.add(solutionPermutationPlaceholders);
-                }
+//
+//                // Build an additional permutation containing all placeholders
+//                if (placeholders.size() > 1) {
+//                    ArrayList<TileDimensions> solutionPermutationPlaceholders = new ArrayList<>(solutionPermutation);
+//                    solutionPermutationPlaceholders.addAll(0, placeholders);
+//                    tilesPermutations.add(solutionPermutationPlaceholders);
+//                }
             }}
+
+
+
+
+        List<String> everyPermutation = new ArrayList<>();
+        for (Iterator<List<TileDimensions>> iterator = tilesPermutations.iterator(); iterator.hasNext(); ) {
+            List<TileDimensions> permutation = iterator.next();
+            StringBuilder sb1 = new StringBuilder();
+            for (TileDimensions tileDimensions : permutation) {
+                sb1.append(tileDimensions.dimensionsToString());
+            }
+
+            if (everyPermutation.contains(sb1.toString())) {
+                iterator.remove();
+            } else {
+                everyPermutation.add(sb1.toString());
+            }
+        }
+
 
         // Log permutations
         int permutationIndex = 0;
@@ -256,43 +332,84 @@ public class CutListService {
         }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         List<StockSolution> stockSolutionsToExclude = new ArrayList<>();
 
         int spare = 0;
         int startWith = 1;
 
+        // Calculate the required area for fitting every tile.
+        int requiredArea = 0;
+        for (TileDimensions tile : tilesToFit) {
+            requiredArea += tile.getArea();
+        }
+
         boolean done = false;
         while (!done) {
 
-            StockSolution stockSolution = stockPanelPicker.getCandidateStockSolutions(tilesToFit, stockTiles, 0f, spare, stockSolutionsToExclude, startWith);
-            if (stockSolution == null) {
-                spare++;
-                stockSolution = stockPanelPicker.getCandidateStockSolutions(tilesToFit, stockTiles, 0f, spare, stockSolutionsToExclude, startWith);
+            List<StockSolution> stockSolution = new ArrayList<>();
+            StockSolution tmpStockSolution;
 
-                if (stockSolution == null) {
-                    // No more possible stock solutions
-                    logger.info("Couldn't find a suitable solution", stockSolution);
-                    break;
-                }
+            float usedArea2 = 1f;
+
+            while (usedArea2 > 0.8) {
+                tmpStockSolution = stockPanelPicker.getCandidateStockSolutions(tilesToFit, stockTiles, 0f, spare, stockSolutionsToExclude, startWith);
+                stockSolution.add(tmpStockSolution);
+                stockSolutionsToExclude.add(tmpStockSolution);
+                usedArea2 = (float) requiredArea / (float) tmpStockSolution.getArea();
+                logger.info("Task[{}] Candidate stock {} usedArea[{}]", cfg.getTaskId(), tmpStockSolution, usedArea2);
             }
-            stockSolutionsToExclude.add(stockSolution);
 
-            // Calculate the required area for fitting every tile.
-            int requiredArea = 0;
-            for (TileDimensions tile : tilesToFit) {
-                requiredArea += tile.getArea();
-            }
-            float usedArea = (float)requiredArea / (float)stockSolution.getArea();
-            int discardAbove = (int)(500.0f * Math.pow(usedArea, 3.0f));
-            discardAbove = Math.max(discardAbove, 100);
-
-            // TODO: Only for debug purposes
-            if (cfg.getAccuracyFactor() > 0) {
-                discardAbove = cfg.getAccuracyFactor();
-            }
-            logger.info("Task[{}] Trying stock {} usedArea[{}] discardAbove[{}]", cfg.getTaskId(), stockSolution, usedArea, discardAbove);
+//            tmpStockSolution = stockPanelPicker.getCandidateStockSolutions(tilesToFit, stockTiles, 0f, spare, stockSolutionsToExclude, startWith);
+//            stockSolution.add(tmpStockSolution);
+//            stockSolutionsToExclude.add(tmpStockSolution);
+//            float usedArea2 = (float) requiredArea / (float) tmpStockSolution.getArea();
+//            logger.info("Task[{}] Trying stock {} usedArea[{}]", cfg.getTaskId(), stockSolution, usedArea2);
+//            if ((float) requiredArea / (float) tmpStockSolution.getArea() > 0.8) {
+//                tmpStockSolution = stockPanelPicker.getCandidateStockSolutions(tilesToFit, stockTiles, 0f, spare, stockSolutionsToExclude, startWith);
+//                stockSolution.add(tmpStockSolution);
+//                stockSolutionsToExclude.add(tmpStockSolution);
+//                usedArea2 = (float) requiredArea / (float) tmpStockSolution.getArea();
+//                logger.info("Task[{}] Trying stock {} usedArea[{}]", cfg.getTaskId(), stockSolution, usedArea2);
+//            }
 
 
+//            tmpStockSolution = stockPanelPicker.getCandidateStockSolutions(tilesToFit, stockTiles, 0f, spare + 1, stockSolutionsToExclude, startWith);
+//            stockSolution.add(tmpStockSolution);
+//            stockSolutionsToExclude.add(tmpStockSolution);
+//            if ((float) requiredArea / (float) tmpStockSolution.getArea() > 0.8) {
+//                tmpStockSolution = stockPanelPicker.getCandidateStockSolutions(tilesToFit, stockTiles, 0f, spare, stockSolutionsToExclude, startWith);
+//                stockSolution.add(tmpStockSolution);
+//                stockSolutionsToExclude.add(tmpStockSolution);
+//            }
+
+//            if (stockSolution == null) {
+//                spare++;
+//                stockSolution = stockPanelPicker.getCandidateStockSolutions(tilesToFit, stockTiles, 0f, spare, stockSolutionsToExclude, startWith);
+//
+//                if (stockSolution == null) {
+//                    // No more possible stock solutions
+//                    logger.info("Couldn't find a suitable solution", stockSolution);
+//                    break;
+//                }
+//            }
+            //
+
+            //stockSolutionsToExclude.add(stockSolution2);
             // Iterate through all permutations
             permutationIndex = -1;
             for (List<TileDimensions> tilesPermutation : tilesPermutations) {
@@ -300,53 +417,83 @@ public class CutListService {
 
                 RunningTasks.Task task2 = runningTasks.getTask(cfg.getTaskId());
                 if (task2 != null) {
-                    task2.setStatusMessage("Trying permutation " + (permutationIndex  + 1) + "/" + tilesPermutations.size() + " on stock " + stockSolution);
+                    task2.setStatusMessage("Trying permutation " + (permutationIndex + 1) + "/" + tilesPermutations.size() + " on stock " + stockSolution);
                 }
+                for (StockSolution stockSolution1 : stockSolution) {
+
+                    float usedArea = (float) requiredArea / (float) stockSolution1.getArea();
+                    int discardAbove = (int) (500.0f * Math.pow(usedArea, 3.0f));
+                    discardAbove = Math.max(discardAbove, 100);
+
+                    // TODO: Only for debug purposes
+                    if (cfg.getAccuracyFactor() > 0) {
+                        discardAbove = cfg.getAccuracyFactor();
+                    }
+                    logger.info("Task[{}] Trying stock {} usedArea[{}] discardAbove[{}]", cfg.getTaskId(), stockSolution1, usedArea, discardAbove);
 
 
-                // Clone the candidate stock solutions
-                List<Solution> solutions = new ArrayList<>();
-                solutions.add(new Solution(stockSolution));
 
-                computeSolutions(tilesPermutation, solutions, cfg, discardAbove);
 
-                allSolutions.addAll(solutions);
-                sort(allSolutions, cfg, false);
+                    //computeSolutions(tilesPermutation, solutions, cfg, discardAbove);
 
-                if (solutions.get(0).getNoFitTiles().size() == 0) {
-                    // TODO: To break or not to break - if not try all permutations and then choose best
-                    //break;
+
+                    CutListThread cutListThread = (CutListThread) context.getBean("cutListThread");
+                    cutListThread.setName("aaa");
+                    cutListThread.setAllSolutions(allSolutions);
+                    cutListThread.setTiles(tilesPermutation);
+//                cutListThread.setSolutions(solutions);
+                    cutListThread.setCfg(cfg);
+                    cutListThread.setAccuracyFactor(discardAbove);
+                    cutListThread.setStockSolution(stockSolution1);
+                    taskExecutor.execute(cutListThread);
+
+
                 }
+            }
 
-                logger.info("Task[{}] Permutation {}/{} on stock {} discardAbove[{}] - usedAreaRatio[{}] nbrCuts[{}] maxDepth[{}] nbrNoFitTiles[{}]",
-                        cfg.getTaskId(),
-                        permutationIndex + 1,
-                        tilesPermutations.size(),
-                        stockSolution,
-                        discardAbove,
-                        Math.round(solutions.get(0).getUsedAreaRatio() * 100f) / 100f,
-                        solutions.get(0).getNbrCuts(),
-                        solutions.get(0).getMaxDepth(),
-                        solutions.get(0).getNoFitTiles().size());
 
-                RunningTasks.Task task = runningTasks.getTask(cfg.getTaskId());
-                if (task != null) {
-                    task.setSolution((new TilingResponseDTOBuilder()).setSolutions(allSolutions.get(0)).setInfo(null).build());
-                } else {
-                    logger.info("Task[{}] was deliberately stopped", cfg.getTaskId());
+
+            for (;;) {
+//                    System.out.println("Active Threads : " + taskExecutor.getActiveCount());
+//                    System.out.println("Pool size: " + taskExecutor.getPoolSize());
+//                    System.out.println("getTaskCount: " + taskExecutor.getThreadPoolExecutor().getTaskCount());
+//                    System.out.println("remainingCapacity: " + taskExecutor.getThreadPoolExecutor().getQueue().remainingCapacity());
+
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                if (taskExecutor.getActiveCount() == 0) {
+                    //taskExecutor.shutdown();
+                    sort(allSolutions, cfg, true);
                     break;
                 }
             }
 
-            sort(allSolutions, cfg, true);
 
-            if (runningTasks.getTask(cfg.getTaskId()) == null || (allSolutions.get(0).getNoFitTiles().size() == 0 && startWith > 3)) {
+
+            //sort(allSolutions, cfg, true);
+
+//            if (runningTasks.getTask(cfg.getTaskId()) == null || (allSolutions.get(0).getNoFitTiles().size() == 0 && startWith > 3)) {
+//                break;
+//            }
+//            else if(allSolutions.get(0).getNoFitTiles().size() == 0 && !cfg.getForceOneBaseTile()) {
+//                startWith++;
+//            }
+
+//            if (runningTasks.getTask(cfg.getTaskId()) == null || startWith > 3) {
+//                break;
+//            }
+//            startWith++;
+
+            if (allSolutions.get(0).getNoFitTiles().size() == 0) {
                 break;
             }
-            else if(allSolutions.get(0).getNoFitTiles().size() == 0 && !cfg.getForceOneBaseTile()) {
-                startWith++;
-            }
         }
+
+
+
 
         long elapsedTime = System.currentTimeMillis() - startTime;
 

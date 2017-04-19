@@ -1,14 +1,16 @@
 package com.pedroedrasousa.tiling.model;
 
+import com.fasterxml.jackson.databind.ser.Serializers;
+
 public class TileDimensions {
 
-    private final int id;
+    protected final int id;
 
-    private final int width;
+    protected final int width;
 
-    private final int height;
+    protected final int height;
 
-    private final boolean isPlaceHolder;
+    protected final boolean isPlaceHolder;
 
     public TileDimensions(TileDimensions that) {
         this.id = that.id;
@@ -86,6 +88,10 @@ public class TileDimensions {
         return "id=" + id + "[" + width + "x" + height + ']';
     }
 
+    public String dimensionsToString() {
+        return "[" + width + "x" + height + ']';
+    }
+
     /**
      * Whether specified tile has the same dimensions.
      * Orientation doesn't matter.
@@ -119,5 +125,9 @@ public class TileDimensions {
         result = 31 * result + width;
         result = 31 * result + height;
         return result;
+    }
+
+    public BaseTileDimensions toBaseTileDimensions() {
+        return new BaseTileDimensions(width, height);
     }
 }

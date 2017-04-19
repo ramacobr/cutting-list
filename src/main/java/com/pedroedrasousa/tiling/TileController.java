@@ -39,7 +39,7 @@ public class TileController {
         for (TillingRequestDTO.TileInfoDTO tileInfoDTO : tilling.getTiles()) {
             if (tileInfoDTO.isEnabled() && tileInfoDTO.getWidth() > 0 && tileInfoDTO.getHeight() > 0) {
                 for (int i = 0; i < tileInfoDTO.getCount(); i++) {
-                    tilesToFit.add(new TileDimensions(tileInfoDTO.getId(), tileInfoDTO.getWidth(), tileInfoDTO.getHeight()));
+                    tilesToFit.add(new TileDimensions(tileInfoDTO.getId()/* + (i / 5)*/, tileInfoDTO.getWidth(), tileInfoDTO.getHeight()));
                 }
             }
         }

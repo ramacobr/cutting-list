@@ -250,4 +250,13 @@ public class Solution {
 
         return centerOfMassDistToOrigin / (float)getNbrMosaics();
     }
+
+    public int getBiggestArea() {
+        int biggestTileArea = 0;
+        for (Mosaic mosaic : mosaics) {
+                biggestTileArea = Math.max(mosaic.getBiggestArea(), biggestTileArea);
+        }
+
+        return biggestTileArea;
+    }
 }

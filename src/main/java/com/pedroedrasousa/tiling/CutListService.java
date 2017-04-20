@@ -1,5 +1,6 @@
 package com.pedroedrasousa.tiling;
 
+import com.pedroedrasousa.tiling.comparator.SolutionBiggestUnusedTileAreaComparator;
 import com.pedroedrasousa.tiling.comparator.SolutionComparatorFactory;
 import com.pedroedrasousa.tiling.comparator.SolutionMostNbrTilesComparator;
 import com.pedroedrasousa.tiling.comparator.SolutionSmallestCenterOfMassDistToOriginComparator;
@@ -46,6 +47,8 @@ public class CutListService {
         // Solutions without all fitted tiles will go last
         solutionComparators.add(new SolutionMostNbrTilesComparator());
 
+        //solutionComparators.add(new SolutionBiggestUnusedTileAreaComparator());
+
         for (String priotity : criterias) {
             solutionComparators.add(SolutionComparatorFactory.getSolutionComparator(priotity));
         }
@@ -63,6 +66,28 @@ public class CutListService {
 
             return diff;
         });
+    }
+
+    /**
+     *
+     * @param solutions
+     * @return Number of removed solutions.
+     */
+    public int removeDuplicated(List<Solution> solutions) {
+        int count = 0;
+        List<Solution> solutionsToRemove = new ArrayList<>();
+
+        Set<String> set = new HashSet<>();
+        for (Solution solution : solutions) {
+            String str = solution.getMosaics().get(0).getRootTileNode().toString();
+            if (set.add(str) == false) {
+                solutionsToRemove.add(solution);
+                count++;
+            }
+        }
+
+        solutions.removeAll(solutionsToRemove);
+        return count;
     }
 
     void computeSolutions(List<TileDimensions> tiles, List<Solution> solutions, Configuration cfg, int accuracyFactor) {
@@ -108,8 +133,9 @@ public class CutListService {
             List<Solution> solutionsToRemove = new ArrayList<>();
             sort(solutions, cfg, false);
             solutionsToRemove.addAll(solutions.subList(Math.min(solutions.size() - 1, accuracyFactor/*(int) (accuracyFactor * 500.0f)*/), solutions.size() - 1));
-
             solutions.removeAll(solutionsToRemove);
+
+            removeDuplicated(solutions);
         }
     }
 
@@ -191,9 +217,7 @@ public class CutListService {
         runningTasks.getTasks().add(new RunningTasks.Task(cfg.getTaskId(), "Initializing..."));
 
 
-
-
-
+        List<Solution> allSolutions = new ArrayList<>();
 
         // Create a list with all distinct tile dimensions
         HashMap<String, Integer> distincTileDimensions = new HashMap<>();
@@ -245,7 +269,6 @@ public class CutListService {
 
 
 
-        List<Solution> allSolutions = new ArrayList<>();
 
 
 

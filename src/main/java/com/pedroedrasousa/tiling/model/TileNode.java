@@ -316,6 +316,25 @@ public class TileNode {
         return count;
     }
 
+
+    public int getBiggestArea() {
+        int biggestArea = 0;
+
+        if (this.getChild1() == null && this.getChild2() == null && !this.isFinal) {
+            biggestArea = this.getArea();
+        }
+
+        if (this.child1 != null) {
+            biggestArea = Math.max(this.child1.getBiggestArea(), biggestArea);
+        }
+
+        if (this.child2 != null) {
+            biggestArea = Math.max(this.child2.getBiggestArea(), biggestArea);
+        }
+
+        return biggestArea;
+    }
+
     public int getNbrFinalHorizontal() {
         int count = 0;
 

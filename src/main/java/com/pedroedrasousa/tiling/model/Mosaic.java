@@ -120,4 +120,8 @@ public class Mosaic {
 
         return (float)Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2)) / (float)Math.sqrt(Math.pow(getRootTileNode().getWidth(), 2) + Math.pow(getRootTileNode().getHeight(), 2));
     }
+
+    public int getBiggestArea() {
+        return rootTileNode.getBiggestArea();
+    }
 }

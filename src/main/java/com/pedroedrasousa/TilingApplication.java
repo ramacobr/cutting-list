@@ -11,7 +11,7 @@ public class TilingApplication {
 	@Bean
 	public ThreadPoolTaskExecutor taskExecutor() {
 		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-		executor.setCorePoolSize(20);
+		executor.setCorePoolSize(5);
 		executor.setMaxPoolSize(50);
 		executor.setQueueCapacity(1000);
 		return executor;

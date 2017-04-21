@@ -194,6 +194,35 @@ public class TileNode {
         return s;
     }
 
+
+    /**
+     * Generates an unique identifier based on tile coordinates and whether is final or not.
+     *
+     * @return A <code>String</code> representing the identifier.
+     */
+    public String toStringIdentifier() {
+        StringBuilder sb = new StringBuilder();
+        appendToStringIdentifier(sb);
+        return sb.toString();
+    }
+
+    private void appendToStringIdentifier(StringBuilder sb) {
+
+        sb.append(getX1());
+        sb.append(getY1());
+        sb.append(getX2());
+        sb.append(getY2());
+        sb.append(isFinal);
+
+        if (child1 != null) {
+            child1.appendToStringIdentifier(sb);
+        }
+
+        if (child2 != null) {
+            child2.appendToStringIdentifier(sb);
+        }
+    }
+
     public int getUsedArea() {
 
         int area = 0;
@@ -385,8 +414,10 @@ public class TileNode {
 
     public HashSet<String> getDistictTileSet(HashSet<String> set) {
 
-        if (this.isFinal()) {
-            set.add(Integer.toString(getWidth()) + "x" + Integer.toString(getHeight()));
+        String dimensions = new StringBuilder().append(getWidth()).append("x").append(getHeight()).toString();
+
+        if (isFinal) {
+            set.add(dimensions);
         }
 
         if (this.child1 != null) {

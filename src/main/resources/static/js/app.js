@@ -149,6 +149,7 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
             accuracyFactor: 0,  // TODO: Only for debug purposes
             priorities: [
                 "LEAST_WASTED_AREA",
+                "BIGGEST_UNUSED_TILE_AREA",
                 "LEAST_NBR_CUTS",
                 "LEAST_NBR_UNUSED_TILES",
                 "SMALLEST_CENTER_OF_MASS_DIST_TO_ORIGIN",

@@ -90,6 +90,28 @@ public class CutListThread implements Runnable {
         computeSolutions();
     }
 
+    /**
+     *
+     * @param solutions
+     * @return Number of removed solutions.
+     */
+    public int removeDuplicated(List<Solution> solutions) {
+        int count = 0;
+        List<Solution> solutionsToRemove = new ArrayList<>();
+
+        Set<String> set = new HashSet<>();
+        for (Solution solution : solutions) {
+            String str = solution.getMosaics().get(0).getRootTileNode().toStringIdentifier();
+            if (set.add(str) == false) {
+                solutionsToRemove.add(solution);
+                count++;
+            }
+        }
+
+        solutions.removeAll(solutionsToRemove);
+        return count;
+    }
+
 
     private void sort(List<Solution> solutions, Configuration cfg, boolean isFinalSort) {
 
@@ -173,6 +195,8 @@ public class CutListThread implements Runnable {
             }
 
             solutions.addAll(newSolutions);
+
+            removeDuplicated(solutions);
 
             List<Solution> solutionsToRemove = new ArrayList<>();
             sort(solutions, cfg, false);

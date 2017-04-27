@@ -295,6 +295,8 @@
     position: relative;
 
     font-size: 13px;
+
+    white-space: pre-wrap;
 }
 
 .spinner {

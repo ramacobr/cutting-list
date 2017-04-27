@@ -79,9 +79,11 @@
         <button ng-show="isLoading && tiling.getNbrMosaics() === 0" class="btn btn-top button-danger hidden-xs" style="width: 110px" ng-click="cancelTilingRequest()" href="#"><i class="material-icons md-center hidden-xs">stop</i></span> {{ 'CANCEL' | translate }}</button>
 
         <!--<button class="btn btn-top button-default hidden-xs" ng-disabled="invalidData" ng-click="print()" data-toggle="tooltip" data-placement="top" title="Ocultar detalhes" href="#"><i class="material-icons md-center hidden-xs">print</i></span></button>-->
-        <button class="btn btn-top button-default hidden-xs" ng-click="print()" data-toggle="tooltip" data-placement="top" title="Ocultar detalhes" href="#"><i class="material-icons md-center hidden-xs">print</i></span></button>
+
 
         <div class="navbar-header pull-right">
+
+            <button class="btn btn-top button-default hidden-xs" ng-click="print()" data-toggle="tooltip" data-placement="top" title="Ocultar detalhes" href="#"><i class="material-icons md-center hidden-xs">print</i></span></button>
 
             <button class="btn btn-top button-default hidden-xs" ng-click="zoomIn()" data-toggle="tooltip" data-placement="top" title="Zoom Out" href="#"><i class="material-icons md-center hidden-xs">zoom_in</i></span></button>
             <button class="btn btn-top button-default hidden-xs" ng-click="zoomOut()" data-toggle="tooltip" data-placement="top" title="Zoom Out" href="#"><i class="material-icons md-center hidden-xs">zoom_out</i></span></button>
@@ -179,7 +181,7 @@
                 <div class="hidden-print" collapse="isAdvancedOptionsCollapsed">
                     <div class="form-horizontal top-buffer" style="margin: 10px 10px 5px 10px;">
                         <div class="form-group">
-                            <span class="control-label col-xs-8">accuracyFactor %</span>
+                            <span class="control-label col-xs-8">discard above</span>
                             <div class="col-xs-4">
                                 <input style="" type="number" class="form-control input-xs" ng-model="cfg.accuracyFactor">
                             </div>
@@ -227,11 +229,14 @@
                     <div ng-show="isTilingInfoVisible" class="col-md-4 hidden-print top-buffer info-container" style="font-size: 13px;" id="DivRightContent">
 
                         <div ng-show="tiling.getNbrMosaics() > 0" class="panel panel-default">
-                            <div class="panel-heading"><h6 class="panel-title">Info
-                                <button ng-show="tiling.getNbrMosaics() > 1" class="btn-transparent pull-right glyphicon glyphicon-menu-right pull-right" ng-click="incrementVisibleTileInfoIdx()"></button>
-                                <span class="pull-right">{{('PANEL' | translate) + ' ' + (visibleTileInfoIdx + 1) + '/' + tiling.getNbrMosaics()}}</span>
-                                <button ng-show="tiling.getNbrMosaics() > 1" class="btn-transparent glyphicon glyphicon-menu-left pull-right" ng-click="decrementVisibleTileInfoIdx()"></button>
+                            <div class="panel-heading"><h6 class="panel-title" data-toggle="collapse" data-parent="#accordion" data-target="{{'#info'}}" style="cursor: pointer">Info
+                                <span class="accordion-toggle"></span>
+                                <button ng-show="tiling.getNbrMosaics() > 1" class="btn-transparent pull-right glyphicon glyphicon-menu-right pull-right" ng-click="incrementVisibleTileInfoIdx(); $event.stopPropagation();"></button>
+                                <span ng-show="tiling.getNbrMosaics() > 1" class="pull-right">{{('PANEL' | translate) + ' ' + (visibleTileInfoIdx + 1) + '/' + tiling.getNbrMosaics()}}</span>
+
+                                <button ng-show="tiling.getNbrMosaics() > 1" class="btn-transparent glyphicon glyphicon-menu-left pull-right" ng-click="decrementVisibleTileInfoIdx(); $event.stopPropagation();"></button>
                                 </h6></div>
+                            <div id="{{'info'}}" class="panel-collapse collapse in">
                             <div class="panel-body">
                                 <div id="stats-table">
                                     <table id="t1" class="table table-striped">
@@ -265,15 +270,16 @@
                                 </div>
                             </div>
                         </div>
+                        </div>
 
                         <div ng-show="tiling.getNbrNoFitTiles() > 0">
-                            <div class="panel-group" id="accordion">
+                            <div class="panel-group" id="no-fit-tiles">
                                 <div class="panel panel-default panel-error">
                                     <div class="panel-heading panel-heading-error">
                                         <h6 class="panel-title">
-                                            <a class="no-underline accordion-toggle" data-toggle="collapse" data-parent="#accordion" data-target="{{'#noFitTiles'}}">
+                                            <div class="accordion-toggle" data-toggle="collapse" data-parent="#no-fit-tiles" data-target="{{'#noFitTiles'}}" style="cursor: pointer">
                                                 Paineis em falta
-                                            </a>
+                                            </div>
                                         </h6>
                                     </div>
                                     <div id="{{'noFitTiles'}}" class="panel-collapse collapse in">
@@ -287,7 +293,7 @@
                                                 </tr>
                                                 </thead>
                                                 <tbody style="font-size: 13px;">
-                                                <tr ng-repeat="tile in tiling.getNoFitTiles() track by $index" ng-mouseover="drawService.drawCut(mosaic, cut)" ng-mouseleave="drawService.resetSvgOverlayElems()">
+                                                <tr ng-repeat="tile in tiling.getNoFitTiles() track by $index">
                                                     <!--<th ng-bind="$index + 1"></th>-->
                                                     <td><span ng-bind="tile.width"></span><span class="math">&#215;</span><span ng-bind="tile.height"></span></td>
                                                     <td><span ng-bind="tile.qty"></span></td>
@@ -305,9 +311,9 @@
                                 <div class="panel panel-default">
                                     <div class="panel-heading">
                                         <h6 class="panel-title">
-                                            <a class="no-underline accordion-toggle" href="javascript:;" data-toggle="collapse" data-parent="#accordion" data-target="{{'#cuts'}}">
+                                            <div class="accordion-toggle" href="javascript:;" data-toggle="collapse" data-parent="#accordion" data-target="{{'#cuts'}}" style="cursor: pointer">
                                                 {{ 'CUTS' | translate }}
-                                            </a>
+                                            </div>
                                         </h6>
                                     </div>
                                     <div id="{{'cuts'}}" class="panel-collapse collapse in">

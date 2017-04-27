@@ -46,6 +46,10 @@ public class RunningTasks {
 
         private String statusMessage;
 
+        private int runningThreads;
+
+        private int nbrTotalThreads;
+
         public Task(String id) {
             this.id = id;
         }
@@ -77,6 +81,38 @@ public class RunningTasks {
 
         public void setStatusMessage(String statusMessage) {
             this.statusMessage = statusMessage;
+        }
+
+        public int getRunningThreads() {
+            return runningThreads;
+        }
+
+        public void setRunningThreads(int runningThreads) {
+            this.runningThreads = runningThreads;
+        }
+
+        public int incrementRunningThreads() {
+            return ++this.runningThreads;
+        }
+
+        public int decrementRunningThreads() {
+            return --this.runningThreads;
+        }
+
+        public int getNbrTotalThreads() {
+            return nbrTotalThreads;
+        }
+
+        public void setNbrTotalThreads(int nbrTotalThreads) {
+            this.nbrTotalThreads = nbrTotalThreads;
+        }
+
+        public int incrementNbrTotalThreads() {
+            return ++this.nbrTotalThreads;
+        }
+
+        public int decrementNbrTotalThreads() {
+            return --this.nbrTotalThreads;
         }
     }
 }

@@ -1,6 +1,6 @@
 app.factory('DrawService', function(TilingData, $window) {
 
-    var isSvgPannable = false;
+    var isSvgPannable = true;
 
     function toggleIsSvgPannable() {
         isSvgPannable = !isSvgPannable;

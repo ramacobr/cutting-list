@@ -407,25 +407,27 @@ public class TileNode {
      *
      * @return A set of unique strings.
      */
-    public HashSet<String> getDistictTileSet() {
-        HashSet<String> set = new HashSet<>();
+    public HashSet<Integer> getDistictTileSet() {
+        HashSet<Integer> set = new HashSet<>();
         return getDistictTileSet(set);
     }
 
-    public HashSet<String> getDistictTileSet(HashSet<String> set) {
-
-        String dimensions = new StringBuilder().append(getWidth()).append("x").append(getHeight()).toString();
+    private HashSet<Integer> getDistictTileSet(HashSet<Integer> set) {
 
         if (isFinal) {
-            set.add(dimensions);
-        }
+            int x = tile.getWidth();
+            int y = tile.getHeight();
+            // Use Cantor pairing function as hash key for performance
+            set.add(((x + y)*(x + y + 1)/2) + y);
+        } else {
 
-        if (this.child1 != null) {
-            this.child1.getDistictTileSet(set);
-        }
+            if (this.child1 != null) {
+                this.child1.getDistictTileSet(set);
+            }
 
-        if (this.child2 != null) {
-            this.child2.getDistictTileSet(set);
+            if (this.child2 != null) {
+                this.child2.getDistictTileSet(set);
+            }
         }
 
         return set;

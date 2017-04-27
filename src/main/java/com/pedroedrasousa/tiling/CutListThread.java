@@ -23,19 +23,24 @@ public class CutListThread implements Runnable {
     @Autowired
     private RunningTasks runningTasks;
 
-    String name;
 
-    public void setName(String name){
-        this.name = name;
-    }
+    private String permutationId;
 
-    List<TileDimensions> tiles;
-    List<Solution> solutions;
-    Configuration cfg;
-    int accuracyFactor;
-    List<Solution> allSolutions;
+    private List<TileDimensions> tiles;
+    private List<Solution> solutions;
+    private Configuration cfg;
+    private int accuracyFactor;
+    private List<Solution> allSolutions;
 
     private StockSolution stockSolution;
+
+    public String getPermutationId() {
+        return permutationId;
+    }
+
+    public void setPermutationId(String permutationId) {
+        this.permutationId = permutationId;
+    }
 
     public List<TileDimensions> getTiles() {
         return tiles;
@@ -113,15 +118,11 @@ public class CutListThread implements Runnable {
     }
 
 
-    private void sort(List<Solution> solutions, Configuration cfg, boolean isFinalSort) {
+    private void sort(List<Solution> solutions, Configuration cfg) {
 
         List<Comparator> solutionComparators = new ArrayList<>();
 
         List<String> criterias = new ArrayList<>(cfg.getPriorities());
-
-        if (!isFinalSort) {
-            criterias.remove("SMALLEST_CENTER_OF_MASS_DIST_TO_ORIGIN");
-        }
 
         // Solutions without all fitted tiles will go last
         solutionComparators.add(new SolutionMostNbrTilesComparator());
@@ -146,13 +147,6 @@ public class CutListThread implements Runnable {
     }
 
     void computeSolutions() {
-
-        logger.info("Task[{}] Starting thread - stock{} discardAbove[{}]",
-                cfg.getTaskId(),
-//                permutationIndex + 1,
-//                tilesPermutations.size(),
-                stockSolution,
-                accuracyFactor);
 
         // Clone the candidate stock solutions
         List<Solution> solutions = new ArrayList<>();
@@ -199,7 +193,7 @@ public class CutListThread implements Runnable {
             removeDuplicated(solutions);
 
             List<Solution> solutionsToRemove = new ArrayList<>();
-            sort(solutions, cfg, false);
+            sort(solutions, cfg);
             solutionsToRemove.addAll(solutions.subList(Math.min(solutions.size() - 1, accuracyFactor/*(int) (accuracyFactor * 500.0f)*/), solutions.size() - 1));
 
             solutions.removeAll(solutionsToRemove);
@@ -212,7 +206,7 @@ public class CutListThread implements Runnable {
 
         synchronized (allSolutions) {
             allSolutions.addAll(solutions);
-            sort(allSolutions, cfg, false);
+            sort(allSolutions, cfg);
             ArrayList<Solution> solutionsToRemove = new ArrayList<>();
             solutionsToRemove.addAll(allSolutions.subList(Math.min(allSolutions.size() - 1, accuracyFactor/*(int) (accuracyFactor * 500.0f)*/), allSolutions.size() - 1));
             allSolutions.removeAll(solutionsToRemove);
@@ -223,11 +217,11 @@ public class CutListThread implements Runnable {
             //break;
         }
 
-        logger.info("Task[{}] Permutation {}/{} on stock {} discardAbove[{}] - usedAreaRatio[{}] nbrCuts[{}] maxDepth[{}] nbrNoFitTiles[{}]",
+        logger.info("Task[{}] Finished permutation[{}] stock[{}] discardAbove[{}] - usedAreaRatio[{}] nbrCuts[{}] maxDepth[{}] nbrNoFitTiles[{}]",
                 cfg.getTaskId(),
 //                permutationIndex + 1,
 //                tilesPermutations.size(),
-                0, 0,
+                permutationId,
                 stockSolution,
                 accuracyFactor,
 
@@ -239,8 +233,10 @@ public class CutListThread implements Runnable {
         RunningTasks.Task task = runningTasks.getTask(cfg.getTaskId());
         if (task != null) {
             task.setSolution((new TilingResponseDTOBuilder()).setSolutions(allSolutions.get(0)).setInfo(null).build());
+            task.decrementRunningThreads();
+            task.setStatusMessage("Searching for best solution...\nIteration " + (task.getNbrTotalThreads() - task.getRunningThreads()) + " of " + task.getNbrTotalThreads());
         } else {
-            logger.info("Task[{}] was deliberately stopped", cfg.getTaskId());
+            logger.info("Task[{}] permutation[{}] Task was deliberately stopped", cfg.getTaskId(), permutationId);
             return;
         }
     }

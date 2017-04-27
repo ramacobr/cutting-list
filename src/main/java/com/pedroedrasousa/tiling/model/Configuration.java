@@ -67,4 +67,16 @@ public class Configuration {
     public void setAccuracyFactor(int accuracyFactor) {
         this.accuracyFactor = accuracyFactor;
     }
+
+    @Override
+    public String toString() {
+        return "Configuration{" +
+                "taskId='" + taskId + '\'' +
+                ", cutThickness=" + cutThickness +
+                ", allowTileRotation=" + allowTileRotation +
+                ", forceOneBaseTile=" + forceOneBaseTile +
+                ", priorities=" + priorities +
+                ", accuracyFactor=" + accuracyFactor +
+                '}';
+    }
 }

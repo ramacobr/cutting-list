@@ -20,7 +20,7 @@ app.config(['$translateProvider', '$windowProvider', function($translateProvider
 app.service('TilingService', function($http, $location, TilingData, DrawService) {
 
     this.serverBaseUrl = $location.protocol() + '://'+ $location.host() +':'+  $location.port();
-    //this.serverBaseUrl = 'http://localhost:8080';
+    this.serverBaseUrl = 'http://localhost:8080';
 
     var taskId;
 
@@ -149,9 +149,9 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
             accuracyFactor: 0,  // TODO: Only for debug purposes
             priorities: [
                 "LEAST_WASTED_AREA",
-                "BIGGEST_UNUSED_TILE_AREA",
                 "LEAST_NBR_CUTS",
                 "LEAST_NBR_UNUSED_TILES",
+                "BIGGEST_UNUSED_TILE_AREA",
                 "SMALLEST_CENTER_OF_MASS_DIST_TO_ORIGIN",
                 "MOST_UNUSED_PANEL_AREA",
                 "MOST_HV_DISCREPANCY",
@@ -256,20 +256,20 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
     $scope.stockTiles = angular.fromJson($window.localStorage.getItem("baseTiles" + localStorageKeySuffix));
     if ($scope.stockTiles === null) {
         $scope.stockTiles = [
-            {width: 600, height: 300, count: 10, enabled: true},
-            {width: 600, height: 400, count: 10, enabled: true},
-            {width: 800, height: 300, count: 10, enabled: true},
-            {width: 800, height: 400, count: 10, enabled: true},
-            {width: 1200, height: 300, count: 10, enabled: true},
-            {width: 1200, height: 400, count: 10, enabled: true},
-            {width: 1200, height: 600, count: 10, enabled: true},
-            {width: 1200, height: 800, count: 10, enabled: true},
-            {width: 2440, height: 400, count: 10, enabled: true},
-            {width: 2440, height: 600, count: 10, enabled: true},
-            {width: 2440, height: 800, count: 10, enabled: true},
-            {width: 2440, height: 1222, count: 10, enabled: true},
-            {width: 2500, height: 1250, count: 10, enabled: true},
-            {width: null, height: null, count: null, enabled: true}]; // TODO: How to add a new one?
+            {width: 600, height: 300, count: 10, enabled: true, isUsed: false},
+            {width: 600, height: 400, count: 10, enabled: true, isUsed: false},
+            {width: 800, height: 300, count: 10, enabled: true, isUsed: false},
+            {width: 800, height: 400, count: 10, enabled: true, isUsed: false},
+            {width: 1200, height: 300, count: 10, enabled: true, isUsed: false},
+            {width: 1200, height: 400, count: 10, enabled: true, isUsed: false},
+            {width: 1200, height: 600, count: 10, enabled: true, isUsed: false},
+            {width: 1200, height: 800, count: 10, enabled: true, isUsed: false},
+            {width: 2440, height: 400, count: 10, enabled: true, isUsed: false},
+            {width: 2440, height: 600, count: 10, enabled: true, isUsed: false},
+            {width: 2440, height: 800, count: 10, enabled: true, isUsed: false},
+            {width: 2440, height: 1222, count: 10, enabled: true, isUsed: false},
+            {width: 2500, height: 1250, count: 10, enabled: true, isUsed: false},
+            {width: null, height: null, count: null, enabled: true, isUsed: false}]; // TODO: How to add a new one?
         //{width: null, height: null, count: null, enabled: true}];
     }
 
@@ -569,6 +569,7 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
         TilingService.requestTiling($scope.tiles, $scope.stockTiles, $scope.cfg, function(response) {
 
             $scope.statusMessage = null;
+            $scope.isLoading = false;
 
             if (TilingData.getData().mosaics && TilingData.getData().mosaics.length > 0) {
                 $scope.scrollTo('main-content');
@@ -608,6 +609,33 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
     }
 
     function render() {
+
+
+        // Clean used status from stock tiles
+        angular.forEach($scope.stockTiles, function(stockTile) {
+            stockTile.isUsed = false;
+        });
+
+
+        if (TilingData.getData()) {
+            // Loop through all mosaics for this solution
+            angular.forEach(TilingData.getData().mosaics, function (mosaic, index) {
+
+                // Render non final tiles
+                angular.forEach(mosaic.tiles, function (tile, index) {
+
+                    angular.forEach($scope.stockTiles, function (stockTile) {
+                        //stockTile.isUsed = false;
+                        if (stockTile.width == tile.width && stockTile.height == tile.height) {
+                            stockTile.isUsed = true;
+                        }
+                    });
+                });
+            });
+        }
+
+
+
         saveDataLocalStorage();
         $scope.visibleTileInfoIdx = 0;
 

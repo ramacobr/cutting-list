@@ -100,7 +100,7 @@ public class StockPanelPicker {
         return null;
     }
 
-    public StockSolution getCandidateStockSolutions(List<TileDimensions> tilesToFit, List<TileDimensions> stockTiles, float areaDelta, int nbrSpare, List<StockSolution> exclusions, int minNbrPanels) {
+    public StockSolution getCandidateStockSolutions(List<TileDimensions> tilesToFit, List<TileDimensions> stockTiles, float areaDelta, int nbrSpare, List<StockSolution> exclusions, int minNbrPanels, int maxNbrTiles) {
 
         StockSolution stockSolution;
 
@@ -125,7 +125,7 @@ public class StockPanelPicker {
         // Start with one stock tile and increment until required area is met.
         // Resulting solution will be returned if no spare is requested.
         int nbrTiles;
-        for (nbrTiles = minNbrPanels; nbrTiles < stockTiles.size(); nbrTiles++) {
+        for (nbrTiles = minNbrPanels; nbrTiles < stockTiles.size() && nbrTiles <= maxNbrTiles; nbrTiles++) {
             stockSolution = getCandidateStockSolution(stockTiles, requiredArea, nbrTiles, exclusions);
             if (stockSolution != null) {
                 if (nbrSpare == 0) {
@@ -136,7 +136,7 @@ public class StockPanelPicker {
         }
 
         // If at least one spare stock panel was requested and there are still stock panels remaining build a solution
-        if (nbrSpare > 0 && nbrTiles < stockTiles.size()) {
+        if (nbrSpare > 0 && nbrTiles < stockTiles.size() && nbrTiles + nbrSpare < maxNbrTiles) {
             stockSolution = getCandidateStockSolution(stockTiles, requiredArea, nbrTiles + nbrSpare, exclusions);
             if (stockSolution != null) {
                 return stockSolution;
@@ -146,7 +146,7 @@ public class StockPanelPicker {
         // Couldn't find stock tiles to fit the required area
         // Return biggest stock tiles as last resort if not in exclusions
         stockSolution = new StockSolution();
-        for (int i = 0; i < stockTiles.size(); i++) {
+        for (int i = 0; i < stockTiles.size() && i < maxNbrTiles; i++) {
             stockSolution.addStockTile(stockTiles.get(stockTiles.size() - 1));
         }
         if (!isExcluded(stockSolution, exclusions)) {

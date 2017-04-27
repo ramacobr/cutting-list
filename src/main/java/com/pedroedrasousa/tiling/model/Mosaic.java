@@ -69,7 +69,7 @@ public class Mosaic {
         return Math.abs(rootTileNode.getNbrFinalHorizontal() - rootTileNode.getNbrFinalVertical());
     }
 
-    public HashSet<String> getDistictTileSet() {
+    public HashSet<Integer> getDistictTileSet() {
         return rootTileNode.getDistictTileSet();
     }
 

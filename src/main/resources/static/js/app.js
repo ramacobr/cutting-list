@@ -145,6 +145,7 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
     $scope.cfg = angular.fromJson($window.localStorage.getItem("cfg" + localStorageKeySuffix));
     if ($scope.cfg === null) {
         $scope.cfg = {
+            version: 1.0,
             cutThickness: 0,
             allowTileRotation: true,
             forceOneBaseTile: false,
@@ -159,6 +160,19 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
                 "MOST_HV_DISCREPANCY",
                 "MOST_NBR_MOSAICS"]
         };
+    } else {
+        if ($scope.cfg.version !== "1.0") {
+            $scope.cfg.version = "1.0";
+            $scope.priorities = [
+                "LEAST_WASTED_AREA",
+                "LEAST_NBR_CUTS",
+                "LEAST_NBR_UNUSED_TILES",
+                "BIGGEST_UNUSED_TILE_AREA",
+                "SMALLEST_CENTER_OF_MASS_DIST_TO_ORIGIN",
+                "MOST_UNUSED_PANEL_AREA",
+                "MOST_HV_DISCREPANCY",
+                "MOST_NBR_MOSAICS"];
+        }
     }
 
     /*****************************************************************************************************

@@ -161,9 +161,9 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
                 "MOST_NBR_MOSAICS"]
         };
     } else {
-        if ($scope.cfg.version !== "1.1") {
-            $scope.cfg.version = "1.1";
-            $scope.priorities = [
+        if ($scope.cfg.version !== "1.2") {
+            $scope.cfg.version = "1.2";
+            $scope.cfg.priorities = [
                 "LEAST_WASTED_AREA",
                 "LEAST_NBR_CUTS",
                 "LEAST_NBR_UNUSED_TILES",

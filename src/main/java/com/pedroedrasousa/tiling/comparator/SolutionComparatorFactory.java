@@ -19,7 +19,7 @@ public class SolutionComparatorFactory {
         } else if(comparatorType.equalsIgnoreCase("LEAST_NBR_UNUSED_TILES")) {
             return new SolutionLeastNbrUnusedTilesComparator();
         } else if(comparatorType.equalsIgnoreCase("LEAST_NBR_CUTS")) {
-            return new SolutionLeastNbrUnusedTilesComparator();
+            return new SolutionLeastNbrCutsComparator();
         } else if(comparatorType.equalsIgnoreCase("MOST_UNUSED_PANEL_AREA")) {
             return new SolutionMostUnusedPanelAreaComparator();
         } else if(comparatorType.equalsIgnoreCase("SMALLEST_CENTER_OF_MASS_DIST_TO_ORIGIN")) {

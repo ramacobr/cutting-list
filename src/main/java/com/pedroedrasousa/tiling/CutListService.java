@@ -34,37 +34,91 @@ public class CutListService {
     @Autowired
     private ThreadPoolTaskExecutor taskExecutor;
 
-    private void sort(List<Solution> solutions, Configuration cfg, boolean isFinalSort) {
+    /**
+     *
+     * @param permutations
+     * @return Number of removed permutations.
+     */
+    private int removeDuplicatedPermutations(List<List<TileDimensions>> permutations) {
 
-        List<Comparator> solutionComparators = new ArrayList<>();
+        int count = 0;
 
-        List<String> criterias = new ArrayList<>(cfg.getPriorities());
+        List<String> distinctPermutations = new ArrayList<>();
+        for (Iterator<List<TileDimensions>> iterator = permutations.iterator(); iterator.hasNext(); ) {
+            List<TileDimensions> permutation = iterator.next();
 
-        if (!isFinalSort) {
-            criterias.remove("SMALLEST_CENTER_OF_MASS_DIST_TO_ORIGIN");
-        }
-
-        // Solutions without all fitted tiles will go last
-        solutionComparators.add(new SolutionMostNbrTilesComparator());
-
-        for (String priotity : criterias) {
-            solutionComparators.add(SolutionComparatorFactory.getSolutionComparator(priotity));
-        }
-
-        Collections.sort(solutions, (o1, o2) -> {
-
-            int diff = 0;
-
-            for (Comparator<Solution> solutionComparator : solutionComparators) {
-                diff = solutionComparator.compare(o1, o2);
-                if (diff != 0) {
-                    break;
-                }
+            // Build a string based on tile dimensions to represent the permutation
+            StringBuilder sb = new StringBuilder();
+            for (TileDimensions tileDimensions : permutation) {
+                sb.append(tileDimensions.dimensionsToString());
             }
 
-            return diff;
-        });
+            // Remove this permutation if not distinct from previous ones,
+            // else add it to the distinct list.
+            if (distinctPermutations.contains(sb.toString())) {
+                iterator.remove();
+                count++;
+            } else {
+                distinctPermutations.add(sb.toString());
+            }
+        }
+
+        return count;
     }
+
+    private List<GroupedTileDimensions> generateGroups(List<TileDimensions> tilesToFit, Configuration cfg) {
+
+        // Create a list with all distinct tile dimensions
+        HashMap<String, Integer> distincTileDimensions = new HashMap<>();
+        for (TileDimensions tileDimensions : tilesToFit) {
+            String tileDimensionsStr = tileDimensions.toString();
+            distincTileDimensions.put(tileDimensionsStr, distincTileDimensions.get(tileDimensionsStr) != null ? distincTileDimensions.get(tileDimensionsStr) + 1 : 1);
+        }
+
+        StringBuilder sb = new StringBuilder();
+        for (String tileDimensions : distincTileDimensions.keySet()) {
+            sb.append(tileDimensions + "*" + distincTileDimensions.get(tileDimensions) + " ");
+        }
+        logger.info("Task[{}] TotalNbrTiles[{}] Tiles: {}", cfg.getTaskId(), tilesToFit.size(), sb);
+
+        List<GroupedTileDimensions> groups = new ArrayList<>();
+        HashMap<String, Integer> map = new HashMap<>();
+        int groupNbr = 0;
+        for (TileDimensions tileDimensions : tilesToFit) {
+
+            String groupId = tileDimensions.toString() + groupNbr;
+
+            map.put(groupId, map.get(groupId) != null ? map.get(groupId) + 1 : 1);
+            GroupedTileDimensions groupedTileDimensions = new GroupedTileDimensions(tileDimensions, groupNbr);
+            groups.add(groupedTileDimensions);
+            if (groupNbr + distincTileDimensions.size() < 5 &&
+                    distincTileDimensions.get(tileDimensions.toString()) > 5 && // Only split in groups if the quantity justifies it
+                    map.get(groupId) > distincTileDimensions.get(tileDimensions.toString()) / 2) {
+                groupNbr++;
+            }
+        }
+
+        return groups;
+    }
+
+    private <T> HashMap<T, Integer> getDistinctGroupedTileDimensions(List<T> groups, Configuration cfg) {
+        StringBuilder sb = new StringBuilder();
+
+        // Create a list with all distinct groups
+        HashMap<T, Integer> distincGroupTileDimensions = new HashMap<>();
+        for (T tileDimensions : groups) {
+            //String tileDimensionsStr = tileDimensions.toString();
+            distincGroupTileDimensions.put(tileDimensions, distincGroupTileDimensions.get(tileDimensions) != null ? distincGroupTileDimensions.get(tileDimensions) + 1 : 1);
+        }
+
+        return distincGroupTileDimensions;
+    }
+
+
+
+
+
+
 
     private List<List<TileDimensions>> getPlaceHolders(List<GroupedTileDimensions> tilesToFit) {
         List<TileDimensions> placeholders = new ArrayList<>();
@@ -138,58 +192,33 @@ public class CutListService {
 
         logger.info("STARTING... " + cfg.toString());
 
-
         long startTime = System.currentTimeMillis();
 
         // Create task
         runningTasks.getTasks().add(new RunningTasks.Task(cfg.getTaskId()));
 
-
         List<Solution> allSolutions = new ArrayList<>();
 
-        // Create a list with all distinct tile dimensions
-        HashMap<String, Integer> distincTileDimensions = new HashMap<>();
-        for (TileDimensions tileDimensions : tilesToFit) {
-            String tileDimensionsStr = tileDimensions.toString();
-            distincTileDimensions.put(tileDimensionsStr, distincTileDimensions.get(tileDimensionsStr) != null ? distincTileDimensions.get(tileDimensionsStr) + 1 : 1);
-        }
 
         StringBuilder sb = new StringBuilder();
-        for (String tileDimensions : distincTileDimensions.keySet()) {
-            sb.append(tileDimensions + "*" + distincTileDimensions.get(tileDimensions) + " ");
+
+
+        // Log stock tile dimensions
+        HashMap<TileDimensions, Integer> distincStockTileDimensions = getDistinctGroupedTileDimensions(stockTiles, cfg);
+
+        sb.setLength(0);
+        for (TileDimensions tileDimensions : distincStockTileDimensions.keySet()) {
+            sb.append(tileDimensions + "*" + distincStockTileDimensions.get(tileDimensions) + " ");
         }
-        logger.info("Task[{}] TotalNbrTiles[{}] Tiles: {}", cfg.getTaskId(), tilesToFit.size(), sb);
+        logger.info("Task[{}] TotalNbrStockTiles[{}] StockTiles: {}", cfg.getTaskId(), stockTiles.size(), sb);
 
 
 
 
+        List<GroupedTileDimensions> groups = generateGroups(tilesToFit, cfg);
 
-
-        List<GroupedTileDimensions> g = new ArrayList<>();
-        HashMap<String, Integer> map = new HashMap<>();
-        int groupNbr = 0;
-        for (TileDimensions tileDimensions : tilesToFit) {
-
-            String groupId = tileDimensions.toString() + groupNbr;
-
-            map.put(groupId, map.get(groupId) != null ? map.get(groupId) + 1 : 1);
-            GroupedTileDimensions groupedTileDimensions = new GroupedTileDimensions(tileDimensions, groupNbr);
-            g.add(groupedTileDimensions);
-            if (groupNbr + distincTileDimensions.size() < 5 &&
-                    distincTileDimensions.get(tileDimensions.toString()) > 5 && // Only split in groups if the quantity justifies it
-                    map.get(groupId) > distincTileDimensions.get(tileDimensions.toString()) / 2) {
-                groupNbr++;
-            }
-        }
-
-        // Create a list with all distinct tile dimensions
-        HashMap<GroupedTileDimensions, Integer> distincGroupTileDimensions = new HashMap<>();
-        for (GroupedTileDimensions tileDimensions : g) {
-            //String tileDimensionsStr = tileDimensions.toString();
-            distincGroupTileDimensions.put(tileDimensions, distincGroupTileDimensions.get(tileDimensions) != null ? distincGroupTileDimensions.get(tileDimensions) + 1 : 1);
-        }
-
-        // Log groups
+        HashMap<GroupedTileDimensions, Integer> distincGroupTileDimensions = getDistinctGroupedTileDimensions(groups, cfg);
+                // Log groups
         int groupIdx = 0;
         sb.setLength(0);
         for (Map.Entry<GroupedTileDimensions, Integer> entry : distincGroupTileDimensions.entrySet()) {
@@ -201,34 +230,7 @@ public class CutListService {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-        // Create a list with all distinct stock tile dimensions
-        HashMap<String, Integer> distincStockTileDimensions = new HashMap<>();
-        for (TileDimensions tileDimensions : stockTiles) {
-            String tileDimensionsStr = tileDimensions.toString();
-            distincStockTileDimensions.put(tileDimensionsStr, distincStockTileDimensions.get(tileDimensionsStr) != null ? distincStockTileDimensions.get(tileDimensionsStr) + 1 : 1);
-        }
-
-        sb.setLength(0);
-        for (String tileDimensions : distincStockTileDimensions.keySet()) {
-            sb.append(tileDimensions + "*" + distincStockTileDimensions.get(tileDimensions) + " ");
-        }
-        logger.info("Task[{}] TotalNbrStockTiles[{}] StockTiles: {}", cfg.getTaskId(), stockTiles.size(), sb);
-
-
-
-
-        List<List<TileDimensions>> placeHolders = getPlaceHolders(g);
+        List<List<TileDimensions>> placeHolders = getPlaceHolders(groups);
 
 
 
@@ -243,7 +245,7 @@ public class CutListService {
         // Create lists sorted according to the calculated permutations
         List<List<TileDimensions>> tilesPermutations = new ArrayList<>();
         for (List<GroupedTileDimensions> combination : permutations) {
-            ArrayList<TileDimensions> solutionPermutation = new ArrayList<>(g);
+            ArrayList<TileDimensions> solutionPermutation = new ArrayList<>(groups);
             tilesPermutations.add(solutionPermutation);
             Collections.sort(solutionPermutation, Comparator.comparingInt(o -> combination.indexOf(o)));
 
@@ -265,26 +267,8 @@ public class CutListService {
         }
 
 
+        removeDuplicatedPermutations(tilesPermutations);
 
-        // Remove duplicated permutations
-        List<String> distinctPermutations = new ArrayList<>();
-        for (Iterator<List<TileDimensions>> iterator = tilesPermutations.iterator(); iterator.hasNext(); ) {
-            List<TileDimensions> permutation = iterator.next();
-
-            // Build a string based on tile dimensions to represent the permutation
-            StringBuilder stringBuilder = new StringBuilder();
-            for (TileDimensions tileDimensions : permutation) {
-                stringBuilder.append(tileDimensions.dimensionsToString());
-            }
-
-            // Remove this permutation if not distinct from previous ones,
-            // else add it to the distinct list.
-            if (distinctPermutations.contains(stringBuilder.toString())) {
-                iterator.remove();
-            } else {
-                distinctPermutations.add(stringBuilder.toString());
-            }
-        }
 
 
         // Log permutations
@@ -350,53 +334,12 @@ public class CutListService {
                 done = true;
             }
 
-//            tmpStockSolution = stockPanelPicker.getCandidateStockSolutions(tilesToFit, stockTiles, 0f, spare, stockSolutionsToExclude, startWith);
-//            stockSolution.add(tmpStockSolution);
-//            stockSolutionsToExclude.add(tmpStockSolution);
-//            float usedArea2 = (float) requiredArea / (float) tmpStockSolution.getArea();
-//            logger.info("Task[{}] Trying stock {} usedArea[{}]", cfg.getTaskId(), stockSolution, usedArea2);
-//            if ((float) requiredArea / (float) tmpStockSolution.getArea() > 0.8) {
-//                tmpStockSolution = stockPanelPicker.getCandidateStockSolutions(tilesToFit, stockTiles, 0f, spare, stockSolutionsToExclude, startWith);
-//                stockSolution.add(tmpStockSolution);
-//                stockSolutionsToExclude.add(tmpStockSolution);
-//                usedArea2 = (float) requiredArea / (float) tmpStockSolution.getArea();
-//                logger.info("Task[{}] Trying stock {} usedArea[{}]", cfg.getTaskId(), stockSolution, usedArea2);
-//            }
-
-
-//            tmpStockSolution = stockPanelPicker.getCandidateStockSolutions(tilesToFit, stockTiles, 0f, spare + 1, stockSolutionsToExclude, startWith);
-//            stockSolution.add(tmpStockSolution);
-//            stockSolutionsToExclude.add(tmpStockSolution);
-//            if ((float) requiredArea / (float) tmpStockSolution.getArea() > 0.8) {
-//                tmpStockSolution = stockPanelPicker.getCandidateStockSolutions(tilesToFit, stockTiles, 0f, spare, stockSolutionsToExclude, startWith);
-//                stockSolution.add(tmpStockSolution);
-//                stockSolutionsToExclude.add(tmpStockSolution);
-//            }
-
-//            if (stockSolution == null) {
-//                spare++;
-//                stockSolution = stockPanelPicker.getCandidateStockSolutions(tilesToFit, stockTiles, 0f, spare, stockSolutionsToExclude, startWith);
-//
-//                if (stockSolution == null) {
-//                    // No more possible stock solutions
-//                    logger.info("Couldn't find a suitable solution", stockSolution);
-//                    break;
-//                }
-//            }
-            //
-
-            //stockSolutionsToExclude.add(stockSolution2);
             // Iterate through all permutations
             int nbrTotalThreads = 0;
             permutationIndex = -1;
             for (List<TileDimensions> tilesPermutation : tilesPermutations) {
                 permutationIndex++;
 
-                // TODO: remove
-//                RunningTasks.Task task2 = runningTasks.getTask(cfg.getTaskId());
-//                if (task2 != null) {
-//                    task2.setStatusMessage("Trying permutation " + (permutationIndex + 1) + "/" + tilesPermutations.size() + " on stock " + stockSolution);
-//                }
                 for (StockSolution stockSolution1 : stockSolution) {
 
                     float usedArea = (float) requiredArea / (float) stockSolution1.getArea();
@@ -407,10 +350,6 @@ public class CutListService {
                     if (cfg.getAccuracyFactor() > 0) {
                         discardAbove = cfg.getAccuracyFactor();
                     }
-
-
-                    //computeSolutions(tilesPermutation, solutions, cfg, discardAbove);
-
 
                     CutListThread cutListThread = (CutListThread) context.getBean("cutListThread");
                     cutListThread.setPermutationId((permutationIndex + 1) + "/" + tilesPermutations.size());
@@ -429,10 +368,6 @@ public class CutListService {
                 }
             }
 
-//            RunningTasks.Task task2 = runningTasks.getTask(cfg.getTaskId());
-//            if (task2 != null) {
-//                task2.setStatusMessage("Iteration " + task2.getRunningThreads() + " of " + nbrTotalThreads);
-//            }
 
             for (;;) {
 //                    System.out.println("Active Threads : " + taskExecutor.getActiveCount());
@@ -447,7 +382,7 @@ public class CutListService {
                 }
                 if (taskExecutor.getActiveCount() == 0) {
                     //taskExecutor.shutdown();
-                    sort(allSolutions, cfg, true);
+
                     // If a good solution was found, we're done.
                     if (allSolutions.get(0).getNoFitTiles().size() == 0) {
                         done = true;
@@ -455,22 +390,6 @@ public class CutListService {
                     break;
                 }
             }
-
-
-
-            //sort(allSolutions, cfg, true);
-
-//            if (runningTasks.getTask(cfg.getTaskId()) == null || (allSolutions.get(0).getNoFitTiles().size() == 0 && startWith > 3)) {
-//                break;
-//            }
-//            else if(allSolutions.get(0).getNoFitTiles().size() == 0 && !cfg.getForceOneBaseTile()) {
-//                startWith++;
-//            }
-
-//            if (runningTasks.getTask(cfg.getTaskId()) == null || startWith > 3) {
-//                break;
-//            }
-//            startWith++;
 
             if (allSolutions.get(0).getNoFitTiles().size() == 0) {
                 break;

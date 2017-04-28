@@ -128,7 +128,11 @@ public class CutListThread implements Runnable {
         solutionComparators.add(new SolutionMostNbrTilesComparator());
 
         for (String priotity : criterias) {
-            solutionComparators.add(SolutionComparatorFactory.getSolutionComparator(priotity));
+            Comparator comparator = SolutionComparatorFactory.getSolutionComparator(priotity);
+
+            if (comparator != null) {
+                solutionComparators.add(comparator);
+            }
         }
 
         Collections.sort(solutions, (o1, o2) -> {

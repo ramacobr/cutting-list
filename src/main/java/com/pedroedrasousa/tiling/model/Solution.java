@@ -12,7 +12,7 @@ import java.util.List;
 
 public class Solution {
 
-
+    private int permutationPriority;
 
     private long elapsedTime;
 
@@ -28,6 +28,8 @@ public class Solution {
 
         // TileDimensions is immutable, create a shallow copy.
         this.noFitTiles = new ArrayList<>(solution.getNoFitTiles());
+
+        this.permutationPriority = solution.permutationPriority;
     }
 
     public Solution(StockSolution stockSolution) {
@@ -48,6 +50,8 @@ public class Solution {
 
         // TileDimensions is immutable, create a shallow copy.
         this.noFitTiles = new ArrayList<>(solution.getNoFitTiles());
+
+        this.permutationPriority = solution.permutationPriority;
     }
 
     public Solution(TileNode baseTile) {
@@ -84,6 +88,14 @@ public class Solution {
         for (TileDimensions tileDimensions : tileDimensionsList) {
             this.addMosaic(new Mosaic(tileDimensions));
         }
+    }
+
+    public int getPermutationPriority() {
+        return permutationPriority;
+    }
+
+    public void setPermutationPriority(int permutationPriority) {
+        this.permutationPriority = permutationPriority;
     }
 
     private void sortMosaics() {

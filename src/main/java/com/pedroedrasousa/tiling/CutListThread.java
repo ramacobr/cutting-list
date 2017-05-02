@@ -1,6 +1,7 @@
 package com.pedroedrasousa.tiling;
 
 import com.pedroedrasousa.tiling.comparator.SolutionComparatorFactory;
+import com.pedroedrasousa.tiling.comparator.SolutionHigherPermutationPriorityComparator;
 import com.pedroedrasousa.tiling.comparator.SolutionMostNbrTilesComparator;
 import com.pedroedrasousa.tiling.model.*;
 import org.slf4j.Logger;
@@ -152,9 +153,21 @@ public class CutListThread implements Runnable {
 
     void computeSolutions() {
 
+        // Calculate permutation priority based on the number of dimensions change while iterating the tile list
+        int permutationPriority = Integer.MAX_VALUE;
+        String lastTileDimensions = "";
+        for (TileDimensions tile : tiles) {
+            if (!tile.dimensionsToString().equals(lastTileDimensions)) {
+                permutationPriority--;
+                lastTileDimensions = tile.dimensionsToString();
+            }
+        }
+
         // Clone the candidate stock solutions
         List<Solution> solutions = new ArrayList<>();
-        solutions.add(new Solution(stockSolution));
+        Solution stockSolutionClone = new Solution(stockSolution);
+        stockSolutionClone.setPermutationPriority(permutationPriority);
+        solutions.add(stockSolutionClone);
 
         // Loop through all the titles to be fitted
         for (TileDimensions tile : tiles) {
@@ -206,6 +219,7 @@ public class CutListThread implements Runnable {
             if (task == null) {
                 break;
             }
+            //task.setSolution((new TilingResponseDTOBuilder()).setSolutions(solutions.get(0)).setInfo(null).build());
         }
 
         synchronized (allSolutions) {

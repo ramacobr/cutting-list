@@ -75,11 +75,15 @@ public class CutListService {
             distincTileDimensions.put(tileDimensionsStr, distincTileDimensions.get(tileDimensionsStr) != null ? distincTileDimensions.get(tileDimensionsStr) + 1 : 1);
         }
 
+        // Log distinct tile dimensions
         StringBuilder sb = new StringBuilder();
         for (String tileDimensions : distincTileDimensions.keySet()) {
             sb.append(tileDimensions + "*" + distincTileDimensions.get(tileDimensions) + " ");
         }
         logger.info("Task[{}] TotalNbrTiles[{}] Tiles: {}", cfg.getTaskId(), tilesToFit.size(), sb);
+
+
+        int splitGreaterThan = tilesToFit.size() / distincTileDimensions.size();
 
         List<GroupedTileDimensions> groups = new ArrayList<>();
         HashMap<String, Integer> map = new HashMap<>();
@@ -92,8 +96,8 @@ public class CutListService {
             GroupedTileDimensions groupedTileDimensions = new GroupedTileDimensions(tileDimensions, groupNbr);
             groups.add(groupedTileDimensions);
             if (groupNbr + distincTileDimensions.size() < 5 &&
-                    distincTileDimensions.get(tileDimensions.toString()) > 5 && // Only split in groups if the quantity justifies it
-                    map.get(groupId) > distincTileDimensions.get(tileDimensions.toString()) / 2) {
+                    distincTileDimensions.get(tileDimensions.toString()) > splitGreaterThan && // Only split in groups if the quantity justifies it
+                    map.get(groupId) > distincTileDimensions.get(tileDimensions.toString()) / 2) {// TODO: /2
                 groupNbr++;
             }
         }
@@ -343,7 +347,7 @@ public class CutListService {
                 for (StockSolution stockSolution1 : stockSolution) {
 
                     float usedArea = (float) requiredArea / (float) stockSolution1.getArea();
-                    int discardAbove = (int) (500.0f * Math.pow(usedArea, 3.0f));
+                    int discardAbove = (int) (200.0f * Math.pow(usedArea, 3.0f));
                     discardAbove = Math.max(discardAbove, 100);
 
                     // TODO: Only for debug purposes

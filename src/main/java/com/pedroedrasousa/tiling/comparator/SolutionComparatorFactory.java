@@ -26,8 +26,9 @@ public class SolutionComparatorFactory {
             return new SolutionSmallestCenterOfMassDistToOriginComparator();
         } else if(comparatorType.equalsIgnoreCase("BIGGEST_UNUSED_TILE_AREA")) {
             return new SolutionBiggestUnusedTileAreaComparator();
-        }
-
+        } else if(comparatorType.equalsIgnoreCase("HIGHER_PERMUTATION_PRIORITY")) {
+        return new SolutionHigherPermutationPriorityComparator();
+    }
         return null;
     }
 }

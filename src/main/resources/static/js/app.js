@@ -1,7 +1,7 @@
 
 var app = angular.module("app", ['ui.grid', 'ui.grid.edit', 'ui.grid.rowEdit', 'ui.grid.cellNav', 'ui.grid.selection', 'ui.sortable', 'ui.bootstrap', 'pascalprecht.translate']);
 
-app.config(['$translateProvider', '$windowProvider', function($translateProvider, $windowProvider) {
+app.config(['$translateProvider', '$windowProvider', '$locationProvider', function($translateProvider, $windowProvider, $locationProvider) {
 
     var $window = $windowProvider.$get();
     var language = $window.localStorage.getItem("language");
@@ -15,6 +15,8 @@ app.config(['$translateProvider', '$windowProvider', function($translateProvider
     $translateProvider.translations('pt', translationsPT);
     $translateProvider.preferredLanguage(language);
     $translateProvider.fallbackLanguage('en');
+
+    $locationProvider.html5Mode(true);
 }]);
 
 app.service('TilingService', function($http, $location, TilingData, DrawService) {
@@ -142,7 +144,13 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
     };
 
 
-    $scope.cfg = angular.fromJson($window.localStorage.getItem("cfg" + localStorageKeySuffix));
+    // Try to load cfg from url params
+    $scope.cfg = angular.fromJson($location.search().cfg);
+
+    if (!$scope.cfg) {
+        $scope.cfg = angular.fromJson($window.localStorage.getItem("cfg" + localStorageKeySuffix));
+    }
+
     if ($scope.cfg === null) {
         $scope.cfg = {
             version: 1.0,
@@ -269,7 +277,13 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
         return count;
     }
 
-    $scope.stockTiles = angular.fromJson($window.localStorage.getItem("baseTiles" + localStorageKeySuffix));
+    // Try to load tiles from url params
+    $scope.stockTiles = angular.fromJson($location.search().stockTiles);
+
+    if (!$scope.stockTiles) {
+        $scope.stockTiles = angular.fromJson($window.localStorage.getItem("baseTiles" + localStorageKeySuffix));
+    }
+
     if ($scope.stockTiles === null) {
         $scope.stockTiles = [
             {width: 600, height: 300, count: 10, enabled: true, isUsed: false},
@@ -308,7 +322,13 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
         $scope.stockTiles.sort(function(a, b) { return (a.width * a.height) - (b.width * b.height); });
     };
 
-    $scope.tiles = angular.fromJson($window.localStorage.getItem("tiles" + localStorageKeySuffix));
+
+    // Try to load tiles from url params
+    $scope.tiles = angular.fromJson($location.search().tiles);
+
+    if (!$scope.tiles) {
+        $scope.tiles = angular.fromJson($window.localStorage.getItem("tiles" + localStorageKeySuffix));
+    }
 
     if ($scope.tiles === null) {
         $scope.tiles = [];
@@ -622,6 +642,10 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
         $window.localStorage.setItem("tiles" + localStorageKeySuffix, angular.toJson($scope.tiles));
         $window.localStorage.setItem("baseTiles" + localStorageKeySuffix, angular.toJson($scope.stockTiles));
         $window.localStorage.setItem("cfg" + localStorageKeySuffix, angular.toJson($scope.cfg));
+
+        $location.search('tiles', angular.toJson($scope.tiles));
+        $location.search('stockTiles', angular.toJson($scope.stockTiles));
+        $location.search('cfg', angular.toJson($scope.cfg));
     }
 
     function render() {
@@ -667,6 +691,13 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
     $scope.reset = function() {
         localStorage.clear();
         $window.location.reload(true);
+        $location.search('tiles', null);
+        $location.search('stockTiles', null);
+    }
+
+
+    if ($location.search().compute) {
+        $scope.compute();
     }
 });
 

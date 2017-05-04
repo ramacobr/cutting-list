@@ -180,6 +180,7 @@
                 </div>
                 <div class="hidden-print" collapse="isAdvancedOptionsCollapsed">
                     <div class="form-horizontal top-buffer" style="margin: 10px 10px 5px 10px;">
+                        <button ng-click="dataToUrl();">dataToURL</button>
                         <div class="form-group">
                             <span class="control-label col-xs-8">discard above</span>
                             <div class="col-xs-4">
@@ -347,9 +348,9 @@
                 </div>
             </div>
 
-            <pre class="col-md-12">
-                <small>"{{tiling.getData() | json}}"></small>
-            </pre>
+            <!--<pre class="col-md-12">-->
+                <!--<small>"{{tiling.getData() | json}}"></small>-->
+            <!--</pre>-->
 
         </div>
 

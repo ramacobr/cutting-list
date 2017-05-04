@@ -643,9 +643,9 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
         $window.localStorage.setItem("baseTiles" + localStorageKeySuffix, angular.toJson($scope.stockTiles));
         $window.localStorage.setItem("cfg" + localStorageKeySuffix, angular.toJson($scope.cfg));
 
-        $location.search('tiles', angular.toJson($scope.tiles));
-        $location.search('stockTiles', angular.toJson($scope.stockTiles));
-        $location.search('cfg', angular.toJson($scope.cfg));
+        //$location.search('tiles', angular.toJson($scope.tiles));
+        //$location.search('stockTiles', angular.toJson($scope.stockTiles));
+        //$location.search('cfg', angular.toJson($scope.cfg));
     }
 
     function render() {
@@ -698,6 +698,13 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
 
     if ($location.search().compute) {
         $scope.compute();
+    }
+
+    $scope.dataToUrl = function() {
+        $location.search('tiles', angular.toJson($scope.tiles));
+        $location.search('stockTiles', angular.toJson($scope.stockTiles));
+        $location.search('cfg', angular.toJson($scope.cfg));
+        $location.search('compute', true);
     }
 });
 

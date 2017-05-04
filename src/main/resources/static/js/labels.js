@@ -1,5 +1,5 @@
 var translationsEN = {
-    TITLE: 'Servicorte',
+    TITLE: 'CutList Optimizer',
     PANELS: 'Panels',
     STOCK: 'Stock',
     OPTIONS: 'Options',

@@ -11,7 +11,7 @@ app.service('TilingData', function() {
             return this.data.returnCode;
         }
         return null;
-    }
+    };
 
     var getMosaics = function() {
         if (this.data) {

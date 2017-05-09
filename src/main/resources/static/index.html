@@ -216,10 +216,10 @@
 
             <div id="main-content" class="col-sm-9">
 
-                <div ng-show="tiling.getReturnCode() === '1'" class="alert alert-danger top-buffer">
+                <div ng-show="requestStatus === 1" class="alert alert-danger top-buffer">
                     <strong>{{ ('ERROR' | translate) + '\! '}}</strong> {{ 'MSG_NO_PANELS' | translate }}
                 </div>
-                <div ng-show="tiling.getReturnCode() === '2'" class="alert alert-danger top-buffer">
+                <div ng-show="requestStatus === 2" class="alert alert-danger top-buffer">
                     <strong>{{ ('ERROR' | translate) + '\! '}}</strong> {{ 'MSG_NO_STOCK_PANELS' | translate }}
                 </div>
 

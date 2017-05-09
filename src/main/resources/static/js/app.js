@@ -16,7 +16,7 @@ app.config(['$translateProvider', '$windowProvider', '$locationProvider', functi
     $translateProvider.preferredLanguage(language);
     $translateProvider.fallbackLanguage('en');
 
-    $locationProvider.html5Mode(true);
+    //$locationProvider.html5Mode(true);
 }]);
 
 app.service('TilingService', function($http, $location, TilingData, DrawService) {
@@ -28,7 +28,7 @@ app.service('TilingService', function($http, $location, TilingData, DrawService)
 
     var taskId;
 
-    this.requestTiling = function(tiles, stockTiles, cfg, callback, canceler) {
+    this.requestTiling = function(tiles, stockTiles, cfg, callback) {
 
         var data = {tiles: tiles, baseTiles: stockTiles, configuration: cfg};
 
@@ -36,16 +36,15 @@ app.service('TilingService', function($http, $location, TilingData, DrawService)
         taskId = "" + new Date().getTime() + JSON.stringify(data).hashCode();
         cfg.taskId = taskId;
 
-        $http.post(this.serverBaseUrl + '/compute-tilling', data, {timeout: canceler.promise})
+        $http.post(this.serverBaseUrl + '/compute-tilling', data)
             .then(function (response) {
-                TilingData.setData(response.data);
                 callback(response.data);
             }, function(error) {
                 // TODO
             });
     };
 
-    this.cancelTiling = function(callback, canceler) {
+    this.cancelTiling = function(callback) {
         $http.post(this.serverBaseUrl + '/stop-task/' + taskId)
             .then(function(response) {
             }, function(error) {
@@ -53,7 +52,7 @@ app.service('TilingService', function($http, $location, TilingData, DrawService)
             });
     };
 
-    this.getTaskStatus = function(callback, canceler) {
+    this.getTaskStatus = function(callback) {
 
         $http.get(this.serverBaseUrl + '/task-status/' + taskId)
             .then(function (response) {
@@ -83,6 +82,7 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
 
     $scope.visibleTileInfoIdx = 0;
 
+    $scope.requestStatus;
     $scope.statusMessage;
 
     // Workaround for changing grid label translations without reloading the page
@@ -213,8 +213,10 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
     /**
      * Redraw canvas if data is changed
      */
-    $scope.$watch('tiling',function(newValue,oldValue) {
-        render();
+    $scope.$watch('tiling',function(newValue, oldValue) {
+        if (newValue !== oldValue) {
+            render();
+        }
     }, true);
 
     $scope.$watch('tiles', function(newValue, oldValue) {
@@ -588,38 +590,35 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
 
     };
 
-    var canceler = $q.defer();
-
     $scope.cancelTilingRequest = function() {
         $scope.isLoading = false;
         $scope.invalidData = false;
-        canceler.resolve();
         TilingService.cancelTiling();
     };
 
     function requestTilling() {
         $scope.isLoading = true;
 
-        canceler = $q.defer();
-
         TilingService.requestTiling($scope.tiles, $scope.stockTiles, $scope.cfg, function(response) {
-
-            $scope.statusMessage = null;
-            $scope.isLoading = false;
-
-            if (TilingData.getData().mosaics && TilingData.getData().mosaics.length > 0) {
-                $scope.scrollTo('main-content');
-            }
-
-        }, canceler);
+            $scope.requestStatus = response;
+        });
 
         var scrolled = false;   // Whether already received a solution and scrolled to it. Used to scroll only once.
         var poller = function() {
             TilingService.getTaskStatus(function(data) {
                 $scope.statusMessage = data.statusMessage;
 
+                if ($scope.statusMessage === 'Finished') {
+                    $scope.statusMessage = null;
+                    $scope.isLoading = false;
+
+                    $scope.scrollTo('main-content');
+                }
+
                 if ($scope.isLoading) {
+                    // Reschedule polling
                     $timeout(poller, 1000);
+
                     if (TilingData.getData() && !scrolled) {
                         // Scroll to the presented solution
                         $scope.scrollTo('main-content');
@@ -642,10 +641,6 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
         $window.localStorage.setItem("tiles" + localStorageKeySuffix, angular.toJson($scope.tiles));
         $window.localStorage.setItem("baseTiles" + localStorageKeySuffix, angular.toJson($scope.stockTiles));
         $window.localStorage.setItem("cfg" + localStorageKeySuffix, angular.toJson($scope.cfg));
-
-        //$location.search('tiles', angular.toJson($scope.tiles));
-        //$location.search('stockTiles', angular.toJson($scope.stockTiles));
-        //$location.search('cfg', angular.toJson($scope.cfg));
     }
 
     function render() {

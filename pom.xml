@@ -6,7 +6,10 @@
 	<groupId>com.lm</groupId>
 	<artifactId>tiling</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>jar</packaging>
+    <modules>
+        <module>cutlistoptimizerservice</module>
+    </modules>
+    <packaging>pom</packaging>
 
 	<name>tiling</name>
 	<description>Demo project for Spring Boot</description>
@@ -40,7 +43,12 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-    </dependencies>
+		<dependency>
+			<groupId>com.lm</groupId>
+			<artifactId>cutlistoptimizerservice</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
 
 	<build>
 		<plugins>

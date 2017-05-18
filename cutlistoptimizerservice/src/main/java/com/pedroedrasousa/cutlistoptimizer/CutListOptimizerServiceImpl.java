@@ -180,7 +180,7 @@ public class CutListOptimizerServiceImpl implements CutListOptimizerService {
         return placeholdersList;
     }
 
-    public String submitTask(List<TileDimensions> tilesToFit, List<TileDimensions> stockTiles, Configuration cfg) {
+    public String submitTask(final List<TileDimensions> tilesToFit, final List<TileDimensions> stockTiles, final Configuration cfg) {
 
         // Validate if tiles were provided
         if (tilesToFit == null || tilesToFit.size() == 0) {
@@ -435,7 +435,9 @@ public class CutListOptimizerServiceImpl implements CutListOptimizerService {
 
         //runningTasks.removeTask(cfg.getTaskId());
         RunningTasks.Task task2 = runningTasks.getTask(cfg.getTaskId());
-        task2.setStatusMessage("Finished");
+        if (task2 != null) {
+            task2.setStatusMessage("Finished");
+        }
 
         //return (new TilingResponseDTOBuilder()).setSolutions(allSolutions.get(0)).setInfo(null).build();
     }

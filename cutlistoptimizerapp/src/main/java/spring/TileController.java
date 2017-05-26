@@ -3,17 +3,25 @@ package spring;
 import com.pedroedrasousa.cutlistoptimizer.RunningTasks;
 import com.pedroedrasousa.cutlistoptimizer.model.TileDimensions;
 import com.pedroedrasousa.cutlistoptimizer.model.TillingRequestDTO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 public class TileController {
 
+    private final static Logger logger = LoggerFactory.getLogger(TileController.class);
+
     @Autowired
     private CutListOptimizerServiceProxy cutListService;
+
+    @Autowired
+    private TrackingService trackingService;
 
     private RunningTasks runningTasks = RunningTasks.getInstance();
 
@@ -32,15 +40,18 @@ public class TileController {
 
     @CrossOrigin(origins = "*")
     @RequestMapping(value = "/compute-tilling", method = RequestMethod.POST)
-    public String tilling(@RequestBody TillingRequestDTO tilling) {
+    public String tilling(@RequestBody TillingRequestDTO tilling, HttpServletRequest request) {
 
         List<TileDimensions> tilesToFit = new ArrayList<>();
         List<TileDimensions> stockTiles = new ArrayList<>();
 
+        TrackingDataModel trackingDataModel = trackingService.getTrackingData("89.115.133.189");
+        logger.info("Request origin: " + trackingDataModel.getCountry() + " - " + trackingDataModel.getCity() + " - " + trackingDataModel.getOrganisation());
+
         for (TillingRequestDTO.TileInfoDTO tileInfoDTO : tilling.getTiles()) {
             if (tileInfoDTO.isEnabled() && tileInfoDTO.getWidth() > 0 && tileInfoDTO.getHeight() > 0) {
                 for (int i = 0; i < tileInfoDTO.getCount(); i++) {
-                    tilesToFit.add(new TileDimensions(tileInfoDTO.getId()/* + (i / 5)*/, tileInfoDTO.getWidth(), tileInfoDTO.getHeight()));
+                    tilesToFit.add(new TileDimensions(tileInfoDTO.getId(), tileInfoDTO.getWidth(), tileInfoDTO.getHeight()));
                 }
             }
         }

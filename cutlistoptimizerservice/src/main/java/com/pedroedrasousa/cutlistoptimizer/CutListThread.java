@@ -249,18 +249,18 @@ public class CutListThread implements Runnable {
             //break;
         }
 
-        logger.info("Task[{}] Finished permutation[{}] stock[{}] discardAbove[{}] - usedAreaRatio[{}] nbrCuts[{}] maxDepth[{}] nbrNoFitTiles[{}]",
-                cfg.getTaskId(),
-//                permutationIndex + 1,
-//                tilesPermutations.size(),
-                permutationId,
-                stockSolution,
-                accuracyFactor,
-
-                Math.round(solutions.get(0).getUsedAreaRatio() * 100f) / 100f,
-                solutions.get(0).getNbrCuts(),
-                solutions.get(0).getMaxDepth(),
-                solutions.get(0).getNoFitTiles().size());
+//        logger.info("Task[{}] Finished permutation[{}] stock[{}] discardAbove[{}] - usedAreaRatio[{}] nbrCuts[{}] maxDepth[{}] nbrNoFitTiles[{}]",
+//                cfg.getTaskId(),
+////                permutationIndex + 1,
+////                tilesPermutations.size(),
+//                permutationId,
+//                stockSolution,
+//                accuracyFactor,
+//
+//                Math.round(solutions.get(0).getUsedAreaRatio() * 100f) / 100f,
+//                solutions.get(0).getNbrCuts(),
+//                solutions.get(0).getMaxDepth(),
+//                solutions.get(0).getNoFitTiles().size());
 
         RunningTasks.Task task = runningTasks.getTask(cfg.getTaskId());
         if (task != null) {
@@ -268,7 +268,7 @@ public class CutListThread implements Runnable {
             task.decrementRunningThreads();
             task.setStatusMessage("Searching for best solution...\nIteration " + (task.getNbrTotalThreads() - task.getRunningThreads()) + " of " + task.getNbrTotalThreads());
         } else {
-            logger.info("Task[{}] permutation[{}] Task was deliberately stopped", cfg.getTaskId(), permutationId);
+            //logger.info("Task[{}] permutation[{}] Task was deliberately stopped", cfg.getTaskId(), permutationId);
             return;
         }
     }

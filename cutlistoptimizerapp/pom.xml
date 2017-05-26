@@ -45,6 +45,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>com.maxmind.geoip2</groupId>
+            <artifactId>geoip2</artifactId>
+            <version>2.9.0</version>
+        </dependency>
+        <dependency>
             <groupId>com.lm</groupId>
             <artifactId>cutlistoptimizerservice</artifactId>
             <version>0.0.1-SNAPSHOT</version>

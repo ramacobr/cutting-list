@@ -38,7 +38,7 @@ public class CutListOptimizerServiceImpl implements CutListOptimizerService {
         runningTasks = RunningTasks.getInstance();
         RejectedExecutionHandlerImpl rejectionHandler = new RejectedExecutionHandlerImpl();
         ThreadFactory threadFactory = Executors.defaultThreadFactory();
-        taskExecutor = new ThreadPoolExecutor(4, 1000, 10, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(2), threadFactory, rejectionHandler);
+        taskExecutor = new ThreadPoolExecutor(4, 4, 10, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(1000), threadFactory, rejectionHandler);
     }
 
     /**
@@ -212,7 +212,7 @@ public class CutListOptimizerServiceImpl implements CutListOptimizerService {
     // TODO: should return solution not dto?
     private void compute(List<TileDimensions> tilesToFit, List<TileDimensions> stockTiles, Configuration cfg) {
 
-        logger.info("STARTING... " + cfg.toString());
+        logger.info(cfg.toString());
 
         long startTime = System.currentTimeMillis();
 
@@ -300,15 +300,16 @@ public class CutListOptimizerServiceImpl implements CutListOptimizerService {
 
         // Log permutations
         int permutationIndex = 0;
-        for (List<TileDimensions> permutation : tilesPermutations) {
-            permutationIndex++;
-            sb.setLength(0);
-            sb.append("Task[" + cfg.getTaskId() + "] Permutation " + permutationIndex + "/" + tilesPermutations.size() + ":");
-            for (TileDimensions tileDimensions : permutation) {
-                sb.append(" " + tileDimensions);
-            }
-            logger.info(sb.toString());
-        }
+//        for (List<TileDimensions> permutation : tilesPermutations) {
+//            permutationIndex++;
+//            sb.setLength(0);
+//            sb.append("Task[" + cfg.getTaskId() + "] Permutation " + permutationIndex + "/" + tilesPermutations.size() + ":");
+//            for (TileDimensions tileDimensions : permutation) {
+//                sb.append(" " + tileDimensions);
+//            }
+//            logger.info(sb.toString());
+//        }
+        logger.info("Task[" + cfg.getTaskId() + "] Number of permutations: " + tilesPermutations.size());
 
 
 
@@ -430,13 +431,20 @@ public class CutListOptimizerServiceImpl implements CutListOptimizerService {
         long elapsedTime = System.currentTimeMillis() - startTime;
 
 
-        logger.info("Task[{}] Elapsed time: {} ms", cfg.getTaskId(), elapsedTime);
+
         allSolutions.get(0).setElapsedTime(elapsedTime);
+
+
+
+        logger.info("Task[{}] Final solution: stock{} nbrCuts[{}]", cfg.getTaskId(), allSolutions.get(0).getBasesAsString(), allSolutions.get(0).getNbrCuts());
 
         //runningTasks.removeTask(cfg.getTaskId());
         RunningTasks.Task task2 = runningTasks.getTask(cfg.getTaskId());
         if (task2 != null) {
             task2.setStatusMessage("Finished");
+            logger.info("Task[{}] Task finished. Elapsed time: {} ms", cfg.getTaskId(), elapsedTime);
+        } else {
+            logger.info("Task[{}] Task was deliberately stopped. Elapsed time: {} ms", cfg.getTaskId(), elapsedTime);
         }
 
         //return (new TilingResponseDTOBuilder()).setSolutions(allSolutions.get(0)).setInfo(null).build();

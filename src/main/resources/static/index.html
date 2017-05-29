@@ -334,7 +334,7 @@
                                                 <tr ng-repeat="cut in tiling.getCuts($index) track by $index" ng-mouseover="drawService.drawCut(mosaic, cut)" ng-mouseleave="drawService.resetSvgOverlayElems()">
                                                     <th ng-bind="$index + 1"></th>
                                                     <td ><span ng-bind="cut.originalWidth"></span><span class="math">&#215;</span><span ng-bind="cut.originalHeight"></span></td>
-                                                    <td><span class="math" ng-bind="cut.isHorizontal ? 'x=' : 'y='"></span><span ng-bind="cut.cutCoords"></span></td>
+                                                    <td><span class="math" ng-bind="cut.x2 - cut.x1 === 0 ? 'x=' : 'y='"></span><span ng-bind="cut.cutCoords"></span></td>
                                                     <td ng-bind="Math.max(cut.x2 - cut.x1, cut.y2 - cut.y1)"></td>
                                                 </tr>
                                                 </tbody>

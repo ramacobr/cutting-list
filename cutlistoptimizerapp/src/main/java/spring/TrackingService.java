@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetAddress;
 
 @Service
@@ -25,10 +26,10 @@ public class TrackingService {
     @PostConstruct
     public void init() {
         try {
-            File cityDatabaseFile = context.getResource("classpath:GeoLite2-City_20170502/GeoLite2-City.mmdb").getFile();
+            InputStream cityDatabaseFile = context.getResource("classpath:GeoLite2-City_20170502/GeoLite2-City.mmdb").getInputStream();
             cityDatabaseReader = new DatabaseReader.Builder(cityDatabaseFile).build();
 
-            File asnDatabaseFile = context.getResource("classpath:GeoLite2-ASN_20170516/GeoLite2-ASN.mmdb").getFile();
+            InputStream asnDatabaseFile = context.getResource("classpath:GeoLite2-ASN_20170516/GeoLite2-ASN.mmdb").getInputStream();
             asnDatabaseReader = new DatabaseReader.Builder(asnDatabaseFile).build();
         } catch (IOException e) {
             e.printStackTrace();

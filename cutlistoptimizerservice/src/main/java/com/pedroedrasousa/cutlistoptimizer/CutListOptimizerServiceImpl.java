@@ -82,7 +82,7 @@ public class CutListOptimizerServiceImpl implements CutListOptimizerService {
             distincTileDimensions.put(tileDimensionsStr, distincTileDimensions.get(tileDimensionsStr) != null ? distincTileDimensions.get(tileDimensionsStr) + 1 : 1);
         }
 
-        // Log distinct tile dimensionpublic RunningTasks.Task getTaskStatus(String taskId) {s
+        // Log distinct tile dimensions
         StringBuilder sb = new StringBuilder();
         for (String tileDimensions : distincTileDimensions.keySet()) {
             sb.append(tileDimensions + "*" + distincTileDimensions.get(tileDimensions) + " ");
@@ -212,7 +212,7 @@ public class CutListOptimizerServiceImpl implements CutListOptimizerService {
     // TODO: should return solution not dto?
     private void compute(List<TileDimensions> tilesToFit, List<TileDimensions> stockTiles, Configuration cfg) {
 
-        logger.info(cfg.toString());
+        logger.info("Task[{}] {}", cfg.getTaskId(), cfg.toString());
 
         long startTime = System.currentTimeMillis();
 
@@ -405,7 +405,7 @@ public class CutListOptimizerServiceImpl implements CutListOptimizerService {
 //                    System.out.println("remainingCapacity: " + taskExecutor.getThreadPoolExecutor().getQueue().remainingCapacity());
 
                 try {
-                    Thread.sleep(100);
+                    Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

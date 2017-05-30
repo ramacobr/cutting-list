@@ -38,6 +38,10 @@ public class TrackingService {
 
     public TrackingDataModel getTrackingData(String ipAddr) {
 
+        if (ipAddr == null) {
+            return null;
+        }
+
         TrackingDataModel trackingDataModel = new TrackingDataModel();
 
         try {

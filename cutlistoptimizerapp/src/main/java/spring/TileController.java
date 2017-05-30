@@ -45,8 +45,15 @@ public class TileController {
         List<TileDimensions> tilesToFit = new ArrayList<>();
         List<TileDimensions> stockTiles = new ArrayList<>();
 
-        TrackingDataModel trackingDataModel = trackingService.getTrackingData("89.115.133.189");
-        logger.info("Request origin: " + trackingDataModel.getCountry() + " - " + trackingDataModel.getCity() + " - " + trackingDataModel.getOrganisation());
+        // Log IP information
+        try {
+            TrackingDataModel trackingDataModel = trackingService.getTrackingData(request.getRemoteAddr());
+            if (trackingDataModel != null) {
+                logger.info("Task[" + tilling.getConfiguration().getTaskId() + "] Request origin: " + trackingDataModel.getCountry() + " - " + trackingDataModel.getCity() + " - " + trackingDataModel.getOrganisation());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         for (TillingRequestDTO.TileInfoDTO tileInfoDTO : tilling.getTiles()) {
             if (tileInfoDTO.isEnabled() && tileInfoDTO.getWidth() > 0 && tileInfoDTO.getHeight() > 0) {

@@ -57,7 +57,7 @@ public class StockPanelPickerImpl implements StockPanelPicker {
      * @param exclusions Stock solutions to exclude.
      * @return The computed stock solution, null if the specified criterias could not be fulfilled.
      */
-    private StockSolution getCandidateStockSolution(List<TileDimensions> stockTiles, int requiredArea, int requiredMaxDimension, int nbrTiles, List<StockSolution> exclusions) {
+    private StockSolution getCandidateStockSolution(List<TileDimensions> stockTiles, int requiredArea, int requiredMaxDimension, int smallestTilleArea, int nbrTiles, List<StockSolution> exclusions) {
         List<Integer> stockTilesIndexes = new ArrayList<>();
 
         // Sort base tiles by area, least area first.
@@ -74,11 +74,11 @@ public class StockPanelPickerImpl implements StockPanelPicker {
             stockTilesIndexes.add(i);
         }
 
-        return iterate(stockTiles, requiredArea, requiredMaxDimension, nbrTiles, exclusions, stockTilesIndexes, 0);
+        return iterate(stockTiles, requiredArea, requiredMaxDimension, smallestTilleArea, nbrTiles, exclusions, stockTilesIndexes, 0);
     }
 
 
-    private StockSolution iterate(List<TileDimensions> stockTiles, int requiredArea, int requiredMaxDimension, int nbrTiles, List<StockSolution> exclusions, List<Integer> stockTilesIndexes, int indexToIterate) {
+    private StockSolution iterate(List<TileDimensions> stockTiles, int requiredArea, int requiredMaxDimension, int smallestTilleArea, int nbrTiles, List<StockSolution> exclusions, List<Integer> stockTilesIndexes, int indexToIterate) {
         Integer nextSpareTileIndex = null;
 
         //boolean fits = false;
@@ -92,13 +92,32 @@ public class StockPanelPickerImpl implements StockPanelPicker {
         }
 
         if (indexToIterate < nbrTiles - 1) {
-            for (int j = 0; j < stockTiles.size(); j++) {
-                StockSolution stockSolution = iterate(stockTiles, requiredArea, requiredMaxDimension, nbrTiles, exclusions, stockTilesIndexes, indexToIterate + 1);
+            int prevWidth = 0;
+            int prevHeight = 0;
+            for (int j = 0; j < stockTiles.size(); ) {
+                StockSolution stockSolution = iterate(stockTiles, requiredArea, requiredMaxDimension, smallestTilleArea, nbrTiles, exclusions, stockTilesIndexes, indexToIterate + 1);
                 if (stockSolution != null) {
                     return stockSolution;
                 }
-                stockTilesIndexes.set(indexToIterate, j);       // Next index
-                stockTilesIndexes.set(indexToIterate + 1, 0);   // Reset the index ahead
+
+                // Go to next stock tile with different dimensions
+                // Smallest tile must fit in the next candidate stock tile
+                do {
+                    j++;
+                } while (j < stockTiles.size()
+                        && ((prevWidth == stockTiles.get(j).getWidth() && prevHeight == stockTiles.get(j).getHeight())  // Must have different dimensions than the previous one
+                        || stockTiles.get(j).getHeight() < smallestTilleArea));                                         // Must fit the smallest tile
+
+                if (j < stockTiles.size()) {
+                    prevWidth = stockTiles.get(j).getWidth();
+                    prevHeight = stockTiles.get(j).getHeight();
+
+                    stockTilesIndexes.set(indexToIterate, j);       // Next index
+                    stockTilesIndexes.set(indexToIterate + 1, 0);   // Reset the index ahead
+                }
+
+
+
             }
         }
 
@@ -131,9 +150,6 @@ public class StockPanelPickerImpl implements StockPanelPicker {
             // Use the next size for the stock tile number being iterated
             nextSpareTileIndex = getNextUnusedStockTile(stockTiles.size(), stockTilesIndexes, stockTilesIndexes.get(indexToIterate));
             if (nextSpareTileIndex != null) {
-                if (indexToIterate == 2 && nbrTiles == 2 && stockTilesIndexes.get(0) == 110) {
-                    nextSpareTileIndex = nextSpareTileIndex;
-                }
                 stockTilesIndexes.set(indexToIterate, nextSpareTileIndex);
             }
 
@@ -156,6 +172,7 @@ public class StockPanelPickerImpl implements StockPanelPicker {
         });
 
         int requiredMaxDimension = 0;
+        int smallestTilleArea = Integer.MAX_VALUE;
 
         // Calculate the required area for fitting every tile.
         int requiredArea = 0;
@@ -163,6 +180,9 @@ public class StockPanelPickerImpl implements StockPanelPicker {
             requiredArea += tile.getArea();
             if (tile.getMaxDimension() > requiredMaxDimension) {
                 requiredMaxDimension = tile.getMaxDimension();
+            }
+            if (tile.getArea() < smallestTilleArea) {
+                smallestTilleArea = tile.getArea();
             }
         }
 
@@ -174,7 +194,7 @@ public class StockPanelPickerImpl implements StockPanelPicker {
         // Resulting solution will be returned if no spare is requested.
         int nbrTiles;
         for (nbrTiles = minNbrPanels; nbrTiles < stockTiles.size() && nbrTiles <= maxNbrTiles; nbrTiles++) {
-            stockSolution = getCandidateStockSolution(stockTiles, requiredArea, requiredMaxDimension, nbrTiles, exclusions);
+            stockSolution = getCandidateStockSolution(stockTiles, requiredArea, requiredMaxDimension, smallestTilleArea, nbrTiles, exclusions);
             if (stockSolution != null) {
                 if (nbrSpare == 0) {
                     return stockSolution;
@@ -185,7 +205,7 @@ public class StockPanelPickerImpl implements StockPanelPicker {
 
         // If at least one spare stock panel was requested and there are still stock panels remaining build a solution
         if (nbrSpare > 0 && nbrTiles < stockTiles.size() && nbrTiles + nbrSpare < maxNbrTiles) {
-            stockSolution = getCandidateStockSolution(stockTiles, requiredArea, requiredMaxDimension, nbrTiles + nbrSpare, exclusions);
+            stockSolution = getCandidateStockSolution(stockTiles, requiredArea, requiredMaxDimension, smallestTilleArea, nbrTiles + nbrSpare, exclusions);
             if (stockSolution != null) {
                 return stockSolution;
             }

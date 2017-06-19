@@ -3,7 +3,7 @@ package com.pedroedrasousa.cutlistoptimizer;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Permutation {
+public class Arrangement {
 
     public static <T> List<List<T>> generatePermutations(List<T> original) {
         if (original.size() == 0) {
@@ -11,6 +11,7 @@ public class Permutation {
             result.add(new ArrayList<T>());
             return result;
         }
+
 
         T firstElement = original.remove(0);
         List<List<T>> returnValue = new ArrayList<>();

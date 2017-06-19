@@ -258,7 +258,7 @@ public class CutListOptimizerServiceImpl implements CutListOptimizerService {
 
 
         // Get all possible combinations by permuting the order in witch the tiles are fited
-        List<List<GroupedTileDimensions>> permutations = Permutation.<GroupedTileDimensions>generatePermutations(new ArrayList<>(distincGroupTileDimensions.keySet()));
+        List<List<GroupedTileDimensions>> permutations = Arrangement.<GroupedTileDimensions>generatePermutations(new ArrayList<>(distincGroupTileDimensions.keySet()));
 
 
 
@@ -303,7 +303,7 @@ public class CutListOptimizerServiceImpl implements CutListOptimizerService {
 //        for (List<TileDimensions> permutation : tilesPermutations) {
 //            permutationIndex++;
 //            sb.setLength(0);
-//            sb.append("Task[" + cfg.getTaskId() + "] Permutation " + permutationIndex + "/" + tilesPermutations.size() + ":");
+//            sb.append("Task[" + cfg.getTaskId() + "] Arrangement " + permutationIndex + "/" + tilesPermutations.size() + ":");
 //            for (TileDimensions tileDimensions : permutation) {
 //                sb.append(" " + tileDimensions);
 //            }
@@ -347,7 +347,7 @@ public class CutListOptimizerServiceImpl implements CutListOptimizerService {
             float usedArea2 = 1f;
 
             while (usedArea2 > 0.8) {
-                tmpStockSolution = stockPanelPicker.getCandidateStockSolutions(tilesToFit, stockTiles, 0f, spare, stockSolutionsToExclude, startWith, cfg.getForceOneBaseTile() == true ? 1 : Integer.MAX_VALUE);
+                tmpStockSolution = stockPanelPicker.getCandidateStockSolutions(tilesToFit, stockTiles, 0f, spare, stockSolutionsToExclude, startWith, cfg.getForceOneBaseTile() == true ? 1 : 10);
                 if (tmpStockSolution == null) {
                     break;
                 }

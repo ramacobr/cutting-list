@@ -9,10 +9,7 @@ import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
@@ -29,10 +26,43 @@ public class TrackingControler {
 
     @CrossOrigin(origins = "*")
     @RequestMapping(value = "/tracking", method = RequestMethod.GET)
-    public void getTaskStatus(HttpServletRequest request) {
+    public void getTaskStatus(HttpServletRequest request, @RequestParam(value = "log", required = false) String log) {
 
-        logger.info(request.getRemoteAddr());
-            TrackingDataModel trackingDataModel = trackingService.getTrackingData(request.getRemoteAddr());
-            logger.info(trackingDataModel.getCountry() + " " + trackingDataModel.getCity());
+        StringBuilder sb = new StringBuilder();
+
+        TrackingDataModel trackingDataModel = null;
+
+            try {
+                trackingDataModel = trackingService.getTrackingData(request.getRemoteAddr());
+            } catch (Exception e) {
+                logger.warn(e.getMessage());
+            }
+
+            if (trackingDataModel != null) {
+
+                if (request.getRemoteAddr() != null) {
+                    sb.append(request.getRemoteAddr());
+                }
+
+                if (trackingDataModel.getCountry() != null) {
+                    if (sb.length() != 0) {
+                        sb.append(" - ");
+                    }
+                    sb.append(trackingDataModel.getCountry());
+                }
+
+                if (trackingDataModel.getCity() != null) {
+                    sb.append(trackingDataModel.getCity());
+                }
+
+                if (log != null) {
+                    if (sb.length() != 0) {
+                        sb.append(" - ");
+                    }
+                    sb.append(log);
+                }
+            }
+
+            logger.info(sb.toString());
     }
 }

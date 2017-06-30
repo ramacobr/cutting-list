@@ -1,244 +1,268 @@
 <!doctype html>
 <html ng-app="app">
-	<head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name=”description” content=”Application targeted for panel cutting optimization. It generates optimized cutting patterns based on the available stock sheets by nesting the required parts.”>
-        <link rel="shortcut icon" type="image/png" href="favicon.png"/>
-        <title>CutList Optimizer</title>
-        <base href="#"/>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name=”description” content=”Application targeted for panel cutting optimization. It generates optimized cutting patterns based on the available stock sheets by nesting the required parts.”>
+    <link rel="shortcut icon" type="image/png" href="favicon.png"/>
+    <title>CutList Optimizer</title>
+    <base href="#"/>
 
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-        <!--<link rel="stylesheet" href="bootstrap-3.3.7-dist/css/bootstrap.min.css">-->
-        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-        <link rel="styleSheet" href="angular-ui-grid/ui-grid.min.css"/>
-        <link rel="styleSheet" href="angular-ui-grid/custom-ui-grid.css"/>
-        <link rel="styleSheet" href="css/navbar.css?v=1.15"/>
-        <link rel="styleSheet" href="css/toggle.css?v=1.15"/>
-        <link rel="styleSheet" href="css/tiling.css?v=1.15"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <!--<link rel="stylesheet" href="bootstrap-3.3.7-dist/css/bootstrap.min.css">-->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="styleSheet" href="angular-ui-grid/ui-grid.min.css"/>
+    <link rel="styleSheet" href="angular-ui-grid/custom-ui-grid.css"/>
+    <link rel="styleSheet" href="css/navbar.css?v=1.15"/>
+    <link rel="styleSheet" href="css/toggle.css?v=1.15"/>
+    <link rel="styleSheet" href="css/tiling.css?v=1.15"/>
 
-        <script data-require="jquery@*" data-semver="3.1.1" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.js"></script>
-        <!--<script data-require="jquery@*" data-semver="3.1.1" src="jquery-3.1.1.min.js"></script>-->
+    <script data-require="jquery@*" data-semver="3.1.1" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.js"></script>
+    <!--<script data-require="jquery@*" data-semver="3.1.1" src="jquery-3.1.1.min.js"></script>-->
 
-        <script data-require="jquery-ui@*" data-semver="1.12.2" src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-        <!--<script data-require="jquery-ui@*" data-semver="1.12.1" src="jquery-ui.min.js"></script>-->
+    <script data-require="jquery-ui@*" data-semver="1.12.2" src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <!--<script data-require="jquery-ui@*" data-semver="1.12.1" src="jquery-ui.min.js"></script>-->
 
-        <script src="angular/angular.min.js"></script>
-        <!--<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular.min.js"></script>-->
+    <script src="angular/angular.min.js"></script>
+    <!--<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular.min.js"></script>-->
 
-        <script data-require="ui-bootstrap@*" data-semver="0.12.0" src="https://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.12.0.min.js"></script>
-        <!--<script data-require="ui-bootstrap@*" data-semver="0.12.0" src="ui-bootstrap-tpls-2.5.0.min.js"></script>-->
+    <script data-require="ui-bootstrap@*" data-semver="0.12.0" src="https://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.12.0.min.js"></script>
+    <!--<script data-require="ui-bootstrap@*" data-semver="0.12.0" src="ui-bootstrap-tpls-2.5.0.min.js"></script>-->
 
-        <!--<script src="https://d3js.org/d3.v4.min.js"></script>-->
-        <script src="d3/d3.min.js"></script>
+    <!--<script src="https://d3js.org/d3.v4.min.js"></script>-->
+    <script src="d3/d3.min.js"></script>
 
-        <script src="js/labels.js?v=1.15"></script>
-    	<script src="js/app.js?v=1.15"></script>
-        <script src="js/draw-service.js?v=1.15"></script>
-        <script src="js/tiling-data.js?v=1.15"></script>
-        <script src="angular-ui-grid/ui-grid.min.js"></script>
+    <script src="js/labels.js?v=1.15"></script>
+    <script src="js/app.js?v=1.15"></script>
+    <script src="js/draw-service.js?v=1.15"></script>
+    <script src="js/tiling-data.js?v=1.15"></script>
+    <script src="angular-ui-grid/ui-grid.min.js"></script>
 
-        <script src="js/min/sortable.min.js"></script>
-        <script src="js/min/angular-translate.min.js"></script>
+    <script src="js/min/sortable.min.js"></script>
+    <script src="js/min/angular-translate.min.js"></script>
 
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-        <!--<script src="bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>-->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <!--<script src="bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>-->
 
-        <!-- Google Analytics -->
-        <script>
-            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-                    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-            })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+    <!-- Google Analytics -->
+    <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
-            ga('create', 'UA-43643199-9', 'auto');
-            ga('send', 'pageview');
+        ga('create', 'UA-43643199-9', 'auto');
+        ga('send', 'pageview');
 
-        </script>
-    </head>
+    </script>
+</head>
 
-	<body ng-controller="Tiling">
+<body ng-controller="Tiling">
 
-    <div ng-show="isLoading">
-        <div class="dim-background"></div>
-        <div ng-cloak class="loading-modal">
-            <div class="spinner">
-            </div>
-            <div class="loading-message" ng-bind="statusMessage || 'Loading...'"></div>
+<div ng-show="isLoading">
+    <div class="dim-background"></div>
+    <div ng-cloak class="loading-modal" ng-click="cancelTilingRequest()">
+        <div class="spinner">
+        </div>
+        <div class="loading-message" ng-bind="statusMessage || 'Loading...'"></div>
+    </div>
+</div>
+
+<div class="hidden-lg hidden-md hidden-sm">
+    <div ng-cloak id="floating-action" class="button-default" ng-show="(!invalidData && !isLoading) || (getNbrUsedTiles() === 0 || getNbrUsedStockTiles() === 0)" ng-click="compute()">
+        <div id="floating-action-content">
+            <i class="material-icons md-center md-36">play_arrow</i>
+        </div>
+    </div>
+    <div ng-cloak id="floating-action" class="button-success" ng-show="invalidData && !isLoading && getNbrUsedTiles() > 0 && getNbrUsedStockTiles() > 0" ng-click="compute()">
+        <div id="floating-action-content">
+            <i class="material-icons md-center md-36">play_arrow</i>
         </div>
     </div>
 
+    <!--<div ng-cloak id="floating-action" class="button-default" ng-show="isLoading && tiling.getNbrMosaics() > 0" ng-click="cancelTilingRequest()">-->
+    <!--<div id="floating-action-content">-->
+    <!--<i class="material-icons md-center md-36">stop</i>-->
+    <!--</div>-->
+    <!--</div>-->
+    <!--<div ng-cloak id="floating-action" class="button-danger" ng-show="isLoading && tiling.getNbrMosaics() === 0" ng-click="cancelTilingRequest()">-->
+    <!--<div id="floating-action-content">-->
+    <!--<i class="material-icons md-center md-36">stop</i>-->
+    <!--</div>-->
+    <!--</div>-->
+</div>
+
+
+<div ng-cloak class="navbar navbar-default navbar-fixed-top hidden-print">
+    <div class="navbar-header navbar-brand" style="float: left;" href="#"><i class="material-icons navbar-logo">dashboard</i><div style="float: right;">&nbsp;&nbsp;{{ 'TITLE' | translate }}</div></div>
+
+    <button ng-show="invalidData && !isLoading" class="btn btn-top button-success hidden-xs" style="width: 110px" ng-click="compute()" href="#"><i class="material-icons md-center hidden-xs">play_arrow</i></span> {{ 'CALCULATE' | translate }}</button>
+    <button ng-show="!invalidData && !isLoading" class="btn btn-top button-default hidden-xs" style="width: 110px" ng-click="compute()" href="#"><i class="material-icons md-center hidden-xs">play_arrow</i></span> {{ 'CALCULATE' | translate }}</button>
+    <button ng-show="isLoading && tiling.getNbrMosaics() > 0" class="btn btn-top button-success hidden-xs" style="width: 110px" ng-click="cancelTilingRequest()" href="#"><i class="material-icons md-center hidden-xs">stop</i></span> {{ 'ACCEPT' | translate }}</button>
+    <button ng-show="isLoading && tiling.getNbrMosaics() === 0" class="btn btn-top button-danger hidden-xs" style="width: 110px" ng-click="cancelTilingRequest()" href="#"><i class="material-icons md-center hidden-xs">stop</i></span> {{ 'CANCEL' | translate }}</button>
+
+    <!--<button class="btn btn-top button-default hidden-xs" ng-disabled="invalidData" ng-click="print()" data-toggle="tooltip" data-placement="top" title="Ocultar detalhes" href="#"><i class="material-icons md-center hidden-xs">print</i></span></button>-->
+
+
+    <div class="navbar-header pull-right">
+
+        <button class="btn btn-top button-default hidden-xs" ng-click="print()" data-toggle="tooltip" data-placement="top" title="Ocultar detalhes" href="#"><i class="material-icons md-center hidden-xs">print</i></span></button>
+
+        <button class="btn btn-top button-default hidden-xs" ng-click="zoomIn()" data-toggle="tooltip" data-placement="top" title="Zoom Out" href="#"><i class="material-icons md-center hidden-xs">zoom_in</i></span></button>
+        <button class="btn btn-top button-default hidden-xs" ng-click="zoomOut()" data-toggle="tooltip" data-placement="top" title="Zoom Out" href="#"><i class="material-icons md-center hidden-xs">zoom_out</i></span></button>
+
+        <button ng-hide="drawService.getIsSvgPannable()" class="btn btn-top button-default hidden-xs" ng-click="drawService.toggleIsSvgPannable()" data-toggle="tooltip" data-placement="top" title="Mostrar dimensões" href="#"><i class="material-icons md-center hidden-xs">open_with</i></span></button>
+        <button ng-show="drawService.getIsSvgPannable()" class="btn btn-top button-enabled hidden-xs" ng-click="drawService.toggleIsSvgPannable()" data-toggle="tooltip" data-placement="top" title="Ocultar dimensões" href="#"><i class="material-icons md-center hidden-xs">open_with</i></span></button>
+
+        <button ng-hide="isTilingInfoVisible" style="margin-right: 7px" class="btn btn-top button-default hidden-xs" ng-click="toggleIsTilingInfoVisible()" data-toggle="tooltip" data-placement="top" title="Mostrar detalhes" href="#"><i class="material-icons md-center hidden-xs">chrome_reader_mode</i></span></button>
+        <button ng-show="isTilingInfoVisible" style="margin-right: 7px" class="btn btn-top button-enabled hidden-xs" ng-click="toggleIsTilingInfoVisible()" data-toggle="tooltip" data-placement="top" title="Ocultar detalhes" href="#"><i class="material-icons md-center hidden-xs">chrome_reader_mode</i></span></button>
+
+        <button type="button" style="color: white" class="btn btn-top dropdown-toggle btn-transparent" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <i class="material-icons md-center md-28">menu</i>
+        </button>
+        <ul class="dropdown-menu">
+            <li><a ng-click="reset()" href="#">Reset</a></li>
+            <li class="divider"></li>
+            <li><a ng-click="changeLanguage('en')" href="#">English</a></li>
+            <li><a ng-click="changeLanguage('pt')" href="#"></span>Português</a></li>
+        </ul>
+
+        <!--<div class="btn-group hidden-lg hidden-md hidden-sm hidden-print">-->
+        <!--<button ng-show="invalidData && !isLoading" type="button"ng-click="compute()" class="btn-top btn-transparent" style="color: white">-->
+        <!--<i class="material-icons md-center navbar-icon">play_circle_filled</i>-->
+        <!--</button>-->
+        <!--<button ng-show="!invalidData && !isLoading" type="button"ng-click="compute()" class="btn-top btn-transparent" style="color: white">-->
+        <!--<i class="material-icons md-center navbar-icon">play_circle_outline</i>-->
+        <!--</button>-->
+        <!--<button ng-show="isLoading" type="button"ng-click="cancelTilingRequest()" class="btn-top btn-transparent" style="color: white">-->
+        <!--<i class="material-icons md-center navbar-icon">stop</i>-->
+        <!--</button>-->
+        <!--</div>-->
     </div>
+</div>
 
-    <div ng-cloak class="navbar navbar-default navbar-fixed-top hidden-print">
-        <div class="navbar-header navbar-brand" style="float: left;" href="#"><i class="material-icons navbar-logo">dashboard</i><div style="float: right;">&nbsp;&nbsp;{{ 'TITLE' | translate }}</div></div>
-
-        <button ng-show="invalidData && !isLoading" class="btn btn-top button-success hidden-xs" style="width: 110px" ng-click="compute()" href="#"><i class="material-icons md-center hidden-xs">play_arrow</i></span> {{ 'CALCULATE' | translate }}</button>
-        <button ng-show="!invalidData && !isLoading" class="btn btn-top button-default hidden-xs" style="width: 110px" ng-click="compute()" href="#"><i class="material-icons md-center hidden-xs">play_arrow</i></span> {{ 'CALCULATE' | translate }}</button>
-        <button ng-show="isLoading && tiling.getNbrMosaics() > 0" class="btn btn-top button-success hidden-xs" style="width: 110px" ng-click="cancelTilingRequest()" href="#"><i class="material-icons md-center hidden-xs">stop</i></span> {{ 'ACCEPT' | translate }}</button>
-        <button ng-show="isLoading && tiling.getNbrMosaics() === 0" class="btn btn-top button-danger hidden-xs" style="width: 110px" ng-click="cancelTilingRequest()" href="#"><i class="material-icons md-center hidden-xs">stop</i></span> {{ 'CANCEL' | translate }}</button>
-
-        <!--<button class="btn btn-top button-default hidden-xs" ng-disabled="invalidData" ng-click="print()" data-toggle="tooltip" data-placement="top" title="Ocultar detalhes" href="#"><i class="material-icons md-center hidden-xs">print</i></span></button>-->
-
-
-        <div class="navbar-header pull-right">
-
-            <button class="btn btn-top button-default hidden-xs" ng-click="print()" data-toggle="tooltip" data-placement="top" title="Ocultar detalhes" href="#"><i class="material-icons md-center hidden-xs">print</i></span></button>
-
-            <button class="btn btn-top button-default hidden-xs" ng-click="zoomIn()" data-toggle="tooltip" data-placement="top" title="Zoom Out" href="#"><i class="material-icons md-center hidden-xs">zoom_in</i></span></button>
-            <button class="btn btn-top button-default hidden-xs" ng-click="zoomOut()" data-toggle="tooltip" data-placement="top" title="Zoom Out" href="#"><i class="material-icons md-center hidden-xs">zoom_out</i></span></button>
-
-            <button ng-hide="drawService.getIsSvgPannable()" class="btn btn-top button-default hidden-xs" ng-click="drawService.toggleIsSvgPannable()" data-toggle="tooltip" data-placement="top" title="Mostrar dimensões" href="#"><i class="material-icons md-center hidden-xs">open_with</i></span></button>
-            <button ng-show="drawService.getIsSvgPannable()" class="btn btn-top button-enabled hidden-xs" ng-click="drawService.toggleIsSvgPannable()" data-toggle="tooltip" data-placement="top" title="Ocultar dimensões" href="#"><i class="material-icons md-center hidden-xs">open_with</i></span></button>
-
-            <button ng-hide="isTilingInfoVisible" style="margin-right: 7px" class="btn btn-top button-default hidden-xs" ng-click="toggleIsTilingInfoVisible()" data-toggle="tooltip" data-placement="top" title="Mostrar detalhes" href="#"><i class="material-icons md-center hidden-xs">chrome_reader_mode</i></span></button>
-            <button ng-show="isTilingInfoVisible" style="margin-right: 7px" class="btn btn-top button-enabled hidden-xs" ng-click="toggleIsTilingInfoVisible()" data-toggle="tooltip" data-placement="top" title="Ocultar detalhes" href="#"><i class="material-icons md-center hidden-xs">chrome_reader_mode</i></span></button>
-
-            <button type="button" style="color: white" class="btn btn-top dropdown-toggle btn-transparent" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <i class="material-icons md-center md-28">menu</i>
-            </button>
-            <ul class="dropdown-menu">
-                <li><a ng-click="reset()" href="#">Reset</a></li>
-                <li class="divider"></li>
-                <li><a ng-click="changeLanguage('en')" href="#">English</a></li>
-                <li><a ng-click="changeLanguage('pt')" href="#"></span>Português</a></li>
-            </ul>
-
-            <div class="btn-group hidden-lg hidden-md hidden-sm hidden-print">
-                <button ng-show="invalidData && !isLoading" type="button"ng-click="compute()" class="btn-top btn-transparent" style="color: white">
-                    <i class="material-icons md-center navbar-icon">play_circle_filled</i>
-                </button>
-                <button ng-show="!invalidData && !isLoading" type="button"ng-click="compute()" class="btn-top btn-transparent" style="color: white">
-                    <i class="material-icons md-center navbar-icon">play_circle_outline</i>
-                </button>
-                <button ng-show="isLoading" type="button"ng-click="cancelTilingRequest()" class="btn-top btn-transparent" style="color: white">
-                    <i class="material-icons md-center navbar-icon">stop</i>
-                </button>
+<div ng-cloak class="container-fluid navbar-padding">
+    <div class="row content">
+        <div id="sidenav" class="col-sm-3 sidenav">
+            <div class="side-bar-accordion-toggle hidden-print" ng-click="isTilesGridVisible = !isTilesGridVisible">
+                <i class="material-icons md-center">view_carousel</i>
+                <span ng-show="isTilesGridVisible" class="glyphicon glyphicon-chevron-down pull-right" style="padding-top: 4px"></span>
+                <span ng-hide="isTilesGridVisible" class="glyphicon glyphicon-chevron-up pull-right" style="padding-top: 4px"></span>
+                {{ 'PANELS' | translate }}
             </div>
+            <div ng-if="!isGridReloding" class="sidebar-section hidden-print" collapse="isTilesGridVisible">
+                <div ui-grid="gridOptions" ui-grid-edit ui-grid-row-edit ui-grid-cellnav class="grid1"></div>
+            </div>
+
+            <div class="side-bar-accordion-toggle hidden-print" ng-click="isStockGridVisible = !isStockGridVisible">
+                <i class="material-icons md-center">layers</i>
+                <span ng-show="isStockGridVisible" class="glyphicon glyphicon glyphicon-chevron-down pull-right" style="padding-top: 4px"></span>
+                <span ng-hide="isStockGridVisible" class="glyphicon glyphicon glyphicon-chevron-up pull-right" style="padding-top: 4px"></span>
+                {{ 'STOCK' | translate }}
+            </div>
+            <div ng-if="!isGridReloding" class="sidebar-section hidden-print" collapse="isStockGridVisible">
+                <div  id="grid2" ui-grid="stockGridOptions" ui-grid-edit ui-grid-row-edit ui-grid-cellnav class="grid2"></div>
+            </div>
+
+            <div class="side-bar-accordion-toggle hidden-print" ng-click="isBaseOptionsCollapsed = !isBaseOptionsCollapsed">
+                <i class="material-icons md-center">settings</i>
+                <span ng-show="isBaseOptionsCollapsed" class="glyphicon glyphicon glyphicon-chevron-down pull-right" style="padding-top: 4px"></span>
+                <span ng-hide="isBaseOptionsCollapsed" class="glyphicon glyphicon glyphicon-chevron-up pull-right" style="padding-top: 4px"></span>
+                {{ 'OPTIONS' | translate }}
+            </div>
+            <div class="hidden-print col-xs-12" style="padding-right: 25px" collapse="isBaseOptionsCollapsed">
+                <div class="form-horizontal top-buffer">
+                    <div class="form-group">
+                        <span class="control-label col-xs-9">{{ 'CUT_THICKNESS' | translate }}</span>
+                        <div class="col-xs-3">
+                            <input style="width: 40px;" type="number" class="form-control input-xs" ng-model="cfg.cutThickness">
+                        </div>
+                        <span class="control-label col-xs-9">{{ 'ALLOW_TILE_ROTATION' | translate }}</span>
+                        <div class="col-xs-3">
+                            <label class="switch">
+                                <input ng-model="cfg.allowTileRotation" type="checkbox">
+                                <div class="slider round"></div>
+                            </label>
+                        </div>
+                        <span class="control-label col-xs-9">{{ 'FORCE_ONE_STOCK_PANEL' | translate }}</span>
+                        <div class="col-xs-3" style="float: left;">
+                            <label class="switch">
+                                <input ng-model="cfg.forceOneBaseTile" type="checkbox">
+                                <div class="slider round"></div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="mosaics" style="margin-bottom: -25px">&nbsp;</div>
+
+            <!--<div class="side-bar-accordion-toggle hidden-print" ng-click="isAdvancedOptionsCollapsed = !isAdvancedOptionsCollapsed">-->
+            <!--<i class="material-icons md-center">build</i>-->
+            <!--<span ng-show="isAdvancedOptionsCollapsed" class="glyphicon glyphicon glyphicon-chevron-down pull-right" style="padding-top: 4px"></span>-->
+            <!--<span ng-hide="isAdvancedOptionsCollapsed" class="glyphicon glyphicon glyphicon-chevron-up pull-right" style="padding-top: 4px"></span>-->
+            <!--{{ 'OPTIONS2' | translate }}-->
+            <!--</div>-->
+            <!--<div class="hidden-print" collapse="isAdvancedOptionsCollapsed">-->
+            <!--<div class="form-horizontal top-buffer" style="margin: 10px 10px 5px 10px;">-->
+            <!--<button ng-click="dataToUrl();">dataToURL</button>-->
+            <!--<div class="form-group">-->
+            <!--<span class="control-label col-xs-8">discard above</span>-->
+            <!--<div class="col-xs-4">-->
+            <!--<input style="" type="number" class="form-control input-xs" ng-model="cfg.accuracyFactor">-->
+            <!--</div>-->
+            <!--</div>-->
+            <!--</div>-->
+            <!--<div id="priority-table" style="font-size: 13px;">-->
+            <!--<table class="table table-hover table-condensed table-striped">-->
+            <!--<thead>-->
+            <!--<tr>-->
+            <!--<th>Prioridade</th>-->
+            <!--<th>Métrica</th>-->
+            <!--</tr>-->
+            <!--</thead>-->
+            <!--<tbody ui-sortable ng-model="cfg.priorities">-->
+            <!--<tr ng-repeat="item in cfg.priorities" class="item" style="cursor: move;">-->
+            <!--<td>{{$index}}</td>-->
+            <!--<td>{{item}}</td>-->
+            <!--</tr>-->
+            <!--</tbody>-->
+            <!--</table>-->
+            <!--</div>-->
+            <!--<div class="col-xs-12">-->
+            <!--<input ng-repeat="item in cfg.priorities" class="form-control input-xs" ng-model="item">-->
+            <!--</div>-->
+            <!--</div>-->
         </div>
-    </div>
 
-    <div ng-cloak class="container-fluid navbar-padding">
-        <div class="row content">
-            <div id="sidenav" class="col-sm-3 sidenav">
-                <div class="side-bar-accordion-toggle hidden-print" ng-click="isTilesGridVisible = !isTilesGridVisible">
-                    <i class="material-icons md-center">view_carousel</i>
-                    <span ng-show="isTilesGridVisible" class="glyphicon glyphicon-chevron-down pull-right" style="padding-top: 4px"></span>
-                    <span ng-hide="isTilesGridVisible" class="glyphicon glyphicon-chevron-up pull-right" style="padding-top: 4px"></span>
-                    {{ 'PANELS' | translate }}
-                </div>
-                <div ng-if="!isGridReloding" class="sidebar-section hidden-print" collapse="isTilesGridVisible">
-                    <div ui-grid="gridOptions" ui-grid-edit ui-grid-row-edit ui-grid-cellnav class="grid1"></div>
-                </div>
+        <div id="main-content" class="col-sm-9">
 
-                <div class="side-bar-accordion-toggle hidden-print" ng-click="isStockGridVisible = !isStockGridVisible">
-                    <i class="material-icons md-center">layers</i>
-                    <span ng-show="isStockGridVisible" class="glyphicon glyphicon glyphicon-chevron-down pull-right" style="padding-top: 4px"></span>
-                    <span ng-hide="isStockGridVisible" class="glyphicon glyphicon glyphicon-chevron-up pull-right" style="padding-top: 4px"></span>
-                    {{ 'STOCK' | translate }}
-                </div>
-                <div ng-if="!isGridReloding" class="sidebar-section hidden-print" collapse="isStockGridVisible">
-                    <div  id="grid2" ui-grid="stockGridOptions" ui-grid-edit ui-grid-row-edit ui-grid-cellnav class="grid2"></div>
-                </div>
-
-                <div class="side-bar-accordion-toggle hidden-print" ng-click="isBaseOptionsCollapsed = !isBaseOptionsCollapsed">
-                    <i class="material-icons md-center">settings</i>
-                    <span ng-show="isBaseOptionsCollapsed" class="glyphicon glyphicon glyphicon-chevron-down pull-right" style="padding-top: 4px"></span>
-                    <span ng-hide="isBaseOptionsCollapsed" class="glyphicon glyphicon glyphicon-chevron-up pull-right" style="padding-top: 4px"></span>
-                    {{ 'OPTIONS' | translate }}
-                </div>
-                <div class="hidden-print col-xs-12" style="padding-right: 25px" collapse="isBaseOptionsCollapsed">
-                    <div class="form-horizontal top-buffer">
-                        <div class="form-group">
-                            <span class="control-label col-xs-9">{{ 'CUT_THICKNESS' | translate }}</span>
-                            <div class="col-xs-3">
-                                <input style="width: 40px;" type="number" class="form-control input-xs" ng-model="cfg.cutThickness">
-                            </div>
-                            <span class="control-label col-xs-9">{{ 'ALLOW_TILE_ROTATION' | translate }}</span>
-                            <div class="col-xs-3">
-                                <label class="switch">
-                                    <input ng-model="cfg.allowTileRotation" type="checkbox">
-                                    <div class="slider round"></div>
-                                </label>
-                            </div>
-                            <span class="control-label col-xs-9">{{ 'FORCE_ONE_STOCK_PANEL' | translate }}</span>
-                            <div class="col-xs-3" style="float: left;">
-                                <label class="switch">
-                                    <input ng-model="cfg.forceOneBaseTile" type="checkbox">
-                                    <div class="slider round"></div>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="side-bar-accordion-toggle hidden-print" ng-click="isAdvancedOptionsCollapsed = !isAdvancedOptionsCollapsed">
-                    <i class="material-icons md-center">build</i>
-                    <span ng-show="isAdvancedOptionsCollapsed" class="glyphicon glyphicon glyphicon-chevron-down pull-right" style="padding-top: 4px"></span>
-                    <span ng-hide="isAdvancedOptionsCollapsed" class="glyphicon glyphicon glyphicon-chevron-up pull-right" style="padding-top: 4px"></span>
-                    {{ 'OPTIONS2' | translate }}
-                </div>
-                <div class="hidden-print" collapse="isAdvancedOptionsCollapsed">
-                    <div class="form-horizontal top-buffer" style="margin: 10px 10px 5px 10px;">
-                        <button ng-click="dataToUrl();">dataToURL</button>
-                        <div class="form-group">
-                            <span class="control-label col-xs-8">discard above</span>
-                            <div class="col-xs-4">
-                                <input style="" type="number" class="form-control input-xs" ng-model="cfg.accuracyFactor">
-                            </div>
-                        </div>
-                    </div>
-                    <div id="priority-table" style="font-size: 13px;">
-                        <table class="table table-hover table-condensed table-striped">
-                            <thead>
-                            <tr>
-                                <th>Prioridade</th>
-                                <th>Métrica</th>
-                            </tr>
-                            </thead>
-                            <tbody ui-sortable ng-model="cfg.priorities">
-                            <tr ng-repeat="item in cfg.priorities" class="item" style="cursor: move;">
-                                <td>{{$index}}</td>
-                                <td>{{item}}</td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="col-xs-12">
-                        <input ng-repeat="item in cfg.priorities" class="form-control input-xs" ng-model="item">
-                    </div>
-                </div>
+            <div ng-show="requestStatus == 1" class="alert alert-danger top-buffer">
+                <strong>{{ ('ERROR' | translate) + '\! '}}</strong> {{ 'MSG_NO_PANELS' | translate }}
+            </div>
+            <div ng-show="requestStatus == 2" class="alert alert-danger top-buffer">
+                <strong>{{ ('ERROR' | translate) + '\! '}}</strong> {{ 'MSG_NO_STOCK_PANELS' | translate }}
             </div>
 
-
-            <div id="mosaics"></div>
-
-            <div id="main-content" class="col-sm-9">
-
-                <div ng-show="requestStatus === 1" class="alert alert-danger top-buffer">
-                    <strong>{{ ('ERROR' | translate) + '\! '}}</strong> {{ 'MSG_NO_PANELS' | translate }}
-                </div>
-                <div ng-show="requestStatus === 2" class="alert alert-danger top-buffer">
-                    <strong>{{ ('ERROR' | translate) + '\! '}}</strong> {{ 'MSG_NO_STOCK_PANELS' | translate }}
+            <div id="main" class="row">
+                <div ng-class="isTilingInfoVisible? 'col-md-8 mosaic' : 'col-md-12 mosaic'" class="col-md-8 mosaic">
+                    <div id="svg-canvas"></div>
                 </div>
 
-                <div id="main" class="row">
-                    <div ng-class="isTilingInfoVisible? 'col-md-8 mosaic' : 'col-md-12 mosaic'" class="col-md-8 mosaic">
-                        <div id="svg-canvas"></div>
-                    </div>
+                <div ng-show="isTilingInfoVisible" class="col-md-4 hidden-print top-buffer info-container" style="font-size: 13px;" id="DivRightContent">
 
-                    <div ng-show="isTilingInfoVisible" class="col-md-4 hidden-print top-buffer info-container" style="font-size: 13px;" id="DivRightContent">
 
-                        <div ng-show="tiling.getNbrMosaics() > 0" class="panel panel-default">
-                            <div class="panel-heading"><h6 class="panel-title" data-toggle="collapse" data-parent="#accordion" data-target="{{'#info'}}" style="cursor: pointer">Info
-                                <span class="accordion-toggle"></span>
-                                <button ng-show="tiling.getNbrMosaics() > 1" class="btn-transparent pull-right glyphicon glyphicon-menu-right pull-right" ng-click="incrementVisibleTileInfoIdx(); $event.stopPropagation();"></button>
-                                <span ng-show="tiling.getNbrMosaics() > 1" class="pull-right">{{('PANEL' | translate) + ' ' + (visibleTileInfoIdx + 1) + '/' + tiling.getNbrMosaics()}}</span>
 
-                                <button ng-show="tiling.getNbrMosaics() > 1" class="btn-transparent glyphicon glyphicon-menu-left pull-right" ng-click="decrementVisibleTileInfoIdx(); $event.stopPropagation();"></button>
-                                </h6></div>
-                            <div id="{{'info'}}" class="panel-collapse collapse in">
+                    <div ng-show="tiling.getNbrMosaics() > 0" class="panel panel-default">
+                        <div class="panel-heading"><h6 class="panel-title" data-toggle="collapse" data-parent="#accordion" data-target="{{'#info'}}" style="cursor: pointer">Info
+                            <span class="accordion-toggle"></span>
+                            <button ng-show="tiling.getNbrMosaics() > 1" class="btn-transparent pull-right glyphicon glyphicon-menu-right pull-right" ng-click="incrementVisibleTileInfoIdx(); $event.stopPropagation();"></button>
+                            <span ng-show="tiling.getNbrMosaics() > 1" class="pull-right">{{('PANEL' | translate) + ' ' + (visibleTileInfoIdx + 1) + '/' + tiling.getNbrMosaics()}}</span>
+
+                            <button ng-show="tiling.getNbrMosaics() > 1" class="btn-transparent glyphicon glyphicon-menu-left pull-right" ng-click="decrementVisibleTileInfoIdx(); $event.stopPropagation();"></button>
+                        </h6></div>
+                        <div id="{{'info'}}" class="panel-collapse collapse in">
                             <div class="panel-body">
                                 <div id="stats-table">
                                     <table id="t1" class="table table-striped">
@@ -272,90 +296,90 @@
                                 </div>
                             </div>
                         </div>
-                        </div>
-
-                        <div ng-show="tiling.getNbrNoFitTiles() > 0">
-                            <div class="panel-group" id="no-fit-tiles">
-                                <div class="panel panel-default panel-error">
-                                    <div class="panel-heading panel-heading-error">
-                                        <h6 class="panel-title">
-                                            <div class="accordion-toggle" data-toggle="collapse" data-parent="#no-fit-tiles" data-target="{{'#noFitTiles'}}" style="cursor: pointer">
-                                                Paineis em falta
-                                            </div>
-                                        </h6>
-                                    </div>
-                                    <div id="{{'noFitTiles'}}" class="panel-collapse collapse in">
-                                        <div class="panel-body">
-
-                                            <table id="cut-table" class="table table-hover table-condensed table-striped">
-                                                <thead>
-                                                <tr>
-                                                    <th>Painel</th>
-                                                    <th>Qtd</th>
-                                                </tr>
-                                                </thead>
-                                                <tbody style="font-size: 13px;">
-                                                <tr ng-repeat="tile in tiling.getNoFitTiles() track by $index">
-                                                    <!--<th ng-bind="$index + 1"></th>-->
-                                                    <td><span ng-bind="tile.width"></span><span class="math">&#215;</span><span ng-bind="tile.height"></span></td>
-                                                    <td><span ng-bind="tile.qty"></span></td>
-                                                </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div ng-show="tiling.getNbrCuts() > 0">
-                            <div class="panel-group" id="accordion">
-                                <div class="panel panel-default">
-                                    <div class="panel-heading">
-                                        <h6 class="panel-title">
-                                            <div class="accordion-toggle" href="javascript:;" data-toggle="collapse" data-parent="#accordion" data-target="{{'#cuts'}}" style="cursor: pointer">
-                                                {{ 'CUTS' | translate }}
-                                            </div>
-                                        </h6>
-                                    </div>
-                                    <div id="{{'cuts'}}" class="panel-collapse collapse in">
-                                        <div class="panel-body">
-
-                                            <table id="cut-table" class="table table-hover table-condensed table-striped">
-                                                <thead>
-                                                <tr>
-                                                    <th> </th>
-                                                    <th>{{ 'PANEL' | translate }}</th>
-                                                    <th>{{ 'CUT' | translate }}</th>
-                                                    <th>{{ 'DIM' | translate }}</th>
-                                                </tr>
-                                                </thead>
-                                                <tbody ng-repeat="mosaic in tiling.getMosaics() track by $index" style="font-size: 13px;">
-                                                <tr ng-repeat="cut in tiling.getCuts($index) track by $index" ng-mouseover="drawService.drawCut(mosaic, cut)" ng-mouseleave="drawService.resetSvgOverlayElems()">
-                                                    <th ng-bind="$index + 1"></th>
-                                                    <td ><span ng-bind="cut.originalWidth"></span><span class="math">&#215;</span><span ng-bind="cut.originalHeight"></span></td>
-                                                    <td><span class="math" ng-bind="cut.isHorizontal ? 'x=' : 'y='"></span><span ng-bind="cut.cutCoords"></span></td>
-                                                    <td ng-bind="Math.max(cut.x2 - cut.x1, cut.y2 - cut.y1)"></td>
-                                                </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
                     </div>
+
+                    <div ng-show="tiling.getNbrNoFitTiles() > 0">
+                        <div class="panel-group" id="no-fit-tiles">
+                            <div class="panel panel-default panel-error">
+                                <div class="panel-heading panel-heading-error">
+                                    <h6 class="panel-title">
+                                        <div class="accordion-toggle" data-toggle="collapse" data-parent="#no-fit-tiles" data-target="{{'#noFitTiles'}}" style="cursor: pointer">
+                                            {{ 'UNABLE_TO_FIT' | translate }}
+                                        </div>
+                                    </h6>
+                                </div>
+                                <div id="{{'noFitTiles'}}" class="panel-collapse collapse in">
+                                    <div class="panel-body">
+
+                                        <table id="cut-table" class="table table-hover table-condensed table-striped">
+                                            <thead>
+                                            <tr>
+                                                <th>Painel</th>
+                                                <th>Qtd</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody style="font-size: 13px;">
+                                            <tr ng-repeat="tile in tiling.getNoFitTiles() track by $index">
+                                                <!--<th ng-bind="$index + 1"></th>-->
+                                                <td><span ng-bind="tile.width"></span><span class="math">&#215;</span><span ng-bind="tile.height"></span></td>
+                                                <td><span ng-bind="tile.qty"></span></td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div ng-show="tiling.getNbrCuts() > 0">
+                        <div class="panel-group" id="accordion">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h6 class="panel-title">
+                                        <div class="accordion-toggle" href="javascript:;" data-toggle="collapse" data-parent="#accordion" data-target="{{'#cuts'}}" style="cursor: pointer">
+                                            {{ 'CUTS' | translate }}
+                                        </div>
+                                    </h6>
+                                </div>
+                                <div id="{{'cuts'}}" class="panel-collapse collapse in">
+                                    <div class="panel-body">
+
+                                        <table id="cut-table" class="table table-hover table-condensed table-striped">
+                                            <thead>
+                                            <tr>
+                                                <th> </th>
+                                                <th>{{ 'PANEL' | translate }}</th>
+                                                <th>{{ 'CUT' | translate }}</th>
+                                                <th>{{ 'DIM' | translate }}</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody ng-repeat="mosaic in tiling.getMosaics() track by $index" style="font-size: 13px;">
+                                            <tr ng-repeat="cut in tiling.getCuts($index) track by $index" ng-mouseover="drawService.drawCut(mosaic, cut)" ng-mouseleave="drawService.resetSvgOverlayElems()">
+                                                <th ng-bind="$index + 1"></th>
+                                                <td ><span ng-bind="cut.originalWidth"></span><span class="math">&#215;</span><span ng-bind="cut.originalHeight"></span></td>
+                                                <td><span class="math" ng-bind="cut.isHorizontal ? 'x=' : 'y='"></span><span ng-bind="cut.cutCoords"></span></td>
+                                                <td ng-bind="Math.max(cut.x2 - cut.x1, cut.y2 - cut.y1)"></td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
-
-            <!--<pre class="col-md-12">-->
-                <!--<small>"{{tiling.getData() | json}}"></small>-->
-            <!--</pre>-->
-
         </div>
+
+        <!--<pre class="col-md-12">-->
+        <!--<small>"{{tiling.getData() | json}}"></small>-->
+        <!--</pre>-->
 
     </div>
 
-	</body>
+</div>
+
+</body>
 </html>

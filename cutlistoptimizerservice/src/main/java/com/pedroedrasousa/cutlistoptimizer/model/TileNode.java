@@ -14,7 +14,7 @@ public class TileNode {
 
     private static final AtomicInteger NEXT_ID = new AtomicInteger(0);
 
-    private int id;
+    private final int id;
 
     private int externalId = -1;
 
@@ -25,6 +25,10 @@ public class TileNode {
     private boolean isFinal;
 
     private Tile tile;
+
+    boolean isAreaTotallyUsed = false;
+
+    int totallyUsedArea = 0;
 
     public TileNode(int x1, int x2, int y1, int y2) {
         this.tile = new Tile(x1, x2, y1, y2);
@@ -77,10 +81,6 @@ public class TileNode {
 
     public int getId() {
         return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public TileNode getChild1() {
@@ -194,7 +194,6 @@ public class TileNode {
         return s;
     }
 
-
     /**
      * Generates an unique identifier based on tile coordinates and whether is final or not.
      *
@@ -208,10 +207,10 @@ public class TileNode {
 
     private void appendToStringIdentifier(StringBuilder sb) {
 
-        sb.append(getX1());
-        sb.append(getY1());
-        sb.append(getX2());
-        sb.append(getY2());
+        sb.append(tile.getX1());
+        sb.append(tile.getY1());
+        sb.append(tile.getX2());
+        sb.append(tile.getY2());
         sb.append(isFinal);
 
         if (child1 != null) {
@@ -225,17 +224,30 @@ public class TileNode {
 
     public int getUsedArea() {
 
+        // If we know that this tile are is fully used no need to traverse its children
+        if (isAreaTotallyUsed) {
+            return totallyUsedArea;
+        }
+
         int area = 0;
 
-        if (isFinal()) {
+        if (isFinal) {
             area += this.getArea();
+            return area;
         }
-        if (this.getChild1() != null) {
-            area += this.getChild1().getUsedArea();
+        if (this.child1 != null) {
+            area += this.child1.getUsedArea();
         }
-        if (this.getChild2() != null) {
-            area += this.getChild2().getUsedArea();
+        if (this.child2 != null) {
+            area += this.child2.getUsedArea();
         }
+
+        // Check if tile area is fully used
+        if (area == this.getArea()) {
+            isAreaTotallyUsed = true;
+            totallyUsedArea = this.getArea();
+        }
+
         return area;
     }
 

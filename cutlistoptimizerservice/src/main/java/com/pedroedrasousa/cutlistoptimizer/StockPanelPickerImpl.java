@@ -136,8 +136,6 @@ public class StockPanelPickerImpl implements StockPanelPicker {
                 }
             }
 
-            System.out.println(stockTilesIndexes);
-
             // If required area is met and solution is not excluded, build an array with the tile dimensions and return it.
             if (remainingRequiredArea <= 0 && fits && !isExcluded(stockTiles, exclusions, stockTilesIndexes)) {
                 StockSolution stockSolution = new StockSolution();

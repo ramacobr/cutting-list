@@ -43,7 +43,7 @@
 }
 @media (max-width: 768px) {
     .navbar-padding {
-        padding-top: 50px;
+        padding-top: 55px;
     }
 }
 
@@ -139,15 +139,15 @@
 }
 
 .btn-top {
-    padding: 0px 7px 0px 7px;
+    padding: 0px 15px 0px 7px;
     margin: 5px 1px 0px 1px;
     vertical-align: middle;
 }
 @media (max-width: 768px) {
     .btn-top {
-        padding: 4px 7px 0px 7px;
+        padding: 4px 15px 0px 7px;
         margin: auto;
-        vertical-align: middle;  
+        vertical-align: middle;
     }
 }
 
@@ -172,7 +172,7 @@
 
 @media (max-width: 768px) {
     .navbar-header {
-        padding-top: 5px;
+        padding-top: 8px;
     }
 }
 
@@ -244,7 +244,6 @@
 
 
 
-
 .dim-background {
     z-index: 999;
     content: '';
@@ -254,86 +253,148 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0,0,0,0.5);
+    background-color: rgba(0, 0, 0, 0.5);
 }
 
-.loading-modal {
-    z-index: 1000;
-    content: '';
-    display: block;
-    position: fixed;
-    top: 0px;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    width: 300px;
-    height: 70px;
-    background-color: rgba(236, 239, 241, 0.7);
-    border-radius: 5px;
-    box-shadow:1px 1px 8px #202020;
-    margin: auto;
 
-    list-style: none;
-    display: flex;
-    align-items: center;
-}
+@media (min-width: 768px) {
 
-.loading-message {
-    z-index: 1001;
-    width: 17em;
-    text-align: left;
-
-    z-index: 10000;
-    overflow: show;
-    margin: auto;
-    top: 0px;
-    left: 35px;
-    bottom: 0;
-    right: 0;
-
-    display: block;
-    position: relative;
-
-    font-size: 13px;
-
-    white-space: pre-wrap;
-}
-
-.spinner {
-    z-index: 10000;
-    overflow: show;
-
-    display: block;
-    width: 50px;
-    height: 50px;
-    border: 8px solid transparent;
-    border-top-color: rgba(0,0,0,0.3);
-    border-bottom-color: rgba(0,0,0,0.3);
-    border-radius: 50%;
-    position: relative;
-    animation: spinner-rotate 1s linear infinite;
-
-    top: 0;
-    left: -230px;
-    bottom: 0;
-    right: 0;
-    margin: auto;
-
-    display: block;
-    position: fixed;
-}
-
-@keyframes spinner-rotate {
-    0% {
-        transform: rotate(0deg);
+    .loading-modal {
+        z-index: 1000;
+        content: '';
+        display: block;
+        position: fixed;
+        top: 0px;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        width: 300px;
+        height: 70px;
+        background-color: rgba(236, 239, 241, 0.7);
+        border-radius: 5px;
+        box-shadow: 1px 1px 8px #202020;
+        margin: auto;
+        list-style: none;
+        display: flex;
+        align-items: center;
     }
-    100% {
-        transform: rotate(360deg);
+
+    .loading-message {
+        z-index: 1001;
+        width: 17em;
+        text-align: left;
+        z-index: 10000;
+        overflow: show;
+        margin: auto;
+        top: 0px;
+        left: 35px;
+        bottom: 0;
+        right: 0;
+        display: block;
+        position: relative;
+        font-size: 13px;
+        white-space: pre-wrap;
+    }
+
+    .spinner {
+        z-index: 10000;
+        overflow: show;
+        display: block;
+        width: 50px;
+        height: 50px;
+        border: 8px solid transparent;
+        border-top-color: rgba(0, 0, 0, 0.3);
+        border-bottom-color: rgba(0, 0, 0, 0.3);
+        border-radius: 50%;
+        position: relative;
+        animation: spinner-rotate 1s linear infinite;
+        top: 0;
+        left: -230px;
+        bottom: 0;
+        right: 0;
+        margin: auto;
+        display: block;
+        position: fixed;
+    }
+
+    @keyframes spinner-rotate {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
     }
 }
 
+@media (max-width: 768px) {
 
+    .loading-modal {
+        z-index: 1000;
+        content: '';
+        display: block;
+        position: fixed;
+        top: 0px;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        height: 78px;
+        background-color: rgba(236, 239, 241, 0.7);
+        border-radius: 5px;
+        box-shadow: 1px 1px 8px #202020;
+        margin: auto;
+        list-style: none;
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+        cursor: pointer;
+        margin-left: 15px;
+        margin-right: 15px;
+    }
 
+    .loading-message {
+        z-index: 1001;
+        width: 17em;
+        text-align: left;
+        z-index: 10000;
+        overflow: show;
+        top: 0px;
+        left: 80px;
+        bottom: 0;
+        display: block;
+        position: relative;
+        font-size: 13px;
+        white-space: pre-wrap;
+    }
+
+    .spinner {
+        z-index: 10000;
+        overflow: show;
+        display: block;
+        width: 50px;
+        height: 50px;
+        border: 8px solid transparent;
+        border-top-color: rgba(0, 0, 0, 0.3);
+        border-bottom-color: rgba(0, 0, 0, 0.3);
+        border-radius: 50%;
+        position: relative;
+        animation: spinner-rotate 1s linear infinite;
+        left: 28px;
+        bottom: 0;
+        display: block;
+        position: fixed;
+        margin-bottom: 28px;
+    }
+
+    @keyframes spinner-rotate {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+}
 
 .ui-grid-menu {
     font-size: 13px;
@@ -355,11 +416,6 @@
 
 
 
-
-
-
-
-
 .panel table {
     margin-bottom: 0px;
 }
@@ -367,7 +423,6 @@
 button:focus {
     outline:0 !important;
 }
-
 
 
 
@@ -392,12 +447,6 @@ button:focus {
     padding-right: 0 !important;
     margin-right: 0 !important;
 }
-
-/*@media (min-width: 768px) {*/
-    /*.mosaic {*/
-        /*padding-left: 30px !important;*/
-    /*}*/
-/*}*/
 
 .mosaic {
     padding-left: 0 !important;
@@ -524,3 +573,28 @@ button:focus {
     line-height: 90px;
 }
 
+
+#floating-action {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    z-index: 90000;
+    width: 60px;
+    height: 60px;
+    bottom: 20px;
+    right: 20px;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow:2px 2px 8px #808080;
+}
+
+#floating-action-content {
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+    text-align: center;
+    color: white;
+    font-size: 20px;
+}

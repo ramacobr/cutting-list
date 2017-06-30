@@ -36,33 +36,56 @@ app.service('TilingService', function($http, $location, TilingData, DrawService)
         taskId = "" + new Date().getTime() + JSON.stringify(data).hashCode();
         cfg.taskId = taskId;
 
-        $http.post(this.serverBaseUrl + '/compute-tilling', data)
-            .then(function (response) {
-                callback(response.data);
-            }, function(error) {
-                // TODO
-            });
-    };
+
+
+        if (typeof android !== 'undefined') {
+            var response = android.compute(angular.toJson(data));
+            callback(response);
+        } else {
+            $http.post(this.serverBaseUrl + '/compute-tilling', data)
+                .then(function (response) {
+                    callback(response.data);
+                }, function(error) {
+                    // TODO
+                });
+        }
+    }
 
     this.cancelTiling = function(callback) {
-        $http.post(this.serverBaseUrl + '/stop-task/' + taskId)
-            .then(function(response) {
-            }, function(error) {
-                // TODO
-            });
+        if (typeof android !== 'undefined') {
+            android.stopTask(taskId);
+        } else {
+            $http.post(this.serverBaseUrl + '/stop-task/' + taskId)
+                .then(function(response) {
+                }, function(error) {
+                    // TODO
+                });
+        }
     };
 
     this.getTaskStatus = function(callback) {
 
-        $http.get(this.serverBaseUrl + '/task-status/' + taskId)
-            .then(function (response) {
-                callback(response.data);
-                if (response.data.solution) {
-                    TilingData.setData(response.data.solution);
-                }
-            }, function(error) {
-                // TODO
-            });
+        if (typeof android !== 'undefined') {
+            var data = android.getTaskStatus(taskId);
+            data = angular.fromJson(data);
+
+            if (data && data.solution) {
+                TilingData.setData(data.solution);
+
+            }
+
+            return data;
+        } else {
+            $http.get(this.serverBaseUrl + '/task-status/' + taskId)
+                .then(function (response) {
+                    callback(response.data);
+                    if (response.data.solution) {
+                        TilingData.setData(response.data.solution);
+                    }
+                }, function(error) {
+                    // TODO
+                });
+        }
     }
 });
 
@@ -115,7 +138,7 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
     };
 
     $scope.scrollTo = function(id) {
-        $("body").animate({scrollTop: $("#" + id).offset().top - 40}, "slow");
+        $("body").animate({scrollTop: $("#" + id).offset().top - 45}, "slow");
     };
 
     /**
@@ -128,7 +151,7 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
     $scope.isTilesGridVisible = false;
     $scope.isStockGridVisible = false;
 
-    $scope.isBaseOptionsCollapsed = $window.innerWidth < 768? true : false;
+    $scope.isBaseOptionsCollapsed = false;
     $scope.isAdvancedOptionsCollapsed = $window.innerWidth < 768? true : true;
 
     $scope.isTilingInfoVisible = true;
@@ -235,10 +258,6 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
         }
     }, true);
 
-
-
-
-
     function addNewTile() {
         var tileId = -1;
         angular.forEach($scope.tiles, function(tile) {
@@ -255,7 +274,7 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
      * Gets the number of used and valid tiles.
      * @returns {number}
      */
-    function getNbrUsedTiles() {
+    $scope.getNbrUsedTiles = function() {
         var count = 0;
         angular.forEach($scope.tiles, function(tile) {
             if (tile.width && tile.height && tile.count) {
@@ -269,10 +288,10 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
      * Gets the number of used and valid base tiles.
      * @returns {number}
      */
-    function getNbrUsedStockTiles() {
+    $scope.getNbrUsedStockTiles = function() {
         var count = 0;
         angular.forEach($scope.stockTiles, function(tile) {
-            if (tile.width && tile.height) {
+            if (tile.width && tile.height && tile.count) {
                 count++;
             }
         });
@@ -287,22 +306,28 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
     }
 
     if ($scope.stockTiles === null) {
-        $scope.stockTiles = [
-            {width: 600, height: 300, count: 10, enabled: true, isUsed: false},
-            {width: 600, height: 400, count: 10, enabled: true, isUsed: false},
-            {width: 800, height: 300, count: 10, enabled: true, isUsed: false},
-            {width: 800, height: 400, count: 10, enabled: true, isUsed: false},
-            {width: 1200, height: 300, count: 10, enabled: true, isUsed: false},
-            {width: 1200, height: 400, count: 10, enabled: true, isUsed: false},
-            {width: 1200, height: 600, count: 10, enabled: true, isUsed: false},
-            {width: 1200, height: 800, count: 10, enabled: true, isUsed: false},
-            {width: 2440, height: 400, count: 10, enabled: true, isUsed: false},
-            {width: 2440, height: 600, count: 10, enabled: true, isUsed: false},
-            {width: 2440, height: 800, count: 10, enabled: true, isUsed: false},
-            {width: 2440, height: 1222, count: 10, enabled: true, isUsed: false},
-            {width: 2500, height: 1250, count: 10, enabled: true, isUsed: false},
-            {width: null, height: null, count: null, enabled: true, isUsed: false}]; // TODO: How to add a new one?
+        // $scope.stockTiles = [
+        //     {width: 600, height: 300, count: 10, enabled: true, isUsed: false},
+        //     {width: 600, height: 400, count: 10, enabled: true, isUsed: false},
+        //     {width: 800, height: 300, count: 10, enabled: true, isUsed: false},
+        //     {width: 800, height: 400, count: 10, enabled: true, isUsed: false},
+        //     {width: 1200, height: 300, count: 10, enabled: true, isUsed: false},
+        //     {width: 1200, height: 400, count: 10, enabled: true, isUsed: false},
+        //     {width: 1200, height: 600, count: 10, enabled: true, isUsed: false},
+        //     {width: 1200, height: 800, count: 10, enabled: true, isUsed: false},
+        //     {width: 2440, height: 400, count: 10, enabled: true, isUsed: false},
+        //     {width: 2440, height: 600, count: 10, enabled: true, isUsed: false},
+        //     {width: 2440, height: 800, count: 10, enabled: true, isUsed: false},
+        //     {width: 2440, height: 1222, count: 10, enabled: true, isUsed: false},
+        //     {width: 2500, height: 1250, count: 10, enabled: true, isUsed: false},
+        //     {width: null, height: null, count: null, enabled: true, isUsed: false}]; // TODO: How to add a new one?
         //{width: null, height: null, count: null, enabled: true}];
+        $scope.stockTiles = [];
+        addNewStockTile();
+        addNewStockTile();
+        addNewStockTile();
+        addNewStockTile();
+        addNewStockTile();
     }
 
     $scope.sort = function(tiles) {
@@ -509,7 +534,7 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
     };
 
     function validateTilesArray() {
-        if (getNbrUsedTiles() > $scope.tiles.length - 1) {
+        if ($scope.getNbrUsedTiles() > $scope.tiles.length - 1) {
             addNewTile();
         }
 
@@ -525,7 +550,7 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
     }
 
     function validateStockTilesArray() {
-        if (getNbrUsedStockTiles() > $scope.stockTiles.length - 1) {
+        if ($scope.getNbrUsedStockTiles() > $scope.stockTiles.length - 1) {
             addNewStockTile();
         }
 
@@ -592,12 +617,13 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
 
     $scope.cancelTilingRequest = function() {
         $scope.isLoading = false;
-        $scope.invalidData = false;
+        $scope.invalidData = true;
         TilingService.cancelTiling();
     };
 
     function requestTilling() {
         $scope.isLoading = true;
+
 
         TilingService.requestTiling($scope.tiles, $scope.stockTiles, $scope.cfg, function(response) {
             $scope.requestStatus = response;
@@ -605,14 +631,29 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
 
         var scrolled = false;   // Whether already received a solution and scrolled to it. Used to scroll only once.
         var poller = function() {
-            TilingService.getTaskStatus(function(data) {
-                $scope.statusMessage = data.statusMessage;
 
-                if ($scope.statusMessage === 'Finished') {
+            var callback = function(data) {
+
+                if (!data && $scope.requestStatus === 0) {
+                    $timeout(poller, 1000);
+                    return;
+                }
+
+                if (data) {
+                    $scope.statusMessage = data.statusMessage;
+                }
+
+                if ($scope.statusMessage === 'Finished' || $scope.requestStatus !== 0) {
                     $scope.statusMessage = null;
                     $scope.isLoading = false;
+                    $timeout(function() { $scope.invalidData = false; }, 100);
+
 
                     $scope.scrollTo('main-content');
+                }
+
+                if ($scope.statusMessage && $window.innerWidth < 768 && $scope.tiling.getNbrMosaics() > 0) {
+                    $scope.statusMessage = $scope.statusMessage + "\nTap to accept solution";
                 }
 
                 if ($scope.isLoading) {
@@ -629,10 +670,14 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
 
                 if (!data && $scope.isLoading) {
                     console.error("Tried to request status for a server nonexistent task");
-                    $scope.invalidData = false;
                     $scope.isLoading = false;
                 }
-            });
+            };
+
+            var data = TilingService.getTaskStatus(callback);
+            if (typeof android !== 'undefined') {
+                callback(data);
+            }
         };
         $timeout(poller, 1000);
     }
@@ -688,7 +733,7 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
         $window.location.reload(true);
         $location.search('tiles', null);
         $location.search('stockTiles', null);
-    }
+    };
 
 
     if ($location.search().compute) {
@@ -700,6 +745,15 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
         $location.search('stockTiles', angular.toJson($scope.stockTiles));
         $location.search('cfg', angular.toJson($scope.cfg));
         $location.search('compute', true);
+    };
+
+    $scope.showSvg = function() {
+        $scope.statusMessage = null;
+        $scope.isLoading = false;
+
+        if (TilingData.getData().mosaics && TilingData.getData().mosaics.length > 0) {
+            $scope.scrollTo('main-content');
+        }
     }
 });
 

@@ -6,8 +6,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Solution {
+
+    private static final AtomicInteger NEXT_ID = new AtomicInteger(0);
+
+    private final int id;
 
     private int permutationPriority;
 
@@ -27,6 +32,8 @@ public class Solution {
         this.noFitTiles = new ArrayList<>(solution.getNoFitTiles());
 
         this.permutationPriority = solution.permutationPriority;
+
+        this.id = NEXT_ID.getAndIncrement();
     }
 
     public Solution(StockSolution stockSolution) {
@@ -35,6 +42,8 @@ public class Solution {
         for (TileDimensions tileDimensions : stockSolution.getStockTileDimensions()) {
             this.addMosaic(new Mosaic(tileDimensions));
         }
+
+        this.id = NEXT_ID.getAndIncrement();
     }
 
     public Solution(Solution solution, Mosaic excludeMosaic) {
@@ -49,12 +58,14 @@ public class Solution {
         this.noFitTiles = new ArrayList<>(solution.getNoFitTiles());
 
         this.permutationPriority = solution.permutationPriority;
+        this.id = NEXT_ID.getAndIncrement();
     }
 
     public Solution(TileNode baseTile) {
         mosaics = new ArrayList<>();
         noFitTiles = new ArrayList<>();
         mosaics.add(new Mosaic(baseTile));
+        this.id = NEXT_ID.getAndIncrement();
     }
 
     public Solution(TileNode... tileNodes) {
@@ -63,12 +74,14 @@ public class Solution {
         for (TileNode tileNode : tileNodes) {
             this.mosaics.add(new Mosaic(tileNode));
         }
+        this.id = NEXT_ID.getAndIncrement();
     }
 
     public Solution(TileDimensions tileDimensions) {
         mosaics = new ArrayList<>();
         noFitTiles = new ArrayList<>();
         mosaics.add(new Mosaic(tileDimensions));
+        this.id = NEXT_ID.getAndIncrement();
     }
 
     public Solution(TileDimensions... tileDimensionsList) {
@@ -77,6 +90,7 @@ public class Solution {
         for (TileDimensions tileDimensions : tileDimensionsList) {
             this.addMosaic(new Mosaic(tileDimensions));
         }
+        this.id = NEXT_ID.getAndIncrement();
     }
 
     public Solution(List<TileDimensions> tileDimensionsList) {
@@ -85,6 +99,11 @@ public class Solution {
         for (TileDimensions tileDimensions : tileDimensionsList) {
             this.addMosaic(new Mosaic(tileDimensions));
         }
+        this.id = NEXT_ID.getAndIncrement();
+    }
+
+    public int getId() {
+        return id;
     }
 
     public int getPermutationPriority() {

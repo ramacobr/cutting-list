@@ -643,7 +643,7 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
                     $scope.statusMessage = data.statusMessage;
                 }
 
-                if ($scope.statusMessage === 'Finished' || $scope.requestStatus !== 0) {
+                if ($scope.statusMessage === 'Finished' || $scope.requestStatus != 0) {
                     $scope.statusMessage = null;
                     $scope.isLoading = false;
                     $timeout(function() { $scope.invalidData = false; }, 100);
@@ -668,10 +668,11 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
                     }
                 }
 
-                if (!data && $scope.isLoading) {
-                    console.error("Tried to request status for a server nonexistent task");
-                    $scope.isLoading = false;
-                }
+// TODO: Causing problems in android
+//                if (!data && $scope.isLoading) {
+//                    console.error("Tried to request status for a server nonexistent task");
+//                    $scope.isLoading = false;
+//                }
             };
 
             var data = TilingService.getTaskStatus(callback);

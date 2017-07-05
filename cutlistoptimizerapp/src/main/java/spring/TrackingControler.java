@@ -52,6 +52,9 @@ public class TrackingControler {
                 }
 
                 if (trackingDataModel.getCity() != null) {
+                    if (sb.length() != 0) {
+                        sb.append(" ");
+                    }
                     sb.append(trackingDataModel.getCity());
                 }
 

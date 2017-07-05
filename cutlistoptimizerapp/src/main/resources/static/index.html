@@ -93,6 +93,12 @@
     <!--</div>-->
 </div>
 
+<div ng-cloak id="play-floating" class="hidden-xs" ng-show="tiling.getNbrMosaics() === 0 && !isLoading">
+    <a href='https://play.google.com/store/apps/details?id=com.cutlistoptimizer&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'>
+        <img style="" height="70" alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png'/>
+    </a>
+</div>
+
 
 <div ng-cloak class="navbar navbar-default navbar-fixed-top hidden-print">
     <div class="navbar-header navbar-brand" style="float: left;" href="#"><i class="material-icons navbar-logo">dashboard</i><div style="float: right;">&nbsp;&nbsp;{{ 'TITLE' | translate }}</div></div>
@@ -107,6 +113,10 @@
 
     <div class="navbar-header pull-right">
 
+        <!--<a class="hidden-xs" href='https://play.google.com/store/apps/details?id=com.cutlistoptimizer&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img style="margin-top: -7px; margin-bottom: -13px" height="52" alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png'/></a>-->
+
+
+
         <button class="btn btn-top button-default hidden-xs" ng-click="print()" data-toggle="tooltip" data-placement="top" title="Ocultar detalhes" href="#"><i class="material-icons md-center hidden-xs">print</i></span></button>
 
         <button class="btn btn-top button-default hidden-xs" ng-click="zoomIn()" data-toggle="tooltip" data-placement="top" title="Zoom Out" href="#"><i class="material-icons md-center hidden-xs">zoom_in</i></span></button>
@@ -118,7 +128,7 @@
         <button ng-hide="isTilingInfoVisible" style="margin-right: 7px" class="btn btn-top button-default hidden-xs" ng-click="toggleIsTilingInfoVisible()" data-toggle="tooltip" data-placement="top" title="Mostrar detalhes" href="#"><i class="material-icons md-center hidden-xs">chrome_reader_mode</i></span></button>
         <button ng-show="isTilingInfoVisible" style="margin-right: 7px" class="btn btn-top button-enabled hidden-xs" ng-click="toggleIsTilingInfoVisible()" data-toggle="tooltip" data-placement="top" title="Ocultar detalhes" href="#"><i class="material-icons md-center hidden-xs">chrome_reader_mode</i></span></button>
 
-        <button type="button" style="color: white" class="btn btn-top dropdown-toggle btn-transparent" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <button type="button" style="color: white; padding-right: 15px" class="btn btn-top dropdown-toggle btn-transparent" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <i class="material-icons md-center md-28">menu</i>
         </button>
         <ul class="dropdown-menu">
@@ -172,7 +182,7 @@
                 {{ 'OPTIONS' | translate }}
             </div>
             <div class="hidden-print col-xs-12" style="padding-right: 25px" collapse="isBaseOptionsCollapsed">
-                <div class="form-horizontal top-buffer">
+                <div class="form-horizontal" style="padding-top: 8px">
                     <div class="form-group">
                         <span class="control-label col-xs-9">{{ 'CUT_THICKNESS' | translate }}</span>
                         <div class="col-xs-3">

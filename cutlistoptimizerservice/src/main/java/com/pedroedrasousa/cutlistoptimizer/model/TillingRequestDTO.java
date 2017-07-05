@@ -34,6 +34,28 @@ public class TillingRequestDTO {
         this.configuration = configuration;
     }
 
+    public String tilesToString() {
+        StringBuilder sb = new StringBuilder();
+        for (TileInfoDTO tile : tiles) {
+            if (tile.getCount() > 0) {
+                sb.append(" " + tile.toString());
+            }
+        }
+
+        return sb.toString();
+    }
+
+    public String baseTilesToString() {
+        StringBuilder sb = new StringBuilder();
+        for (TileInfoDTO tile : baseTiles) {
+            if (tile.getCount() > 0) {
+                sb.append(" " + tile.toString());
+            }
+        }
+
+        return sb.toString();
+    }
+
     public static class TileInfoDTO {
 
         private int id;
@@ -86,6 +108,11 @@ public class TillingRequestDTO {
 
         public void setEnabled(boolean enabled) {
             this.enabled = enabled;
+        }
+
+        @Override
+        public String toString() {
+            return id + "[" + width + "x" + height + "]x" + count + (enabled ? "" : "-disabled");
         }
     }
 }

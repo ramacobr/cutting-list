@@ -1,10 +1,14 @@
 package com.pedroedrasousa.cutlistoptimizer;
 
 import com.pedroedrasousa.cutlistoptimizer.model.TileDimensions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
 public class StockPanelPickerImpl implements StockPanelPicker {
+
+    private final static Logger logger = LoggerFactory.getLogger(StockPanelPickerImpl.class);
 
     private static final StockPanelPicker instance = new StockPanelPickerImpl();
 
@@ -91,7 +95,7 @@ public class StockPanelPickerImpl implements StockPanelPicker {
             }
         }
 
-        if (indexToIterate < nbrTiles - 1) {
+        if (indexToIterate < nbrTiles - 1 && indexToIterate != 0) {
             int prevWidth = 0;
             int prevHeight = 0;
             for (int j = 0; j < stockTiles.size(); ) {

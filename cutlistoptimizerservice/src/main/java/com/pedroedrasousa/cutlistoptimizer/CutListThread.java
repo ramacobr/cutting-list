@@ -264,9 +264,19 @@ public class CutListThread implements Runnable {
 
         RunningTasks.Task task = runningTasks.getTask(cfg.getTaskId());
         if (task != null) {
+
+            // Remove unused panels from the final solution
+            Iterator<Mosaic> iterator = allSolutions.get(0).getMosaics().iterator();
+            while (iterator.hasNext()) {
+                Mosaic mosaic = iterator.next();
+                if (mosaic.getUsedArea() == 0) {
+                    iterator.remove();
+                }
+            }
+
             task.setSolution((new TilingResponseDTOBuilder()).setSolutions(allSolutions.get(0)).setInfo(null).build());
             task.decrementRunningThreads();
-            task.setStatusMessage("Searching for best solution...\nIteration " + (task.getNbrTotalThreads() - task.getRunningThreads()) + " of " + task.getNbrTotalThreads());
+            task.setStatusMessage("Searching for best solution...\nIteration " + permutationId + " on stock " + stockSolution);
         } else {
             //logger.info("Task[{}] permutation[{}] Task was deliberately stopped", cfg.getTaskId(), permutationId);
             return;

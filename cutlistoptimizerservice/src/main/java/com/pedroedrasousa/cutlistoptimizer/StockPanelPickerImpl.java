@@ -95,7 +95,7 @@ public class StockPanelPickerImpl implements StockPanelPicker {
             }
         }
 
-        if (indexToIterate < nbrTiles - 1 && indexToIterate != 0) {
+        if (indexToIterate < nbrTiles - 1) {
             int prevWidth = 0;
             int prevHeight = 0;
             for (int j = 0; j < stockTiles.size(); ) {
@@ -109,8 +109,7 @@ public class StockPanelPickerImpl implements StockPanelPicker {
                 do {
                     j++;
                 } while (j < stockTiles.size()
-                        && ((prevWidth == stockTiles.get(j).getWidth() && prevHeight == stockTiles.get(j).getHeight())  // Must have different dimensions than the previous one
-                        || stockTiles.get(j).getHeight() < smallestTilleArea));                                         // Must fit the smallest tile
+                        && stockTiles.get(j).getArea() < smallestTilleArea); // Must fit the smallest tile
 
                 if (j < stockTiles.size()) {
                     prevWidth = stockTiles.get(j).getWidth();

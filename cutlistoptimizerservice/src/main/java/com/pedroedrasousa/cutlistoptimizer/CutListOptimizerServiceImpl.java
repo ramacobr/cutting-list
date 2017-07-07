@@ -1,9 +1,6 @@
 package com.pedroedrasousa.cutlistoptimizer;
 
-import com.pedroedrasousa.cutlistoptimizer.model.TileDimensions;
-import com.pedroedrasousa.cutlistoptimizer.model.Configuration;
-import com.pedroedrasousa.cutlistoptimizer.model.GroupedTileDimensions;
-import com.pedroedrasousa.cutlistoptimizer.model.Solution;
+import com.pedroedrasousa.cutlistoptimizer.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -364,6 +361,7 @@ public class CutListOptimizerServiceImpl implements CutListOptimizerService {
 
             // Iterate through all permutations
             int nbrTotalThreads = 0;
+
             permutationIndex = -1;
             for (List<TileDimensions> tilesPermutation : tilesPermutations) {
                 permutationIndex++;
@@ -381,7 +379,7 @@ public class CutListOptimizerServiceImpl implements CutListOptimizerService {
 
                     CutListThread cutListThread = new CutListThread();
                     cutListThread.setRunningTasks(runningTasks);
-                    cutListThread.setPermutationId((permutationIndex + 1) + "/" + tilesPermutations.size());
+                    cutListThread.setPermutationId((permutationIndex + 1) + " / " + tilesPermutations.size());
                     cutListThread.setAllSolutions(allSolutions);
                     cutListThread.setTiles(tilesPermutation);
                     cutListThread.setCfg(cfg);
@@ -396,7 +394,6 @@ public class CutListOptimizerServiceImpl implements CutListOptimizerService {
                     }
                 }
             }
-
 
             for (;;) {
 //                    System.out.println("Active Threads : " + taskExecutor.getActiveCount());
@@ -433,6 +430,7 @@ public class CutListOptimizerServiceImpl implements CutListOptimizerService {
 
 
         allSolutions.get(0).setElapsedTime(elapsedTime);
+
 
 
 

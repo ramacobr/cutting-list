@@ -138,7 +138,8 @@ public class Solution {
     }
 
     public final List<Mosaic> getMosaics() {
-        return Collections.unmodifiableList(mosaics);
+        //return Collections.unmodifiableList(mosaics); TODO: ???
+        return mosaics;
     }
 
     public void removeMosaic(Mosaic mosaic) {

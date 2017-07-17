@@ -2,11 +2,11 @@ app.factory('DrawService', function(TilingData, $window) {
 
     var isSvgPannable = true;
 
-    function toggleIsSvgPannable() {
+    var toggleIsSvgPannable = function() {
         isSvgPannable = !isSvgPannable;
         init();
         renderTiles();
-    }
+    };
 
     function getIsSvgPannable() {
         return isSvgPannable;
@@ -41,6 +41,9 @@ app.factory('DrawService', function(TilingData, $window) {
     var data = {ratio: 1, zoom: 1};
 
     var svgContainer;
+
+    var innerFontSize = 10;
+
 
     isHorizontal = function(obj) {
         return (obj.x2 - obj.x1) > (obj.y2 - obj.y1);
@@ -85,12 +88,12 @@ app.factory('DrawService', function(TilingData, $window) {
     }
 
     function generateGradients() {
-        // generateGradient("gradient", "#bd1e24", 0.1, 0.3);
-        // generateGradient("gradient2", "#e97600", 0.1, 0.3);
-        // generateGradient("gradient3", "#f6c700", 0.1, 0.3);
-        // generateGradient("gradient4", "#007256", 0.1, 0.3);
-        // generateGradient("gradient5", "#0067a7", 0.1, 0.3);
-        // generateGradient("gradient6", "#964f8e", 0.1, 0.3);
+         // generateGradient("gradient", "#bd1e24", 0.1, 0.3);
+         // generateGradient("gradient2", "#e97600", 0.1, 0.3);
+         // generateGradient("gradient3", "#f6c700", 0.1, 0.3);
+         // generateGradient("gradient4", "#007256", 0.1, 0.3);
+         // generateGradient("gradient5", "#0067a7", 0.1, 0.3);
+         // generateGradient("gradient6", "#964f8e", 0.1, 0.3);
 
         generateGradient("gradient", "#004B7A", 0.1, 0.25);
         generateGradient("gradient1", "#8A161B", 0.1, 0.25);
@@ -103,6 +106,9 @@ app.factory('DrawService', function(TilingData, $window) {
 
 
     function init() {
+
+        // Reset zoom
+        zoom = 1;
 
         // Get div element
         var div = document.getElementById("svg-canvas");
@@ -126,7 +132,11 @@ app.factory('DrawService', function(TilingData, $window) {
         var ratioV = data.zoom * ($window.innerHeight / (tilesHeight * 1.35));
 
         // Consider the smallest ratio to fit the mosaics
-        data.ratio = Math.min(ratioH, ratioV);
+        //data.ratio = Math.min(ratioH, ratioV);
+        data.ratio = ratioH;
+
+        // Cap ration at 0.5
+        //data.ratio = Math.max(data.ratio, 0.5);
 
         // Find offset
         var canvasHeight = 0;
@@ -155,9 +165,15 @@ app.factory('DrawService', function(TilingData, $window) {
             .attr("height", canvasHeight)
             .append("g");
 
-        if ($window.innerWidth >= 768 && isSvgPannable) {    // To avoid dragging in mobile
+        if (/*$window.innerWidth >= 768 &&*/ isSvgPannable) {    // To avoid dragging in mobile
             svgContainer2.call(d3.zoom().on("zoom", function () {
                 svgContainer.attr("transform", d3.event.transform);
+                zoom = d3.event.transform.k;
+                cleanTmpSvgOverlayElems();
+                drawBaseDimensions();
+                removeDimensions();
+                showDimensions();
+                //console.log(d3.event.transform.k);
             }));
         }
 
@@ -170,7 +186,11 @@ app.factory('DrawService', function(TilingData, $window) {
             data.ratio *= 0.97;
         }
 
+        // Apply margins
         svgContainer = svgContainer2.attr("transform", "translate(" + xTranslation + ", 25)").append("g");
+
+        // White background
+        svgContainer.append("rect").attr("x", -xTranslation).attr("y", -25).attr("width", "100%").attr("height", "100%").attr("fill", "white");
 
         generateGradients();
     }
@@ -243,6 +263,7 @@ app.factory('DrawService', function(TilingData, $window) {
             .attr("y", mosaic.yOffset)
             .attr("width", mosaic.base.width * data.ratio)
             .attr("height", mosaic.base.height * data.ratio)
+            .attr("vector-effect", "non-scaling-stroke")
             .style("stroke", "black")
             .style("stroke-width", "2")
             .classed('background', true)
@@ -269,6 +290,7 @@ app.factory('DrawService', function(TilingData, $window) {
                 .attr("height", tile.height * data.ratio)
                 .style("stroke", "#bbb")
                 .style("stroke-width", "1")
+                .attr("vector-effect", "non-scaling-stroke")
                 .attr('fill', "#f5f5f5")
                 .classed('background', true)
                 .on("mouseover", function () {
@@ -306,6 +328,7 @@ app.factory('DrawService', function(TilingData, $window) {
                     .attr("y", getTileY2(mosaic.base.height, tile.y + tile.height) + mosaic.yOffset)
                     .attr("width", tile.width * data.ratio)
                     .attr("height", tile.height * data.ratio)
+                    .attr("vector-effect", "non-scaling-stroke")
                     .style("stroke", "#000")
                     .style("stroke-width", "1")
                     .classed('background', true)
@@ -368,12 +391,6 @@ app.factory('DrawService', function(TilingData, $window) {
 
     function toggleFontSize() {
 
-        if (fontType === 1) {
-            fontType = 2;
-        } else {
-            fontType = 1;
-        }
-
         cleanTmpSvgOverlayElems();
         drawBaseDimensions();
         removeDimensions();
@@ -391,10 +408,9 @@ app.factory('DrawService', function(TilingData, $window) {
                 // Only render dimensions text if tile is big enough
                 if (tile.width * data.ratio > 20 && tile.height * data.ratio > 20) {
 
-                    var textMargin;
-
-                        textMargin = 10;
-                        fontSize = "9px";
+                    // Text size and margin varies inversely as zoom
+                    var textMargin = 10 * (1 / zoom);
+                    var fontSize = innerFontSize * (1 / zoom) + "px";
 
                     var textWidth = svgContainer.append("text")
                         .attr("x", (tile.x + tile.width / 2) * data.ratio)
@@ -440,8 +456,9 @@ app.factory('DrawService', function(TilingData, $window) {
 
         var textMargin;
 
-            textMargin = 12;
-            fontSize = "12px";
+        // Text size and margin varies inversely as zoom
+        var textMargin = 12 * (1 / zoom);
+        var fontSize = 12 * (1 / zoom) + "px";
 
         svgElement = svgContainer.append("line")
             .style("stroke", color1)
@@ -489,8 +506,9 @@ app.factory('DrawService', function(TilingData, $window) {
 
         var textMargin;
 
-            textMargin = 12;
-            fontSize = "12px";
+        // Text size and margin varies inversely as zoom
+        var textMargin = 12 * (1 / zoom);
+        var fontSize = 12 * (1 / zoom) + "px";
 
         svgElement = svgContainer.append("line")
             .style("stroke", color1)
@@ -571,6 +589,7 @@ app.factory('DrawService', function(TilingData, $window) {
             .attr("y", getTileY2(mosaic.base.height, result.y + result.height) + mosaic.yOffset)
             .attr("width", result.width * data.ratio)
             .attr("height", result.height * data.ratio)
+            .attr("vector-effect", "non-scaling-stroke")
             .style("stroke", "black")
             .style("stroke-width", "3")
             .attr('fill-opacity', "0.6")
@@ -585,6 +604,7 @@ app.factory('DrawService', function(TilingData, $window) {
                 .attr("y", getTileY2(mosaic.base.height, child1.y + child1.height) + mosaic.yOffset)
                 .attr("width", child1.width * data.ratio)
                 .attr("height", child1.height * data.ratio)
+                .attr("vector-effect", "non-scaling-stroke")
                 .style("stroke", "black");
             // .style("stroke-width", "3")
             // .attr('fill-opacity', "0.7")
@@ -645,6 +665,7 @@ app.factory('DrawService', function(TilingData, $window) {
                     .attr("y", getTileY2(mosaic.base.height, tile.y + tile.height) + mosaic.yOffset)
                     .attr("width", tile.width * data.ratio)
                     .attr("height", tile.height * data.ratio)
+                    .attr("vector-effect", "non-scaling-stroke")
                     .style("stroke", "#d9534f")
                     .style("stroke-width", "2")
                     .classed('background', true)

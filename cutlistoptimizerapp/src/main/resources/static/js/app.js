@@ -545,6 +545,7 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
         $scope.tiles.forEach(function(tile) {
             if (tile.width && tile.height && !tile.count) {
                 tile.count = 1;
+                tile.isInvalid = false;
             }
         });
     }
@@ -561,6 +562,7 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
         $scope.stockTiles.forEach(function(tile) {
             if (tile.width && tile.height && tile.count === null) {
                 tile.count = 1;
+                tile.isInvalid = false;
             }
         });
     }
@@ -622,6 +624,29 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
     };
 
     function requestTilling() {
+
+
+        if ($scope.getNbrUsedTiles() === 0) {
+            $scope.isGridReloding = true;
+            $scope.tiles[0].isInvalid = true;
+
+
+            $timeout(function () {
+                $scope.isGridReloding = false;
+            }, 0);
+        }
+
+        if ($scope.getNbrUsedStockTiles() === 0) {
+            $scope.isGridReloding = true;
+            $scope.stockTiles[0].isInvalid = true;
+
+
+            $timeout(function () {
+                $scope.isGridReloding = false;
+            }, 0);
+        }
+
+
         $scope.isLoading = true;
 
 
@@ -755,7 +780,75 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
         if (TilingData.getData().mosaics && TilingData.getData().mosaics.length > 0) {
             $scope.scrollTo('main-content');
         }
-    }
+    };
+
+    $scope.generatePdf = function() {
+
+        if (!$scope.tiling.getNbrMosaics()) {
+            if (typeof android !== 'undefined') {
+                android.showToast("No data");
+            } else {
+                // TODO
+            }
+            return;
+        }
+
+        if (typeof android !== 'undefined') {
+            android.showToast("Creating PDF file...");
+        }
+
+        window.scrollTo(0, 0);
+        document.getElementById('pdf-info').style.display = 'block';
+        var elemWidth = document.getElementById('pdf-info').offsetWidth;
+        var elemHeight = document.getElementById('pdf-info').offsetHeight;
+
+        // Get svg markup as string
+        var svg = document.getElementById('svg-canvas').innerHTML;
+
+        if (svg) {
+            svg = svg.replace(/\r?\n|\r/g, '').trim();
+        }
+
+        var canvas = document.createElement('canvas');
+        var context = canvas.getContext('2d');
+        canvg(canvas, svg);
+
+
+        var imgData = canvas.toDataURL('image/jpeg');
+
+        // Generate PDF
+        var doc = new jsPDF('p', 'pt', 'a4');
+        var width = doc.internal.pageSize.width;
+        var height = doc.internal.pageSize.height;
+
+
+        doc.addImage(imgData, 'JPEG', 25, 25, width-225, 0);
+
+        var canvas123 = html2canvas(document.getElementById('pdf-info'), {background:'#fff',
+            onrendered: function(canvas) {
+                var imgData2 = canvas.toDataURL('image/jpeg');
+                doc.addImage(imgData2, 'JPEG', width-200, 25, 200, elemHeight * 200 / elemWidth);
+
+                if (typeof android !== 'undefined') {
+                    var pdfData = doc.output('dataurlstring');
+                    android.savePdf(pdfData);
+                } else {
+                    var today = new Date();
+                    var filename = 'cutlist-optimizer_';
+                    filename += today.getFullYear().toString();
+                    filename += '-' + ("0" + (today.getMonth()+1).toString()).slice(-2);
+                    filename += '-' + ("0" + today.getDate().toString()).slice(-2);
+                    filename += '_' + ("0" + today.getHours().toString()).slice(-2);
+                    filename += '-' + ("0" + today.getMinutes().toString()).slice(-2);
+                    filename += '-' + ("0" + today.getSeconds().toString()).slice(-2);
+                    filename += '.pdf';
+                    doc.save(filename);
+                }
+            }
+        });
+
+        document.getElementById( 'pdf-info' ).style.display = 'none';
+    };
 });
 
 String.prototype.hashCode = function() {

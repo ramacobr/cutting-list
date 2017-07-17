@@ -31,6 +31,16 @@
     <!--<script data-require="ui-bootstrap@*" data-semver="0.12.0" src="https://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.12.0.min.js"></script>-->
     <script data-require="ui-bootstrap@*" data-semver="0.12.0" src="js/ui-bootstrap-tpls-0.12.0.min.js"></script>
 
+    <script type="text/javascript" src="http://canvg.github.io/canvg/rgbcolor.js"></script>
+    <script type="text/javascript" src="http://canvg.github.io/canvg/StackBlur.js"></script>
+    <script type="text/javascript" src="http://canvg.github.io/canvg/canvg.js"></script>
+    <script type="text/javascript" src="js/html2canvas.min.js"></script>
+
+    <!--<script src="https://cdn.rawgit.com/canvg/canvg/master/canvg.min.js"></script>-->
+    <!--<script src="https://cdn.rawgit.com/canvg/canvg/master/StackBlur.js"></script>-->
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jspdf/0.9.0rc1/jspdf.min.js"></script>
+    <!--<script src="https://cdn.rawgit.com/canvg/canvg/master/rgbcolor.js"></script>-->
+
     <!--<script src="https://d3js.org/d3.v4.min.js"></script>-->
     <script src="d3/d3.min.js"></script>
 
@@ -116,9 +126,10 @@
 
         <!--<a class="hidden-xs" href='https://play.google.com/store/apps/details?id=com.cutlistoptimizer&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img style="margin-top: -7px; margin-bottom: -13px" height="52" alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png'/></a>-->
 
+        <button class="btn btn-top button-default hidden-xs" ng-click="generatePdf()" data-toggle="tooltip" data-placement="top" title="Ocultar detalhes" href="#"><i class="material-icons md-center">picture_as_pdf</i></span></button>
 
 
-        <button class="btn btn-top button-default hidden-xs" ng-click="print()" data-toggle="tooltip" data-placement="top" title="Ocultar detalhes" href="#"><i class="material-icons md-center hidden-xs">print</i></span></button>
+        <!--<button class="btn btn-top button-default hidden-xs" ng-click="print()" data-toggle="tooltip" data-placement="top" title="Ocultar detalhes" href="#"><i class="material-icons md-center hidden-xs">print</i></span></button>-->
 
         <button class="btn btn-top button-default hidden-xs" ng-click="zoomIn()" data-toggle="tooltip" data-placement="top" title="Zoom Out" href="#"><i class="material-icons md-center hidden-xs">zoom_in</i></span></button>
         <button class="btn btn-top button-default hidden-xs" ng-click="zoomOut()" data-toggle="tooltip" data-placement="top" title="Zoom Out" href="#"><i class="material-icons md-center hidden-xs">zoom_out</i></span></button>
@@ -128,6 +139,11 @@
 
         <button ng-hide="isTilingInfoVisible" style="margin-right: 7px" class="btn btn-top button-default hidden-xs" ng-click="toggleIsTilingInfoVisible()" data-toggle="tooltip" data-placement="top" title="Mostrar detalhes" href="#"><i class="material-icons md-center hidden-xs">chrome_reader_mode</i></span></button>
         <button ng-show="isTilingInfoVisible" style="margin-right: 7px" class="btn btn-top button-enabled hidden-xs" ng-click="toggleIsTilingInfoVisible()" data-toggle="tooltip" data-placement="top" title="Ocultar detalhes" href="#"><i class="material-icons md-center hidden-xs">chrome_reader_mode</i></span></button>
+
+
+
+        <button type="button" style="color: white;" class="btn btn-transparent hidden-lg hidden-md hidden-sm" ng-click="generatePdf()" data-toggle="tooltip" data-placement="top" title="Ocultar detalhes" href="#"><i class="material-icons md-center">picture_as_pdf</i></span></button>
+
 
         <button type="button" style="color: white; padding-right: 15px" class="btn btn-top dropdown-toggle btn-transparent" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <i class="material-icons md-center md-28">menu</i>
@@ -343,7 +359,7 @@
                         </div>
                     </div>
 
-                    <div ng-show="tiling.getNbrCuts() > 0">
+                    <div id="cuts" ng-show="tiling.getNbrCuts() > 0">
                         <div class="panel-group" id="accordion">
                             <div class="panel panel-default">
                                 <div class="panel-heading">
@@ -390,7 +406,63 @@
 
     </div>
 
-</div>
+
+
+
+    <div id="pdf-info" style="display: none; background-color:#ffffff; width: 500px; max-width: 500px; padding: 50px 100px 0px 50px; font-size: 20px; font-family: Arial, Helvetica, sans-serif;">
+        <div ng-repeat="mosaic in tiling.getMosaics() track by $index">
+            <table class="table pdf-table">
+                <tbody>
+                <tr style="background-color: #ddd">
+                    <th>{{('PANEL' | translate) + ' ' + ($index + 1) + '/' + tiling.getNbrMosaics()}}</th>
+                    <th ng-bind="mosaic.base.width + 'x' + mosaic.base.height"></th>
+                </tr>
+                <tr>
+                    <th>{{ 'USED_AREA' | translate }}</th>
+                    <td ng-bind="Math.round(mosaic.usedAreaRatio * 100) + '%'"></td>
+                </tr>
+                <tr>
+                    <th>{{ 'WASTED_AREA' | translate }}</th>
+                    <td ng-bind="mosaic.unusedArea"></td>
+                </tr>
+                <tr>
+                    <th>{{ 'PANELS' | translate }}</th>
+                    <td ng-bind="mosaic.nbrHorizontal + mosaic.nbrVertical"></td>
+                </tr>
+                <tr>
+                    <th>{{ 'WASTED_PANELS' | translate }}</th>
+                    <td ng-bind="mosaic.nbrWasted"></td>
+                </tr>
+                <tr>
+                    <th>{{ 'CUTS' | translate }}</th>
+                    <td ng-bind="mosaic.cuts.length"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!--<div ng-show="tiling.getNbrCuts() > 0">-->
+            <!--<h2>{{ 'CUTS' | translate }}</h2>-->
+            <!--<table id="pdf-cut-table" class="table pdf-table">-->
+                <!--<thead>-->
+                    <!--<tr>-->
+                        <!--<th> </th>-->
+                        <!--<th>{{ 'PANEL' | translate }}</th>-->
+                        <!--<th>{{ 'CUT' | translate }}</th>-->
+                        <!--<th>{{ 'DIM' | translate }}</th>-->
+                    <!--</tr>-->
+                <!--</thead>-->
+                <!--<tbody ng-repeat="mosaic in tiling.getMosaics() track by $index" style="font-size: 13px;">-->
+                    <!--<tr ng-repeat="cut in tiling.getCuts($index) track by $index" ng-mouseover="drawService.drawCut(mosaic, cut)" ng-mouseleave="drawService.resetSvgOverlayElems()">-->
+                        <!--<th ng-bind="$index + 1"></th>-->
+                        <!--<td ><span ng-bind="cut.originalWidth"></span><span class="math">&#215;</span><span ng-bind="cut.originalHeight"></span></td>-->
+                        <!--<td><span class="math" ng-bind="cut.isHorizontal ? 'x=' : 'y='"></span><span ng-bind="cut.cutCoords"></span></td>-->
+                        <!--<td ng-bind="Math.max(cut.x2 - cut.x1, cut.y2 - cut.y1)"></td>-->
+                    <!--</tr>-->
+                <!--</tbody>-->
+            <!--</table>-->
+        <!--</div>-->
+    </div>
 
 </body>
 </html>

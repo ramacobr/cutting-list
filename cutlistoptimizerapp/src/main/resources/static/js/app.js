@@ -857,6 +857,8 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
             android.showToast("Creating PDF file...");
         }
 
+        DrawService.reset();
+
         window.scrollTo(0, 0);
         document.getElementById('pdf-info').style.display = 'block';
         var elemWidth = document.getElementById('pdf-info').offsetWidth;

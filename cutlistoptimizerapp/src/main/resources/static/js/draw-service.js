@@ -1,4 +1,4 @@
-app.factory('DrawService', function(TilingData, $window) {
+app.factory('DrawService', function(TilingData, $window, $timeout) {
 
     var isSvgPannable = true;
 
@@ -29,6 +29,8 @@ app.factory('DrawService', function(TilingData, $window) {
 
 
     var zoom = 1;
+
+    var isPannedOrZoomed;
 
     var dimensionsOffset = 15;
 
@@ -104,11 +106,17 @@ app.factory('DrawService', function(TilingData, $window) {
     }
 
 
+    function reset() {
+        init();
+        renderTiles();
+    }
+
 
     function init() {
 
         // Reset zoom
         zoom = 1;
+        isPannedOrZoomed = false;
 
         // Get div element
         var div = document.getElementById("svg-canvas");
@@ -167,6 +175,11 @@ app.factory('DrawService', function(TilingData, $window) {
 
         if (/*$window.innerWidth >= 768 &&*/ isSvgPannable) {    // To avoid dragging in mobile
             svgContainer2.call(d3.zoom().on("zoom", function () {
+
+                $timeout(function() {
+                    isPannedOrZoomed = true;
+                });
+
                 svgContainer.attr("transform", d3.event.transform);
                 zoom = d3.event.transform.k;
                 cleanTmpSvgOverlayElems();
@@ -697,11 +710,15 @@ app.factory('DrawService', function(TilingData, $window) {
     }
 
     function setZoom(zoom) {
-        data.zoom = zoom;
+        zoom = zoom;
     }
 
     function getZoom() {
-        return data.zoom;
+        return zoom;
+    }
+
+    function isPannedOrZoomed_() {
+        return isPannedOrZoomed;
     }
 
     return {
@@ -713,6 +730,7 @@ app.factory('DrawService', function(TilingData, $window) {
 
         getZoom: getZoom,
         setZoom: setZoom,
+        isPannedOrZoomed: isPannedOrZoomed_,
         renderTiles: renderTiles,
         drawBaseTile: drawBaseTile,
         showDimensions: showDimensions,
@@ -726,6 +744,7 @@ app.factory('DrawService', function(TilingData, $window) {
         resetSvgOverlayElems: resetSvgOverlayElems,
         highlightTiles: highlightTiles,
         init: init,
+        reset: reset,
         drawCut: drawCut,
         toggleFontSize: toggleFontSize
     }

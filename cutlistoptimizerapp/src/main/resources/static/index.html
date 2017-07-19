@@ -126,22 +126,26 @@
 
         <!--<a class="hidden-xs" href='https://play.google.com/store/apps/details?id=com.cutlistoptimizer&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img style="margin-top: -7px; margin-bottom: -13px" height="52" alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png'/></a>-->
 
-        <button class="btn btn-top button-default hidden-xs" ng-click="generatePdf()" data-toggle="tooltip" data-placement="top" title="Ocultar detalhes" href="#"><i class="material-icons md-center">picture_as_pdf</i></span></button>
+
 
 
         <!--<button class="btn btn-top button-default hidden-xs" ng-click="print()" data-toggle="tooltip" data-placement="top" title="Ocultar detalhes" href="#"><i class="material-icons md-center hidden-xs">print</i></span></button>-->
 
-        <button class="btn btn-top button-default hidden-xs" ng-click="zoomIn()" data-toggle="tooltip" data-placement="top" title="Zoom Out" href="#"><i class="material-icons md-center hidden-xs">zoom_in</i></span></button>
-        <button class="btn btn-top button-default hidden-xs" ng-click="zoomOut()" data-toggle="tooltip" data-placement="top" title="Zoom Out" href="#"><i class="material-icons md-center hidden-xs">zoom_out</i></span></button>
+        <!--<button class="btn btn-top button-default hidden-xs" ng-click="zoomIn()" data-toggle="tooltip" data-placement="top" title="Zoom Out" href="#"><i class="material-icons md-center hidden-xs">zoom_in</i></span></button>-->
+        <!--<button class="btn btn-top button-default hidden-xs" ng-click="zoomOut()" data-toggle="tooltip" data-placement="top" title="Zoom Out" href="#"><i class="material-icons md-center hidden-xs">zoom_out</i></span></button>-->
 
         <button ng-hide="drawService.getIsSvgPannable()" class="btn btn-top button-default hidden-xs" ng-click="drawService.toggleIsSvgPannable()" data-toggle="tooltip" data-placement="top" title="Mostrar dimensões" href="#"><i class="material-icons md-center hidden-xs">open_with</i></span></button>
         <button ng-show="drawService.getIsSvgPannable()" class="btn btn-top button-enabled hidden-xs" ng-click="drawService.toggleIsSvgPannable()" data-toggle="tooltip" data-placement="top" title="Ocultar dimensões" href="#"><i class="material-icons md-center hidden-xs">open_with</i></span></button>
 
+        <button ng-disabled="!drawService.isPannedOrZoomed()" class="btn btn-top button-default hidden-xs" ng-click="drawService.reset()" data-toggle="tooltip" data-placement="top" title="Mostrar dimensões" href="#"><i class="material-icons md-center hidden-xs">zoom_out_map</i></span></button>
+        <!--<button ng-show="drawService.isPannedOrZoomed()" class="btn btn-top button-enabled hidden-xs" ng-click="drawService.reset()" data-toggle="tooltip" data-placement="top" title="Ocultar dimensões" href="#"><i class="material-icons md-center hidden-xs">zoom_out_map</i></span></button>-->
+
         <button ng-hide="isTilingInfoVisible" style="margin-right: 7px" class="btn btn-top button-default hidden-xs" ng-click="toggleIsTilingInfoVisible()" data-toggle="tooltip" data-placement="top" title="Mostrar detalhes" href="#"><i class="material-icons md-center hidden-xs">chrome_reader_mode</i></span></button>
         <button ng-show="isTilingInfoVisible" style="margin-right: 7px" class="btn btn-top button-enabled hidden-xs" ng-click="toggleIsTilingInfoVisible()" data-toggle="tooltip" data-placement="top" title="Ocultar detalhes" href="#"><i class="material-icons md-center hidden-xs">chrome_reader_mode</i></span></button>
 
+        <button class="btn btn-top button-default hidden-xs" ng-click="generatePdf()" data-toggle="tooltip" data-placement="top" title="Ocultar detalhes" href="#"><i class="material-icons md-center">picture_as_pdf</i></span></button>
 
-
+        <button ng-disabled="!drawService.isPannedOrZoomed()" type="button" style="color: white;" class="btn btn-transparent hidden-lg hidden-md hidden-sm" ng-click="drawService.reset()" data-toggle="tooltip" data-placement="top" title="Ocultar detalhes" href="#"><i class="material-icons md-center">zoom_out_map</i></span></button>
         <button type="button" style="color: white;" class="btn btn-transparent hidden-lg hidden-md hidden-sm" ng-click="generatePdf()" data-toggle="tooltip" data-placement="top" title="Ocultar detalhes" href="#"><i class="material-icons md-center">picture_as_pdf</i></span></button>
 
 
@@ -265,11 +269,15 @@
 
         <div id="main-content" class="col-sm-9">
 
-            <div ng-show="requestStatus == 1" class="alert alert-danger top-buffer">
-                <strong>{{ ('ERROR' | translate) + '\! '}}</strong> {{ 'MSG_NO_PANELS' | translate }}
-            </div>
-            <div ng-show="requestStatus == 2" class="alert alert-danger top-buffer">
-                <strong>{{ ('ERROR' | translate) + '\! '}}</strong> {{ 'MSG_NO_STOCK_PANELS' | translate }}
+            <!--<div ng-show="requestStatus == 1" class="alert alert-danger top-buffer">-->
+                <!--<strong>{{ ('ERROR' | translate) + '\! '}}</strong> {{ 'MSG_NO_PANELS' | translate }}-->
+            <!--</div>-->
+            <!--<div ng-show="requestStatus == 2" class="alert alert-danger top-buffer">-->
+                <!--<strong>{{ ('ERROR' | translate) + '\! '}}</strong> {{ 'MSG_NO_STOCK_PANELS' | translate }}-->
+            <!--</div>-->
+
+            <div ng-show="errorMessage" class="alert alert-danger top-buffer">
+                <strong>{{ ('ERROR' | translate) + '\! '}}</strong><span style="white-space: pre-line" ng-bind="errorMessage"></span>
             </div>
 
             <div id="main" class="row">

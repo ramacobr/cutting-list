@@ -30,7 +30,8 @@ var translationsEN = {
     SELECT_NONE: "Select none",
     DELETE_ALL: "Delete all",
     SORT: "Sort",
-    UNABLE_TO_FIT: "Unable to fit"
+    UNABLE_TO_FIT: "Unable to fit",
+    NO_SOLUTION: "No possible solution."
 };
 
 var translationsPT= {
@@ -65,5 +66,6 @@ var translationsPT= {
     SELECT_NONE: "Desseleccionar todos",
     DELETE_ALL: "Eliminar todos",
     SORT: "Ordenar",
-    UNABLE_TO_FIT: "Paineis em falta"
+    UNABLE_TO_FIT: "Paineis em falta",
+    NO_SOLUTION: "Sem solução possível."
 };

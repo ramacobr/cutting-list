@@ -305,29 +305,33 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
         $scope.stockTiles = angular.fromJson($window.localStorage.getItem("baseTiles" + localStorageKeySuffix));
     }
 
+    var resetStockTiles = function() {
+
+        // {width: null, height: null, count: null, enabled: true}];
+        $scope.stockTiles.length = 0;
+        addNewStockTile();
+        addNewStockTile();
+        addNewStockTile();
+        addNewStockTile();
+        addNewStockTile();
+    };
     if ($scope.stockTiles === null) {
-        // $scope.stockTiles = [
-        //     {width: 600, height: 300, count: 10, enabled: true, isUsed: false},
-        //     {width: 600, height: 400, count: 10, enabled: true, isUsed: false},
-        //     {width: 800, height: 300, count: 10, enabled: true, isUsed: false},
-        //     {width: 800, height: 400, count: 10, enabled: true, isUsed: false},
-        //     {width: 1200, height: 300, count: 10, enabled: true, isUsed: false},
-        //     {width: 1200, height: 400, count: 10, enabled: true, isUsed: false},
-        //     {width: 1200, height: 600, count: 10, enabled: true, isUsed: false},
-        //     {width: 1200, height: 800, count: 10, enabled: true, isUsed: false},
-        //     {width: 2440, height: 400, count: 10, enabled: true, isUsed: false},
-        //     {width: 2440, height: 600, count: 10, enabled: true, isUsed: false},
-        //     {width: 2440, height: 800, count: 10, enabled: true, isUsed: false},
-        //     {width: 2440, height: 1222, count: 10, enabled: true, isUsed: false},
-        //     {width: 2500, height: 1250, count: 10, enabled: true, isUsed: false},
-        //     {width: null, height: null, count: null, enabled: true, isUsed: false}]; // TODO: How to add a new one?
-        //{width: null, height: null, count: null, enabled: true}];
-        $scope.stockTiles = [];
-        addNewStockTile();
-        addNewStockTile();
-        addNewStockTile();
-        addNewStockTile();
-        addNewStockTile();
+        $scope.stockTiles = [
+            {width: 600, height: 300, count: 10, enabled: true, isUsed: false},
+            {width: 600, height: 400, count: 10, enabled: true, isUsed: false},
+            {width: 800, height: 300, count: 10, enabled: true, isUsed: false},
+            {width: 800, height: 400, count: 10, enabled: true, isUsed: false},
+            {width: 1200, height: 300, count: 10, enabled: true, isUsed: false},
+            {width: 1200, height: 400, count: 10, enabled: true, isUsed: false},
+            {width: 1200, height: 600, count: 10, enabled: true, isUsed: false},
+            {width: 1200, height: 800, count: 10, enabled: true, isUsed: false},
+            {width: 2440, height: 400, count: 10, enabled: true, isUsed: false},
+            {width: 2440, height: 600, count: 10, enabled: true, isUsed: false},
+            {width: 2440, height: 800, count: 10, enabled: true, isUsed: false},
+            {width: 2440, height: 1222, count: 10, enabled: true, isUsed: false},
+            {width: 2500, height: 1250, count: 10, enabled: true, isUsed: false},
+            {width: null, height: null, count: null, enabled: true, isUsed: false}]; // TODO: How to add a new one?
+        //resetStockTiles();
     }
 
     $scope.sort = function(tiles) {
@@ -357,13 +361,17 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
         $scope.tiles = angular.fromJson($window.localStorage.getItem("tiles" + localStorageKeySuffix));
     }
 
+    var resetTiles = function() {
+        $scope.tiles.length = 0;
+        addNewTile();
+        addNewTile();
+        addNewTile();
+        addNewTile();
+        addNewTile();
+    };
     if ($scope.tiles === null) {
         $scope.tiles = [];
-        addNewTile();
-        addNewTile();
-        addNewTile();
-        addNewTile();
-        addNewTile();
+        resetTiles();
     }
 
     $scope.gridOptions = {
@@ -408,12 +416,7 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
                 action: function ($event) {
                     // TODO: Translate msg
                     if (confirm("Delete all panels?") === true) {
-                        $scope.tiles.forEach(function(obj) {
-                            obj.width = null;
-                            obj.height = null;
-                            obj.count = null;
-                            obj.enabled = true;
-                        });
+                        resetTiles();
                     }
                 },
                 order: 302
@@ -479,12 +482,7 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
                 action: function ($event) {
                     // TODO: Translate msg
                     if (confirm("Delete all stock panels?") === true) {
-                        $scope.stockTiles.forEach(function(obj) {
-                            obj.width = null;
-                            obj.height = null;
-                            obj.count = null;
-                            obj.enabled = true;
-                        });
+                        resetStockTiles();
                     }
                 },
                 order: 3
@@ -583,15 +581,15 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
         saveDataLocalStorage();
     };
 
-    $scope.zoomIn = function() {
-        DrawService.setZoom(DrawService.getZoom() + 0.1);
-        render();
-    };
-
-    $scope.zoomOut = function() {
-        DrawService.setZoom(DrawService.getZoom() - 0.1);
-        render();
-    };
+    // $scope.zoomIn = function() {
+    //     DrawService.setZoom(DrawService.getZoom() + 0.1);
+    //     render();
+    // };
+    //
+    // $scope.zoomOut = function() {
+    //     DrawService.setZoom(DrawService.getZoom() - 0.1);
+    //     render();
+    // };
 
     $scope.print = function(divName) {
         window.print();
@@ -626,25 +624,87 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
     function requestTilling() {
 
 
+        $scope.errorMessage = '';
+
         if ($scope.getNbrUsedTiles() === 0) {
             $scope.isGridReloding = true;
             $scope.tiles[0].isInvalid = true;
 
-
             $timeout(function () {
                 $scope.isGridReloding = false;
             }, 0);
+
+            $scope.errorMessage += "\n" + $translate.instant('MSG_NO_PANELS');
         }
 
         if ($scope.getNbrUsedStockTiles() === 0) {
             $scope.isGridReloding = true;
             $scope.stockTiles[0].isInvalid = true;
 
-
             $timeout(function () {
                 $scope.isGridReloding = false;
             }, 0);
+
+            $scope.errorMessage += "\n" + $translate.instant('MSG_NO_STOCK_PANELS');
         }
+
+        if ($scope.getNbrUsedTiles() === 0 || $scope.getNbrUsedStockTiles() === 0) {
+            return;
+        }
+
+
+
+        var biggestTileWidth = 0;
+        var biggestTileHeight = 0;
+        var biggestTileArea = Number.MAX_SAFE_INTEGER;
+        var totalTiles = 0;
+
+        angular.forEach($scope.tiles, function(tile) {
+            if (tile.width && tile.width * tile.height < biggestTileArea) {
+                biggestTileArea = tile.width * tile.height;
+                biggestTileWidth = tile.width;
+                biggestTileHeight = tile.height;
+                totalTiles += tile.count;
+            }
+        });
+
+
+        var biggestStockTileWidth = 0;
+        var biggestStockTileHeight = 0;
+        var biggestStockTileArea = 0;
+        var totalBaseTiles = 0;
+
+        angular.forEach($scope.stockTiles, function(stockTile) {
+            if (stockTile.width && stockTile.width * stockTile.height > biggestStockTileArea) {
+                biggestStockTileArea = stockTile.width * stockTile.height;
+                biggestStockTileWidth = stockTile.width;
+                biggestStockTileHeight = stockTile.height;
+                totalBaseTiles += stockTile.count;
+            }
+        });
+
+        if (biggestTileArea > biggestStockTileArea) {
+            if (confirm("Unable to cut specified panels from available stock.\nRequired panels are bigger than stock! Are the specification dimensions misplaced, should tiles be swapped with the stock?") === true) {
+                var tilesBak = $scope.tiles.slice();
+
+                $scope.tiles.length = 0;
+                [].push.apply($scope.tiles, $scope.stockTiles);
+
+                $scope.stockTiles.length = 0;
+                [].push.apply($scope.stockTiles, tilesBak);
+            } else {
+                $scope.errorMessage = $translate.instant('NO_SOLUTION');
+                return;
+            }
+        }
+
+
+
+
+
+
+
+
 
 
         $scope.isLoading = true;

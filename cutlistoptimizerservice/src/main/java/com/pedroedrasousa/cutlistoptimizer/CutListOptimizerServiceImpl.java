@@ -252,14 +252,14 @@ public class CutListOptimizerServiceImpl implements CutListOptimizerService {
         List<List<TileDimensions>> placeHolders = getPlaceHolders(groups);
 
 
-
+        logger.info("Calculating permutations...");
 
         // Get all possible combinations by permuting the order in witch the tiles are fited
         List<List<GroupedTileDimensions>> permutations = Arrangement.<GroupedTileDimensions>generatePermutations(new ArrayList<>(distincGroupTileDimensions.keySet()));
 
 
 
-
+        logger.info("Sorting tiles according to permutations...");
 
         // Create lists sorted according to the calculated permutations
         List<List<TileDimensions>> tilesPermutations = new ArrayList<>();
@@ -274,7 +274,7 @@ public class CutListOptimizerServiceImpl implements CutListOptimizerService {
             });
 
             // Ugly way of limiting the number of permutations. Would be slow.
-            if (tilesPermutations.size() > 99) {
+            if (tilesPermutations.size() > 49) {
                 break;
             }
 
@@ -295,6 +295,7 @@ public class CutListOptimizerServiceImpl implements CutListOptimizerService {
             }
         }
 
+        logger.info("Removing duplicated permutations...");
 
         // Slow as hell
         removeDuplicatedPermutations(tilesPermutations);

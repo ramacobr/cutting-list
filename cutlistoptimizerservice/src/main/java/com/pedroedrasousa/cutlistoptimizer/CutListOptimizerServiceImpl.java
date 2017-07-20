@@ -273,6 +273,11 @@ public class CutListOptimizerServiceImpl implements CutListOptimizerService {
                 }
             });
 
+            // Ugly way of limiting the number of permutations. Would be slow.
+            if (tilesPermutations.size() > 99) {
+                break;
+            }
+
             for (List<TileDimensions> placeholders : placeHolders) {
 //                // Build additional permutations foreach placeholder
 //                for (TileDimensions tileDimensions : placeholders) {
@@ -291,6 +296,7 @@ public class CutListOptimizerServiceImpl implements CutListOptimizerService {
         }
 
 
+        // Slow as hell
         removeDuplicatedPermutations(tilesPermutations);
 
 

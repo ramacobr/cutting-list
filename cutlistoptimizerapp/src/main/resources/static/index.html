@@ -119,6 +119,13 @@
     <button ng-show="isLoading && tiling.getNbrMosaics() > 0" class="btn btn-top button-success hidden-xs" style="width: 110px" ng-click="cancelTilingRequest()" href="#"><i class="material-icons md-center hidden-xs">stop</i></span> {{ 'ACCEPT' | translate }}</button>
     <button ng-show="isLoading && tiling.getNbrMosaics() === 0" class="btn btn-top button-danger hidden-xs" style="width: 110px" ng-click="cancelTilingRequest()" href="#"><i class="material-icons md-center hidden-xs">stop</i></span> {{ 'CANCEL' | translate }}</button>
 
+    <!--<button ng-hide="drawService.getIsSvgPannable()" class="btn btn-top button-default hidden-xs" ng-click="drawService.toggleIsSvgPannable()" data-toggle="tooltip" data-placement="top" title="Mostrar dimensões" href="#"><i class="material-icons md-center hidden-xs">open_with</i></span></button>-->
+    <!--<button ng-show="drawService.getIsSvgPannable()" class="btn btn-top button-enabled hidden-xs" ng-click="drawService.toggleIsSvgPannable()" data-toggle="tooltip" data-placement="top" title="Ocultar dimensões" href="#"><i class="material-icons md-center hidden-xs">open_with</i></span></button>-->
+
+    <!--<button ng-disabled="!drawService.isPannedOrZoomed()" class="btn btn-top button-default hidden-xs" ng-click="drawService.reset()" data-toggle="tooltip" data-placement="top" title="Mostrar dimensões" href="#"><i class="material-icons md-center hidden-xs">zoom_out_map</i></span></button>-->
+    <!--<button ng-show="drawService.isPannedOrZoomed()" class="btn btn-top button-enabled hidden-xs" ng-click="drawService.reset()" data-toggle="tooltip" data-placement="top" title="Ocultar dimensões" href="#"><i class="material-icons md-center hidden-xs">zoom_out_map</i></span></button>-->
+
+
     <!--<button class="btn btn-top button-default hidden-xs" ng-disabled="invalidData" ng-click="print()" data-toggle="tooltip" data-placement="top" title="Ocultar detalhes" href="#"><i class="material-icons md-center hidden-xs">print</i></span></button>-->
 
 
@@ -134,29 +141,36 @@
         <!--<button class="btn btn-top button-default hidden-xs" ng-click="zoomIn()" data-toggle="tooltip" data-placement="top" title="Zoom Out" href="#"><i class="material-icons md-center hidden-xs">zoom_in</i></span></button>-->
         <!--<button class="btn btn-top button-default hidden-xs" ng-click="zoomOut()" data-toggle="tooltip" data-placement="top" title="Zoom Out" href="#"><i class="material-icons md-center hidden-xs">zoom_out</i></span></button>-->
 
-        <button ng-hide="drawService.getIsSvgPannable()" class="btn btn-top button-default hidden-xs" ng-click="drawService.toggleIsSvgPannable()" data-toggle="tooltip" data-placement="top" title="Mostrar dimensões" href="#"><i class="material-icons md-center hidden-xs">open_with</i></span></button>
-        <button ng-show="drawService.getIsSvgPannable()" class="btn btn-top button-enabled hidden-xs" ng-click="drawService.toggleIsSvgPannable()" data-toggle="tooltip" data-placement="top" title="Ocultar dimensões" href="#"><i class="material-icons md-center hidden-xs">open_with</i></span></button>
 
         <button ng-disabled="!drawService.isPannedOrZoomed()" class="btn btn-top button-default hidden-xs" ng-click="drawService.reset()" data-toggle="tooltip" data-placement="top" title="Mostrar dimensões" href="#"><i class="material-icons md-center hidden-xs">zoom_out_map</i></span></button>
         <!--<button ng-show="drawService.isPannedOrZoomed()" class="btn btn-top button-enabled hidden-xs" ng-click="drawService.reset()" data-toggle="tooltip" data-placement="top" title="Ocultar dimensões" href="#"><i class="material-icons md-center hidden-xs">zoom_out_map</i></span></button>-->
 
-        <button ng-hide="isTilingInfoVisible" style="margin-right: 7px" class="btn btn-top button-default hidden-xs" ng-click="toggleIsTilingInfoVisible()" data-toggle="tooltip" data-placement="top" title="Mostrar detalhes" href="#"><i class="material-icons md-center hidden-xs">chrome_reader_mode</i></span></button>
-        <button ng-show="isTilingInfoVisible" style="margin-right: 7px" class="btn btn-top button-enabled hidden-xs" ng-click="toggleIsTilingInfoVisible()" data-toggle="tooltip" data-placement="top" title="Ocultar detalhes" href="#"><i class="material-icons md-center hidden-xs">chrome_reader_mode</i></span></button>
+        <button ng-hide="drawService.getIsSvgPannable()" class="btn btn-top button-default hidden-xs" ng-click="drawService.toggleIsSvgPannable()" data-toggle="tooltip" data-placement="top" title="Toggle zoom and drag" href="#"><i class="material-icons md-center hidden-xs">open_with</i></span></button>
+        <button ng-show="drawService.getIsSvgPannable()" class="btn btn-top button-enabled hidden-xs" ng-click="drawService.toggleIsSvgPannable()" data-toggle="tooltip" data-placement="top" title="Toggle zoom and drag" href="#"><i class="material-icons md-center hidden-xs">open_with</i></span></button>
 
-        <button class="btn btn-top button-default hidden-xs" ng-click="generatePdf()" data-toggle="tooltip" data-placement="top" title="Ocultar detalhes" href="#"><i class="material-icons md-center">picture_as_pdf</i></span></button>
 
-        <button ng-disabled="!drawService.isPannedOrZoomed()" type="button" style="color: white;" class="btn btn-transparent hidden-lg hidden-md hidden-sm" ng-click="drawService.reset()" data-toggle="tooltip" data-placement="top" title="Ocultar detalhes" href="#"><i class="material-icons md-center">zoom_out_map</i></span></button>
-        <button type="button" style="color: white;" class="btn btn-transparent hidden-lg hidden-md hidden-sm" ng-click="generatePdf()" data-toggle="tooltip" data-placement="top" title="Ocultar detalhes" href="#"><i class="material-icons md-center">picture_as_pdf</i></span></button>
+        <button ng-hide="isTilingInfoVisible" style="margin-right: 7px" class="btn btn-top button-default hidden-xs" ng-click="toggleIsTilingInfoVisible()" data-toggle="tooltip" data-placement="top" title="Toggle info" href="#"><i class="material-icons md-center hidden-xs">chrome_reader_mode</i></span></button>
+        <button ng-show="isTilingInfoVisible" style="margin-right: 7px" class="btn btn-top button-enabled hidden-xs" ng-click="toggleIsTilingInfoVisible()" data-toggle="tooltip" data-placement="top" title="Toggle info" href="#"><i class="material-icons md-center hidden-xs">chrome_reader_mode</i></span></button>
+
+        <button class="btn btn-top button-default hidden-xs" ng-click="generatePdf()" data-toggle="tooltip" data-placement="top" title="Export to PDF file" href="#"><i class="material-icons md-center">picture_as_pdf</i></span></button>
+
+        <button ng-disabled="!drawService.isPannedOrZoomed()" type="button" style="color: white;" class="btn btn-transparent hidden-lg hidden-md hidden-sm" ng-click="drawService.reset()" data-toggle="tooltip" data-placement="top" title="Reset zoom" href="#"><i class="material-icons md-center">zoom_out_map</i></span></button>
+        <!--<button type="button" style="color: white;" class="btn btn-transparent hidden-lg hidden-md hidden-sm" ng-click="generatePdf()" data-toggle="tooltip" data-placement="top" title="Ocultar detalhes" href="#"><i class="material-icons md-center">picture_as_pdf</i></span></button>-->
 
 
         <button type="button" style="color: white; padding-right: 15px" class="btn btn-top dropdown-toggle btn-transparent" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <i class="material-icons md-center md-28">menu</i>
         </button>
         <ul class="dropdown-menu">
-            <li><a ng-click="reset()" href="#">Reset</a></li>
+            <!--<li><a ng-click="generatePdf()" href="#"></span><i class="material-icons md-center">picture_as_pdf</i> Export to PDF</a></li>-->
+            <li><a ng-click="reset()" href="#"><i class="material-icons md-center">undo</i> Reset Data</a></li>
+            <!--<li><a ng-click="drawService.toggleIsSvgPannable()" href="#"><span ng-show="drawService.getIsSvgPannable()" class="glyphicon glyphicon-check" aria-hidden="true"></span><span ng-hide="drawService.getIsSvgPannable()" class="glyphicon glyphicon-unchecked" aria-hidden="true"></span> Allow image zoom</a></li>-->
             <li class="divider"></li>
-            <li><a ng-click="changeLanguage('en')" href="#">English</a></li>
-            <li><a ng-click="changeLanguage('pt')" href="#"></span>Português</a></li>
+            <li><a ng-click="changeLanguage('en')" href="#"><i class="material-icons md-center">language</i> English</a></li>
+            <li><a ng-click="changeLanguage('pt')" href="#"></span><i class="material-icons md-center">language</i> Português</a></li>
+
+
+
         </ul>
 
         <!--<div class="btn-group hidden-lg hidden-md hidden-sm hidden-print">-->
@@ -270,10 +284,10 @@
         <div id="main-content" class="col-sm-9">
 
             <!--<div ng-show="requestStatus == 1" class="alert alert-danger top-buffer">-->
-                <!--<strong>{{ ('ERROR' | translate) + '\! '}}</strong> {{ 'MSG_NO_PANELS' | translate }}-->
+            <!--<strong>{{ ('ERROR' | translate) + '\! '}}</strong> {{ 'MSG_NO_PANELS' | translate }}-->
             <!--</div>-->
             <!--<div ng-show="requestStatus == 2" class="alert alert-danger top-buffer">-->
-                <!--<strong>{{ ('ERROR' | translate) + '\! '}}</strong> {{ 'MSG_NO_STOCK_PANELS' | translate }}-->
+            <!--<strong>{{ ('ERROR' | translate) + '\! '}}</strong> {{ 'MSG_NO_STOCK_PANELS' | translate }}-->
             <!--</div>-->
 
             <div ng-show="errorMessage" class="alert alert-danger top-buffer">
@@ -450,25 +464,25 @@
         </div>
 
         <!--<div ng-show="tiling.getNbrCuts() > 0">-->
-            <!--<h2>{{ 'CUTS' | translate }}</h2>-->
-            <!--<table id="pdf-cut-table" class="table pdf-table">-->
-                <!--<thead>-->
-                    <!--<tr>-->
-                        <!--<th> </th>-->
-                        <!--<th>{{ 'PANEL' | translate }}</th>-->
-                        <!--<th>{{ 'CUT' | translate }}</th>-->
-                        <!--<th>{{ 'DIM' | translate }}</th>-->
-                    <!--</tr>-->
-                <!--</thead>-->
-                <!--<tbody ng-repeat="mosaic in tiling.getMosaics() track by $index" style="font-size: 13px;">-->
-                    <!--<tr ng-repeat="cut in tiling.getCuts($index) track by $index" ng-mouseover="drawService.drawCut(mosaic, cut)" ng-mouseleave="drawService.resetSvgOverlayElems()">-->
-                        <!--<th ng-bind="$index + 1"></th>-->
-                        <!--<td ><span ng-bind="cut.originalWidth"></span><span class="math">&#215;</span><span ng-bind="cut.originalHeight"></span></td>-->
-                        <!--<td><span class="math" ng-bind="cut.isHorizontal ? 'x=' : 'y='"></span><span ng-bind="cut.cutCoords"></span></td>-->
-                        <!--<td ng-bind="Math.max(cut.x2 - cut.x1, cut.y2 - cut.y1)"></td>-->
-                    <!--</tr>-->
-                <!--</tbody>-->
-            <!--</table>-->
+        <!--<h2>{{ 'CUTS' | translate }}</h2>-->
+        <!--<table id="pdf-cut-table" class="table pdf-table">-->
+        <!--<thead>-->
+        <!--<tr>-->
+        <!--<th> </th>-->
+        <!--<th>{{ 'PANEL' | translate }}</th>-->
+        <!--<th>{{ 'CUT' | translate }}</th>-->
+        <!--<th>{{ 'DIM' | translate }}</th>-->
+        <!--</tr>-->
+        <!--</thead>-->
+        <!--<tbody ng-repeat="mosaic in tiling.getMosaics() track by $index" style="font-size: 13px;">-->
+        <!--<tr ng-repeat="cut in tiling.getCuts($index) track by $index" ng-mouseover="drawService.drawCut(mosaic, cut)" ng-mouseleave="drawService.resetSvgOverlayElems()">-->
+        <!--<th ng-bind="$index + 1"></th>-->
+        <!--<td ><span ng-bind="cut.originalWidth"></span><span class="math">&#215;</span><span ng-bind="cut.originalHeight"></span></td>-->
+        <!--<td><span class="math" ng-bind="cut.isHorizontal ? 'x=' : 'y='"></span><span ng-bind="cut.cutCoords"></span></td>-->
+        <!--<td ng-bind="Math.max(cut.x2 - cut.x1, cut.y2 - cut.y1)"></td>-->
+        <!--</tr>-->
+        <!--</tbody>-->
+        <!--</table>-->
         <!--</div>-->
     </div>
 

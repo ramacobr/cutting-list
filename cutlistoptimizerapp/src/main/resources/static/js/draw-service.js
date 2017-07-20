@@ -90,12 +90,12 @@ app.factory('DrawService', function(TilingData, $window, $timeout) {
     }
 
     function generateGradients() {
-         // generateGradient("gradient", "#bd1e24", 0.1, 0.3);
-         // generateGradient("gradient2", "#e97600", 0.1, 0.3);
-         // generateGradient("gradient3", "#f6c700", 0.1, 0.3);
-         // generateGradient("gradient4", "#007256", 0.1, 0.3);
-         // generateGradient("gradient5", "#0067a7", 0.1, 0.3);
-         // generateGradient("gradient6", "#964f8e", 0.1, 0.3);
+        // generateGradient("gradient", "#bd1e24", 0.1, 0.3);
+        // generateGradient("gradient2", "#e97600", 0.1, 0.3);
+        // generateGradient("gradient3", "#f6c700", 0.1, 0.3);
+        // generateGradient("gradient4", "#007256", 0.1, 0.3);
+        // generateGradient("gradient5", "#0067a7", 0.1, 0.3);
+        // generateGradient("gradient6", "#964f8e", 0.1, 0.3);
 
         generateGradient("gradient", "#004B7A", 0.1, 0.25);
         generateGradient("gradient1", "#8A161B", 0.1, 0.25);
@@ -328,49 +328,49 @@ app.factory('DrawService', function(TilingData, $window, $timeout) {
                 }(tile.x1, tile.y1, tile.x2, tile.y2));
         });
 
-            // Render final tiles
-            angular.forEach(mosaic.tiles, function (tile, index) {
+        // Render final tiles
+        angular.forEach(mosaic.tiles, function (tile, index) {
 
-                if (tile.hasChildren || tile.final === false) {
-                    // This tile has inner tiles, doesn't need to be rendered.
-                    return;
-                }
+            if (tile.hasChildren || tile.final === false) {
+                // This tile has inner tiles, doesn't need to be rendered.
+                return;
+            }
 
-                var rec = svgContainer.append("rect")
-                    .attr("x", tile.x * data.ratio)
-                    .attr("y", getTileY2(mosaic.base.height, tile.y + tile.height) + mosaic.yOffset)
-                    .attr("width", tile.width * data.ratio)
-                    .attr("height", tile.height * data.ratio)
-                    .attr("vector-effect", "non-scaling-stroke")
-                    .style("stroke", "#000")
-                    .style("stroke-width", "1")
-                    .classed('background', true)
-                    .on("mouseover", function () {
-                        cleanTmpSvgOverlayElems();
-                        drawDimensionH(tile.x, tile.x + tile.width, mosaic);
-                        drawDimensionV(tile.y, tile.y + tile.height, mosaic);
-                        if (isSvgPannable) {
-                            d3.select(this).style("cursor", "move")
-                        }
-                    })
-                    .on("mouseout", function () {
-                        cleanTmpSvgOverlayElems();
-                        drawBaseDimensions(mosaic);
-                        if (isSvgPannable) {
-                            d3.select(this).style("cursor", "default")
-                        }
-                    })
-                    .on("click", function (x1, y1, x2, y2) {
-                        return function () {
-                            //alert('test');
-                        };
-                    }(tile.x1, tile.y1, tile.x2, tile.y2));
-
-                angular.forEach(gradients, function (gradient, index) {
-                    if (tile.requestObjId % gradients.length === index) {
-                        rec.attr('fill', tile.final == true ? "url(#" + gradient + ")" : "#f5f5f5")
+            var rec = svgContainer.append("rect")
+                .attr("x", tile.x * data.ratio)
+                .attr("y", getTileY2(mosaic.base.height, tile.y + tile.height) + mosaic.yOffset)
+                .attr("width", tile.width * data.ratio)
+                .attr("height", tile.height * data.ratio)
+                .attr("vector-effect", "non-scaling-stroke")
+                .style("stroke", "#000")
+                .style("stroke-width", "1")
+                .classed('background', true)
+                .on("mouseover", function () {
+                    cleanTmpSvgOverlayElems();
+                    drawDimensionH(tile.x, tile.x + tile.width, mosaic);
+                    drawDimensionV(tile.y, tile.y + tile.height, mosaic);
+                    if (isSvgPannable) {
+                        d3.select(this).style("cursor", "move")
                     }
-                });
+                })
+                .on("mouseout", function () {
+                    cleanTmpSvgOverlayElems();
+                    drawBaseDimensions(mosaic);
+                    if (isSvgPannable) {
+                        d3.select(this).style("cursor", "default")
+                    }
+                })
+                .on("click", function (x1, y1, x2, y2) {
+                    return function () {
+                        //alert('test');
+                    };
+                }(tile.x1, tile.y1, tile.x2, tile.y2));
+
+            angular.forEach(gradients, function (gradient, index) {
+                if (tile.requestObjId % gradients.length === index) {
+                    rec.attr('fill', tile.final == true ? "url(#" + gradient + ")" : "#f5f5f5")
+                }
+            });
         });
     }
 

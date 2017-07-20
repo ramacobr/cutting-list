@@ -626,6 +626,20 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
 
         $scope.errorMessage = '';
 
+
+        $scope.tiles.forEach(function(tile) {
+            if (tile.width && tile.height && tile.count) {
+                tile.isInvalid = false;
+            }
+        });
+
+        $scope.stockTiles.forEach(function(tile) {
+            if (tile.width && tile.height && tile.count) {
+                tile.isInvalid = false;
+            }
+        });
+
+
         if ($scope.getNbrUsedTiles() === 0) {
             $scope.isGridReloding = true;
             $scope.tiles[0].isInvalid = true;
@@ -633,6 +647,10 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
             $timeout(function () {
                 $scope.isGridReloding = false;
             }, 0);
+
+            if (typeof android !== 'undefined') {
+                android.showToast($translate.instant('MSG_NO_PANELS'));
+            }
 
             $scope.errorMessage += "\n" + $translate.instant('MSG_NO_PANELS');
         }
@@ -644,6 +662,10 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
             $timeout(function () {
                 $scope.isGridReloding = false;
             }, 0);
+
+            if (typeof android !== 'undefined') {
+                android.showToast($translate.instant('MSG_NO_STOCK_PANELS'));
+            }
 
             $scope.errorMessage += "\n" + $translate.instant('MSG_NO_STOCK_PANELS');
         }
@@ -697,8 +719,6 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
                 return;
             }
         }
-
-
 
 
 
@@ -815,10 +835,12 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
      * Clears local storage and reloads the page
      */
     $scope.reset = function() {
-        localStorage.clear();
-        $window.location.reload(true);
-        $location.search('tiles', null);
-        $location.search('stockTiles', null);
+        if (confirm("Reset all data?") === true) {
+            localStorage.clear();
+            $window.location.reload(true);
+            $location.search('tiles', null);
+            $location.search('stockTiles', null);
+        }
     };
 
 

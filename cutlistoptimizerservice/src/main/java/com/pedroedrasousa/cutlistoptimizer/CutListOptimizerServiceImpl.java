@@ -254,8 +254,27 @@ public class CutListOptimizerServiceImpl implements CutListOptimizerService {
 
         logger.info("Calculating permutations...");
 
+        List<GroupedTileDimensions> toBePermuted = new ArrayList<>(distincGroupTileDimensions.keySet());
+
+        // Sort by qty
+        Collections.sort(toBePermuted, new Comparator<GroupedTileDimensions>() {
+            @Override
+            public int compare(GroupedTileDimensions o1, GroupedTileDimensions o2) {
+                return distincGroupTileDimensions.get(o2).compareTo(distincGroupTileDimensions.get(o1));
+            }
+        });
+
+        List<GroupedTileDimensions> toBePermutedTail = new ArrayList<>(toBePermuted.subList(5, toBePermuted.size()));
+
+        List<GroupedTileDimensions> toBePermutedHead = new ArrayList<>(toBePermuted.subList(0, 5));
+
+
         // Get all possible combinations by permuting the order in witch the tiles are fited
-        List<List<GroupedTileDimensions>> permutations = Arrangement.<GroupedTileDimensions>generatePermutations(new ArrayList<>(distincGroupTileDimensions.keySet()));
+        List<List<GroupedTileDimensions>> permutations = Arrangement.<GroupedTileDimensions>generatePermutations(toBePermutedHead);
+
+        for (final List<GroupedTileDimensions> combination : permutations) {
+            combination.addAll(toBePermutedTail);
+        }
 
 
 
@@ -297,7 +316,6 @@ public class CutListOptimizerServiceImpl implements CutListOptimizerService {
 
         logger.info("Removing duplicated permutations...");
 
-        // Slow as hell
         removeDuplicatedPermutations(tilesPermutations);
 
 

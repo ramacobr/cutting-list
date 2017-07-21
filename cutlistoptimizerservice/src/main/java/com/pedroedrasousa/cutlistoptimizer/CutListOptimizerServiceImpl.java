@@ -252,33 +252,35 @@ public class CutListOptimizerServiceImpl implements CutListOptimizerService {
         List<List<TileDimensions>> placeHolders = getPlaceHolders(groups);
 
 
-        logger.info("Calculating permutations...");
+        //logger.info("Calculating permutations...");
 
-        List<GroupedTileDimensions> toBePermuted = new ArrayList<>(distincGroupTileDimensions.keySet());
+        List<GroupedTileDimensions> DistinctTileDimensions = new ArrayList<>(distincGroupTileDimensions.keySet());
 
-        // Sort by qty
-        Collections.sort(toBePermuted, new Comparator<GroupedTileDimensions>() {
+        // Sort by quantity
+        Collections.sort(DistinctTileDimensions, new Comparator<GroupedTileDimensions>() {
             @Override
             public int compare(GroupedTileDimensions o1, GroupedTileDimensions o2) {
                 return distincGroupTileDimensions.get(o2).compareTo(distincGroupTileDimensions.get(o1));
             }
         });
 
-        List<GroupedTileDimensions> toBePermutedTail = new ArrayList<>(toBePermuted.subList(5, toBePermuted.size()));
+        // Get the first 5 elements. Permutations of this will be created.
+        List<GroupedTileDimensions> toBePermuted = new ArrayList<>(DistinctTileDimensions.subList(0, 5));
 
-        List<GroupedTileDimensions> toBePermutedHead = new ArrayList<>(toBePermuted.subList(0, 5));
+        // Get the remaining elements. These won't be permuted.
+        List<GroupedTileDimensions> nonPermuted = new ArrayList<>(DistinctTileDimensions.subList(5, DistinctTileDimensions.size()));
 
+        // Get all possible combinations by permuting the order in witch the tiles are fitted
+        List<List<GroupedTileDimensions>> permutations = Arrangement.<GroupedTileDimensions>generatePermutations(toBePermuted);
 
-        // Get all possible combinations by permuting the order in witch the tiles are fited
-        List<List<GroupedTileDimensions>> permutations = Arrangement.<GroupedTileDimensions>generatePermutations(toBePermutedHead);
-
+        // Add the tiles not included in the permutation
         for (final List<GroupedTileDimensions> combination : permutations) {
-            combination.addAll(toBePermutedTail);
+            combination.addAll(nonPermuted);
         }
 
 
 
-        logger.info("Sorting tiles according to permutations...");
+        //logger.info("Sorting tiles according to permutations...");
 
         // Create lists sorted according to the calculated permutations
         List<List<TileDimensions>> tilesPermutations = new ArrayList<>();
@@ -314,7 +316,7 @@ public class CutListOptimizerServiceImpl implements CutListOptimizerService {
             }
         }
 
-        logger.info("Removing duplicated permutations...");
+        //logger.info("Removing duplicated permutations...");
 
         removeDuplicatedPermutations(tilesPermutations);
 
@@ -331,7 +333,7 @@ public class CutListOptimizerServiceImpl implements CutListOptimizerService {
 //            }
 //            logger.info(sb.toString());
 //        }
-        logger.info("Task[" + cfg.getTaskId() + "] Number of permutations: " + tilesPermutations.size());
+        //logger.info("Task[" + cfg.getTaskId() + "] Number of permutations: " + tilesPermutations.size());
 
 
 
@@ -369,6 +371,7 @@ public class CutListOptimizerServiceImpl implements CutListOptimizerService {
             float usedArea2 = 1f;
 
             while (usedArea2 > 0.8) {
+                //logger.info("Task[{}] Getting new stock", cfg.getTaskId());
                 tmpStockSolution = stockPanelPicker.getCandidateStockSolutions(tilesToFit, stockTiles, 0f, spare, stockSolutionsToExclude, startWith, cfg.getForceOneBaseTile() == true ? 1 : 10);
                 if (tmpStockSolution == null) {
                     break;
@@ -376,7 +379,7 @@ public class CutListOptimizerServiceImpl implements CutListOptimizerService {
                 stockSolution.add(tmpStockSolution);
                 stockSolutionsToExclude.add(tmpStockSolution);
                 usedArea2 = (float) requiredArea / (float) tmpStockSolution.getArea();
-                logger.info("Task[{}] Candidate stock {} usedArea[{}]", cfg.getTaskId(), tmpStockSolution, usedArea2);
+                //logger.info("Task[{}] Candidate stock {} usedArea[{}]", cfg.getTaskId(), tmpStockSolution, usedArea2);
             }
 
             if (stockSolution.size() == 0) {

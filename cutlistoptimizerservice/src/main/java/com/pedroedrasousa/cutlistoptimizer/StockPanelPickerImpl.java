@@ -73,14 +73,27 @@ public class StockPanelPickerImpl implements StockPanelPicker {
             }
         });
 
-        // Start with the stock panels with least area
-        for (int i = 0; i < nbrTiles; i++) {
-            stockTilesIndexes.add(i);
+        int indexToIterate = 0;
+        if (previousReturnedStockTilesIndexes != null && previousReturnedStockTilesIndexes.size() == nbrTiles) {
+            stockTilesIndexes = new ArrayList<>(previousReturnedStockTilesIndexes);
+            indexToIterate = prevIndexToIterate;
+            logger.info("Started: " + stockTilesIndexes);
+        } else {
+
+
+            // Start with the stock panels with least area
+            for (int i = 0; i < nbrTiles; i++) {
+                stockTilesIndexes.add(i);
+            }
         }
 
-        return iterate(stockTiles, requiredArea, requiredMaxDimension, smallestTilleArea, nbrTiles, exclusions, stockTilesIndexes, 0);
+        return iterate(stockTiles, requiredArea, requiredMaxDimension, smallestTilleArea, nbrTiles, exclusions, stockTilesIndexes, indexToIterate);
     }
 
+
+    // Ugly
+    List<Integer> previousReturnedStockTilesIndexes;
+    int prevIndexToIterate;
 
     private StockSolution iterate(List<TileDimensions> stockTiles, int requiredArea, int requiredMaxDimension, int smallestTilleArea, int nbrTiles, List<StockSolution> exclusions, List<Integer> stockTilesIndexes, int indexToIterate) {
         Integer nextSpareTileIndex = null;
@@ -139,12 +152,17 @@ public class StockPanelPickerImpl implements StockPanelPicker {
                 }
             }
 
+
+
             // If required area is met and solution is not excluded, build an array with the tile dimensions and return it.
             if (remainingRequiredArea <= 0 && fits && !isExcluded(stockTiles, exclusions, stockTilesIndexes)) {
                 StockSolution stockSolution = new StockSolution();
                 for (Integer sol : stockTilesIndexes) {
                     stockSolution.addStockTile(stockTiles.get(sol));
                 }
+                previousReturnedStockTilesIndexes = new ArrayList<>(stockTilesIndexes);
+                prevIndexToIterate = indexToIterate;
+                //logger.info("Returned: " + stockTilesIndexes);
                 return stockSolution;
             }
 

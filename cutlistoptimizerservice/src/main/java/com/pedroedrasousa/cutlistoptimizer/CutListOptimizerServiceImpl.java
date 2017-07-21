@@ -264,11 +264,19 @@ public class CutListOptimizerServiceImpl implements CutListOptimizerService {
             }
         });
 
-        // Get the first 5 elements. Permutations of this will be created.
-        List<GroupedTileDimensions> toBePermuted = new ArrayList<>(DistinctTileDimensions.subList(0, 5));
+        List<GroupedTileDimensions> toBePermuted;
+        List<GroupedTileDimensions> nonPermuted;
 
-        // Get the remaining elements. These won't be permuted.
-        List<GroupedTileDimensions> nonPermuted = new ArrayList<>(DistinctTileDimensions.subList(5, DistinctTileDimensions.size()));
+        if (DistinctTileDimensions.size() > 5) {
+            // Get the first 5 elements. Permutations of this will be created.
+            toBePermuted = new ArrayList<>(DistinctTileDimensions.subList(0, 5));
+
+            // Get the remaining elements. These won't be permuted.
+            nonPermuted = new ArrayList<>(DistinctTileDimensions.subList(5, DistinctTileDimensions.size()));
+        } else {
+            toBePermuted = DistinctTileDimensions;
+            nonPermuted = new ArrayList<>();
+        }
 
         // Get all possible combinations by permuting the order in witch the tiles are fitted
         List<List<GroupedTileDimensions>> permutations = Arrangement.<GroupedTileDimensions>generatePermutations(toBePermuted);

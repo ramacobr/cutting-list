@@ -91,7 +91,21 @@ app.service('TilingService', function($http, $location, TilingData, DrawService)
 
 app.controller('Tiling', function(TilingService, TilingData, DrawService, $window, $scope, $location, $http, $timeout, $q, $translate, $interval, $anchorScroll, uiGridConstants) {
 
+
+    $timeout(function() {
+        //document.getElementById('splash').style.display = 'none';
+        $("#splash").fadeOut();
+    }, 0);
+
     var localStorageKeySuffix = '?v=1.2';
+
+    var count = $window.localStorage.getItem("runCount");
+    count = count ? parseInt(count) + 1 : 1;
+    $window.localStorage.setItem("runCount", count);
+    if (typeof android !== 'undefined') {
+        android.audit("Run count: " + count);
+    }
+
 
     $scope.drawService = DrawService;
 
@@ -274,29 +288,29 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
      * Gets the number of used and valid tiles.
      * @returns {number}
      */
-    $scope.getNbrUsedTiles = function() {
+    $scope.getNbrUsedTiles = function(includeDisabled) {
         var count = 0;
         angular.forEach($scope.tiles, function(tile) {
-            if (tile.width && tile.height && tile.count) {
+            if (tile.width && tile.height && tile.count && (tile.enabled || includeDisabled)) {
                 count++;
             }
         });
         return count;
-    }
+    };
 
     /**
      * Gets the number of used and valid base tiles.
      * @returns {number}
      */
-    $scope.getNbrUsedStockTiles = function() {
+    $scope.getNbrUsedStockTiles = function(includeDisabled) {
         var count = 0;
         angular.forEach($scope.stockTiles, function(tile) {
-            if (tile.width && tile.height && tile.count) {
+            if (tile.width && tile.height && tile.count && (tile.enabled || includeDisabled)) {
                 count++;
             }
         });
         return count;
-    }
+    };
 
     // Try to load tiles from url params
     $scope.stockTiles = angular.fromJson($location.search().stockTiles);
@@ -532,7 +546,7 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
     };
 
     function validateTilesArray() {
-        if ($scope.getNbrUsedTiles() > $scope.tiles.length - 1) {
+        if ($scope.getNbrUsedTiles(true) > $scope.tiles.length - 1) {
             addNewTile();
         }
 
@@ -549,7 +563,7 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
     }
 
     function validateStockTilesArray() {
-        if ($scope.getNbrUsedStockTiles() > $scope.stockTiles.length - 1) {
+        if ($scope.getNbrUsedStockTiles(true) > $scope.stockTiles.length - 1) {
             addNewStockTile();
         }
 
@@ -623,9 +637,7 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
 
     function requestTilling() {
 
-
         $scope.errorMessage = '';
-
 
         $scope.tiles.forEach(function(tile) {
             if (tile.width && tile.height && tile.count) {
@@ -640,7 +652,7 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
         });
 
 
-        if ($scope.getNbrUsedTiles() === 0) {
+        if ($scope.getNbrUsedTiles(false) === 0) {
             $scope.isGridReloding = true;
             $scope.tiles[0].isInvalid = true;
 
@@ -655,7 +667,7 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
             $scope.errorMessage += "\n" + $translate.instant('MSG_NO_PANELS');
         }
 
-        if ($scope.getNbrUsedStockTiles() === 0) {
+        if ($scope.getNbrUsedStockTiles(false) === 0) {
             $scope.isGridReloding = true;
             $scope.stockTiles[0].isInvalid = true;
 
@@ -670,7 +682,7 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
             $scope.errorMessage += "\n" + $translate.instant('MSG_NO_STOCK_PANELS');
         }
 
-        if ($scope.getNbrUsedTiles() === 0 || $scope.getNbrUsedStockTiles() === 0) {
+        if ($scope.getNbrUsedTiles(true) === 0 || $scope.getNbrUsedStockTiles(true) === 0) {
             return;
         }
 
@@ -706,7 +718,7 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
         });
 
         if (biggestTileArea > biggestStockTileArea) {
-            if (confirm("Unable to cut specified panels from available stock.\nRequired panels are bigger than stock! Are the specification dimensions misplaced, should tiles be swapped with the stock?") === true) {
+            if (confirm("Unable to cut specified panels from available stock.\nRequired panels are bigger than stock! Are the specification dimensions misplaced? Should tiles be swapped with the stock?") === true) {
                 var tilesBak = $scope.tiles.slice();
 
                 $scope.tiles.length = 0;
@@ -772,12 +784,6 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
                         scrolled = true;
                     }
                 }
-
-// TODO: Causing problems in android
-//                if (!data && $scope.isLoading) {
-//                    console.error("Tried to request status for a server nonexistent task");
-//                    $scope.isLoading = false;
-//                }
             };
 
             var data = TilingService.getTaskStatus(callback);
@@ -795,7 +801,6 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
     }
 
     function render() {
-
 
         // Clean used status from stock tiles
         angular.forEach($scope.stockTiles, function(stockTile) {
@@ -820,8 +825,6 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
             });
         }
 
-
-
         saveDataLocalStorage();
         $scope.visibleTileInfoIdx = 0;
 
@@ -835,8 +838,13 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
      * Clears local storage and reloads the page
      */
     $scope.reset = function() {
-        if (confirm("Reset all data?") === true) {
+        if (confirm("Clear all data?") === true) {
+            if (typeof android !== 'undefined') {
+                android.audit("Clear all data");
+            }
+            var count = $window.localStorage.getItem("runCount");
             localStorage.clear();
+            $window.localStorage.setItem("runCount", count);
             $window.location.reload(true);
             $location.search('tiles', null);
             $location.search('stockTiles', null);
@@ -879,7 +887,7 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
             android.showToast("Creating PDF file...");
         }
 
-        DrawService.reset();
+        DrawService.reset(true);
 
         window.scrollTo(0, 0);
         document.getElementById('pdf-info').style.display = 'block';
@@ -928,6 +936,8 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
                     filename += '.pdf';
                     doc.save(filename);
                 }
+
+                DrawService.reset(false);
             }
         });
 

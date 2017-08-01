@@ -1,8 +1,15 @@
 app.factory('DrawService', function(TilingData, $window, $timeout) {
 
-    var isSvgPannable = true;
+    var self = this;
+
+    var isHighDetail = false;
+
+    var isSvgPannable = $window.innerWidth >= 768 ? true : false;
 
     var toggleIsSvgPannable = function() {
+        if (typeof android !== 'undefined') {
+            android.audit("Toggle zoom");
+        }
         isSvgPannable = !isSvgPannable;
         init();
         renderTiles();
@@ -106,13 +113,15 @@ app.factory('DrawService', function(TilingData, $window, $timeout) {
     }
 
 
-    function reset() {
-        init();
+    function reset(isHighDetail) {
+        init(isHighDetail);
         renderTiles();
     }
 
 
-    function init() {
+    function init(isHighDetail) {
+
+        self.isHighDetail = isHighDetail;
 
         // Reset zoom
         zoom = 1;
@@ -131,7 +140,7 @@ app.factory('DrawService', function(TilingData, $window, $timeout) {
             maxWidth = Math.max(mosaic.base.width, maxWidth);
             tilesHeight += mosaic.base.height;
         });
-        var divWidth = div.clientWidth;
+        var divWidth = isHighDetail ? 1500 : div.clientWidth;
 
         // Find a ratio to fit horizontally
         var ratioH = data.zoom * (divWidth / (maxWidth * 1.13));
@@ -423,7 +432,12 @@ app.factory('DrawService', function(TilingData, $window, $timeout) {
 
                     // Text size and margin varies inversely as zoom
                     var textMargin = 10 * (1 / zoom);
-                    var fontSize = innerFontSize * (1 / zoom) + "px";
+                    var fontSize = innerFontSize * (1 / zoom);
+                    if (self.isHighDetail) {
+                        fontSize *= 2;
+                        textMargin *= 2;
+                    }
+                    fontSize = fontSize + "px";
 
                     var textWidth = svgContainer.append("text")
                         .attr("x", (tile.x + tile.width / 2) * data.ratio)
@@ -471,7 +485,12 @@ app.factory('DrawService', function(TilingData, $window, $timeout) {
 
         // Text size and margin varies inversely as zoom
         var textMargin = 12 * (1 / zoom);
-        var fontSize = 12 * (1 / zoom) + "px";
+        var fontSize = 12 * (1 / zoom);
+        if (self.isHighDetail) {
+            fontSize *= 2;
+            textMargin *= 2;
+        }
+        fontSize = fontSize + "px";
 
         svgElement = svgContainer.append("line")
             .style("stroke", color1)
@@ -521,7 +540,13 @@ app.factory('DrawService', function(TilingData, $window, $timeout) {
 
         // Text size and margin varies inversely as zoom
         var textMargin = 12 * (1 / zoom);
-        var fontSize = 12 * (1 / zoom) + "px";
+
+        var fontSize = 12 * (1 / zoom);
+        if (self.isHighDetail) {
+            fontSize *= 2;
+            textMargin *= 2;
+        }
+        fontSize = fontSize + "px";
 
         svgElement = svgContainer.append("line")
             .style("stroke", color1)

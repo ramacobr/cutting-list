@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="bootstrap-3.3.7-dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="styleSheet" href="angular-ui-grid/ui-grid.min.css"/>
+    <link rel="styleSheet" href="angular-ui-grid/ui-grid.min.css"/>
     <link rel="styleSheet" href="angular-ui-grid/custom-ui-grid.css"/>
     <link rel="styleSheet" href="css/navbar.css?v=1.15"/>
     <link rel="styleSheet" href="css/toggle.css?v=1.15"/>
@@ -70,6 +71,13 @@
 </head>
 
 <body ng-controller="Tiling">
+
+<div id="splash" class="splash">
+<div class="splash-loading"></div>
+    <img class="splash-loading" src="icon.png" alt="CutList Optimizer">
+</div>
+
+
 
 <div ng-show="isLoading">
     <div class="dim-background"></div>
@@ -154,7 +162,7 @@
 
         <button class="btn btn-top button-default hidden-xs" ng-click="generatePdf()" data-toggle="tooltip" data-placement="top" title="Export to PDF file" href="#"><i class="material-icons md-center">picture_as_pdf</i></span></button>
 
-        <button ng-disabled="!drawService.isPannedOrZoomed()" type="button" style="color: white;" class="btn btn-transparent hidden-lg hidden-md hidden-sm" ng-click="drawService.reset()" data-toggle="tooltip" data-placement="top" title="Reset zoom" href="#"><i class="material-icons md-center">zoom_out_map</i></span></button>
+        <button ng-show="drawService.getIsSvgPannable()" ng-disabled="!drawService.isPannedOrZoomed()" type="button" style="color: white;" class="btn btn-transparent hidden-lg hidden-md hidden-sm" ng-click="drawService.reset()" data-toggle="tooltip" data-placement="top" title="Reset zoom" href="#"><i class="material-icons md-center">zoom_out_map</i></span></button>
         <!--<button type="button" style="color: white;" class="btn btn-transparent hidden-lg hidden-md hidden-sm" ng-click="generatePdf()" data-toggle="tooltip" data-placement="top" title="Ocultar detalhes" href="#"><i class="material-icons md-center">picture_as_pdf</i></span></button>-->
 
 
@@ -162,9 +170,10 @@
             <i class="material-icons md-center md-28">menu</i>
         </button>
         <ul class="dropdown-menu">
-            <!--<li><a ng-click="generatePdf()" href="#"></span><i class="material-icons md-center">picture_as_pdf</i> Export to PDF</a></li>-->
-            <li><a ng-click="reset()" href="#"><i class="material-icons md-center">undo</i> Reset Data</a></li>
-            <!--<li><a ng-click="drawService.toggleIsSvgPannable()" href="#"><span ng-show="drawService.getIsSvgPannable()" class="glyphicon glyphicon-check" aria-hidden="true"></span><span ng-hide="drawService.getIsSvgPannable()" class="glyphicon glyphicon-unchecked" aria-hidden="true"></span> Allow image zoom</a></li>-->
+            <li><a class="hidden-lg hidden-md hidden-sm" ng-click="drawService.toggleIsSvgPannable()" href="#"><i ng-show="drawService.getIsSvgPannable()" class="material-icons md-center">check_box</i><i ng-show="!drawService.getIsSvgPannable()" class="material-icons md-center">check_box_outline_blank</i> Allow image zoom</a></li>
+            <li><a class="hidden-lg hidden-md hidden-sm" ng-click="generatePdf()" href="#"></span><i class="material-icons md-center">insert_drive_file</i> Export to PDF</a></li>
+            <li><a ng-click="reset()" href="#"><i class="material-icons md-center">cached</i> Clear all data</a></li>
+
             <li class="divider"></li>
             <li><a ng-click="changeLanguage('en')" href="#"><i class="material-icons md-center">language</i> English</a></li>
             <li><a ng-click="changeLanguage('pt')" href="#"></span><i class="material-icons md-center">language</i> Português</a></li>
@@ -243,42 +252,42 @@
 
             <div id="mosaics" style="margin-bottom: -25px">&nbsp;</div>
 
-            <!--<div class="side-bar-accordion-toggle hidden-print" ng-click="isAdvancedOptionsCollapsed = !isAdvancedOptionsCollapsed">-->
-            <!--<i class="material-icons md-center">build</i>-->
-            <!--<span ng-show="isAdvancedOptionsCollapsed" class="glyphicon glyphicon glyphicon-chevron-down pull-right" style="padding-top: 4px"></span>-->
-            <!--<span ng-hide="isAdvancedOptionsCollapsed" class="glyphicon glyphicon glyphicon-chevron-up pull-right" style="padding-top: 4px"></span>-->
-            <!--{{ 'OPTIONS2' | translate }}-->
-            <!--</div>-->
-            <!--<div class="hidden-print" collapse="isAdvancedOptionsCollapsed">-->
-            <!--<div class="form-horizontal top-buffer" style="margin: 10px 10px 5px 10px;">-->
-            <!--<button ng-click="dataToUrl();">dataToURL</button>-->
-            <!--<div class="form-group">-->
-            <!--<span class="control-label col-xs-8">discard above</span>-->
-            <!--<div class="col-xs-4">-->
-            <!--<input style="" type="number" class="form-control input-xs" ng-model="cfg.accuracyFactor">-->
-            <!--</div>-->
-            <!--</div>-->
-            <!--</div>-->
-            <!--<div id="priority-table" style="font-size: 13px;">-->
-            <!--<table class="table table-hover table-condensed table-striped">-->
-            <!--<thead>-->
-            <!--<tr>-->
-            <!--<th>Prioridade</th>-->
-            <!--<th>Métrica</th>-->
-            <!--</tr>-->
-            <!--</thead>-->
-            <!--<tbody ui-sortable ng-model="cfg.priorities">-->
-            <!--<tr ng-repeat="item in cfg.priorities" class="item" style="cursor: move;">-->
-            <!--<td>{{$index}}</td>-->
-            <!--<td>{{item}}</td>-->
-            <!--</tr>-->
-            <!--</tbody>-->
-            <!--</table>-->
-            <!--</div>-->
-            <!--<div class="col-xs-12">-->
-            <!--<input ng-repeat="item in cfg.priorities" class="form-control input-xs" ng-model="item">-->
-            <!--</div>-->
-            <!--</div>-->
+            <div class="side-bar-accordion-toggle hidden-print" ng-click="isAdvancedOptionsCollapsed = !isAdvancedOptionsCollapsed">
+            <i class="material-icons md-center">build</i>
+            <span ng-show="isAdvancedOptionsCollapsed" class="glyphicon glyphicon glyphicon-chevron-down pull-right" style="padding-top: 4px"></span>
+            <span ng-hide="isAdvancedOptionsCollapsed" class="glyphicon glyphicon glyphicon-chevron-up pull-right" style="padding-top: 4px"></span>
+            {{ 'OPTIONS2' | translate }}
+            </div>
+            <div class="hidden-print" collapse="isAdvancedOptionsCollapsed">
+            <div class="form-horizontal top-buffer" style="margin: 10px 10px 5px 10px;">
+            <button ng-click="dataToUrl();">dataToURL</button>
+            <div class="form-group">
+            <span class="control-label col-xs-8">discard above</span>
+            <div class="col-xs-4">
+            <input style="" type="number" class="form-control input-xs" ng-model="cfg.accuracyFactor">
+            </div>
+            </div>
+            </div>
+            <div id="priority-table" style="font-size: 13px;">
+            <table class="table table-hover table-condensed table-striped">
+            <thead>
+            <tr>
+            <th>Prioridade</th>
+            <th>Métrica</th>
+            </tr>
+            </thead>
+            <tbody ui-sortable ng-model="cfg.priorities">
+            <tr ng-repeat="item in cfg.priorities" class="item" style="cursor: move;">
+            <td>{{$index}}</td>
+            <td>{{item}}</td>
+            </tr>
+            </tbody>
+            </table>
+            </div>
+            <div class="col-xs-12">
+            <input ng-repeat="item in cfg.priorities" class="form-control input-xs" ng-model="item">
+            </div>
+            </div>
         </div>
 
         <div id="main-content" class="col-sm-9">
@@ -462,6 +471,7 @@
                 </tbody>
             </table>
         </div>
+    </div>
 
         <!--<div ng-show="tiling.getNbrCuts() > 0">-->
         <!--<h2>{{ 'CUTS' | translate }}</h2>-->

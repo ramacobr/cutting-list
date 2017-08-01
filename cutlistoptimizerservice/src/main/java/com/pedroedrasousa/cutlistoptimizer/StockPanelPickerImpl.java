@@ -1,5 +1,6 @@
 package com.pedroedrasousa.cutlistoptimizer;
 
+import com.pedroedrasousa.cutlistoptimizer.model.Tile;
 import com.pedroedrasousa.cutlistoptimizer.model.TileDimensions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,9 +44,10 @@ public class StockPanelPickerImpl implements StockPanelPicker {
     }
 
 
-    private Integer getNextUnusedStockTile(int nbrStockTiles, List<Integer> stockTilesIndexes, int index) {
-        for (int i = index + 1; i < nbrStockTiles; i++) {
-            if (!stockTilesIndexes.contains(i)) {
+    private Integer getNextUnusedStockTile(List<TileDimensions> stockTiles, List<Integer> stockTilesIndexes, int index, TileDimensions greaterThanDimensions) {
+        for (int i = index + 1; i < stockTiles.size(); i++) {
+            if (!stockTilesIndexes.contains(i)
+                    && (stockTiles.get(i).getWidth() > greaterThanDimensions.getWidth() || stockTiles.get(i).getHeight() > greaterThanDimensions.getHeight())) {
                 return i;
             }
         }
@@ -77,7 +79,6 @@ public class StockPanelPickerImpl implements StockPanelPicker {
         if (previousReturnedStockTilesIndexes != null && previousReturnedStockTilesIndexes.size() == nbrTiles) {
             stockTilesIndexes = new ArrayList<>(previousReturnedStockTilesIndexes);
             indexToIterate = prevIndexToIterate;
-            logger.info("Started: " + stockTilesIndexes);
         } else {
 
 
@@ -108,6 +109,8 @@ public class StockPanelPickerImpl implements StockPanelPicker {
             }
         }
 
+        //logger.info("stockTilesIndexes - " + stockTilesIndexes + " | iterated: " + indexToIterate);
+
         if (indexToIterate < nbrTiles - 1) {
             int prevWidth = 0;
             int prevHeight = 0;
@@ -122,20 +125,30 @@ public class StockPanelPickerImpl implements StockPanelPicker {
                 do {
                     j++;
                 } while (j < stockTiles.size()
-                        && stockTiles.get(j).getArea() < smallestTilleArea); // Must fit the smallest tile
+                        && ((stockTiles.get(j).getWidth() == prevWidth && stockTiles.get(j).getHeight() == prevHeight)  // TODO: NOT SURE ABOUT THIS
+                        || stockTiles.get(j).getArea() < smallestTilleArea)); // Must fit the smallest tile
 
                 if (j < stockTiles.size()) {
                     prevWidth = stockTiles.get(j).getWidth();
                     prevHeight = stockTiles.get(j).getHeight();
 
-                    stockTilesIndexes.set(indexToIterate, j);       // Next index
-                    stockTilesIndexes.set(indexToIterate + 1, 0);   // Reset the index ahead
+//                    stockTilesIndexes.set(indexToIterate, j);       // Next index
+//                    stockTilesIndexes.set(indexToIterate + 1, j + 1);   // Reset the index ahead
+
+                    // Set indexes ahead to the next size
+                    for (int a = indexToIterate; a < stockTilesIndexes.size(); a++) {
+                        stockTilesIndexes.set(a, j++);       // Next index
+                    }
+
+                    //logger.info("incremented idx " + indexToIterate + " to " + j);
                 }
 
 
 
             }
         }
+
+
 
         // Keep incrementing the stock tile being iterated until required area is met or the biggest tile is reached.
         do {
@@ -162,12 +175,14 @@ public class StockPanelPickerImpl implements StockPanelPicker {
                 }
                 previousReturnedStockTilesIndexes = new ArrayList<>(stockTilesIndexes);
                 prevIndexToIterate = indexToIterate;
-                //logger.info("Returned: " + stockTilesIndexes);
+                //logger.info("RETURNED: " + stockTilesIndexes);
                 return stockSolution;
             }
 
+            // The next stock tile dimensions must be greater than the current one being iterated
+            TileDimensions iteratedTileDimensions = stockTiles.get(stockTilesIndexes.get(indexToIterate));
             // Use the next size for the stock tile number being iterated
-            nextSpareTileIndex = getNextUnusedStockTile(stockTiles.size(), stockTilesIndexes, stockTilesIndexes.get(indexToIterate));
+            nextSpareTileIndex = getNextUnusedStockTile(stockTiles, stockTilesIndexes, stockTilesIndexes.get(indexToIterate), iteratedTileDimensions);
             if (nextSpareTileIndex != null) {
                 stockTilesIndexes.set(indexToIterate, nextSpareTileIndex);
             }

@@ -12,7 +12,6 @@ public class Arrangement {
             return result;
         }
 
-
         T firstElement = original.remove(0);
         List<List<T>> returnValue = new ArrayList<>();
         List<List<T>> permutations = generatePermutations(original);

@@ -133,20 +133,6 @@ public class CutListThread implements Runnable {
             }
         }
 
-//        Collections.sort(solutions, (o1, o2) -> {
-//
-//            int diff = 0;
-//
-//            for (Comparator<Solution> solutionComparator : solutionComparators) {
-//                diff = solutionComparator.compare(o1, o2);
-//                if (diff != 0) {
-//                    break;
-//                }
-//            }
-//
-//            return diff;
-//        });
-
         Collections.sort(solutions, new Comparator<Solution>() {
             @Override
             public int compare(Solution o1, Solution o2) {
@@ -248,19 +234,6 @@ public class CutListThread implements Runnable {
             // TODO: To break or not to break - if not try all permutations and then choose best
             //break;
         }
-
-//        logger.info("Task[{}] Finished permutation[{}] stock[{}] discardAbove[{}] - usedAreaRatio[{}] nbrCuts[{}] maxDepth[{}] nbrNoFitTiles[{}]",
-//                cfg.getTaskId(),
-////                permutationIndex + 1,
-////                tilesPermutations.size(),
-//                permutationId,
-//                stockSolution,
-//                accuracyFactor,
-//
-//                Math.round(solutions.get(0).getUsedAreaRatio() * 100f) / 100f,
-//                solutions.get(0).getNbrCuts(),
-//                solutions.get(0).getMaxDepth(),
-//                solutions.get(0).getNoFitTiles().size());
 
         RunningTasks.Task task = runningTasks.getTask(cfg.getTaskId());
         if (task != null) {

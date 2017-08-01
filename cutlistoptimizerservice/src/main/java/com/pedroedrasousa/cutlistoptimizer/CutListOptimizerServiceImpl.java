@@ -9,6 +9,10 @@ import java.util.concurrent.*;
 
 public class CutListOptimizerServiceImpl implements CutListOptimizerService {
 
+    private static int THREAD_POOL_SIZE = 8;
+
+    private static int NBR_MAX_USED_STOCK = 50;
+
     private final static Logger logger = LoggerFactory.getLogger(CutListOptimizerServiceImpl.class);
 
     private StockPanelPicker stockPanelPicker = StockPanelPickerImpl.getInstance();
@@ -35,7 +39,7 @@ public class CutListOptimizerServiceImpl implements CutListOptimizerService {
         runningTasks = RunningTasks.getInstance();
         RejectedExecutionHandlerImpl rejectionHandler = new RejectedExecutionHandlerImpl();
         ThreadFactory threadFactory = Executors.defaultThreadFactory();
-        taskExecutor = new ThreadPoolExecutor(8, 8, 10, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(1000), threadFactory, rejectionHandler);
+        taskExecutor = new ThreadPoolExecutor(THREAD_POOL_SIZE, THREAD_POOL_SIZE, 10, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(1000), threadFactory, rejectionHandler);
     }
 
     /**
@@ -122,12 +126,6 @@ public class CutListOptimizerServiceImpl implements CutListOptimizerService {
         return distincGroupTileDimensions;
     }
 
-
-
-
-
-
-
     private List<List<TileDimensions>> getPlaceHolders(List<GroupedTileDimensions> tilesToFit) {
         List<TileDimensions> placeholders = new ArrayList<>();
         List<TileDimensions> placeholders2 = new ArrayList<>();
@@ -159,15 +157,6 @@ public class CutListOptimizerServiceImpl implements CutListOptimizerService {
             TileDimensions placeholder = new TileDimensions(tileDimensions.getKey().getWidth() * x, tileDimensions.getKey().getHeight() * y, true);
             placeholders.add(placeholder);
             placeholders2.add(new TileDimensions(tileDimensions.getKey().getHeight() * x, tileDimensions.getKey().getWidth() * y, true));
-
-            // TODO: delete
-//            logger.info("tile: " + tileDimensions);
-//            logger.info("x= " + x);
-//            logger.info("y= " + y);
-//            logger.info("nbrTiles= " + nbrTiles);
-//            logger.info("placeholder= " + placeholder);
-
-
         }
 
         List<List<TileDimensions>> placeholdersList = new ArrayList<>();
@@ -181,15 +170,11 @@ public class CutListOptimizerServiceImpl implements CutListOptimizerService {
 
         // Validate if tiles were provided
         if (tilesToFit == null || tilesToFit.size() == 0) {
-            //TillingResponseDTO tillingResponseDTO = new TillingResponseDTO();
-            //tillingResponseDTO.setReturnCode("1");
             return "1";
         }
 
         // Validate if stock tiles were provided
         if (stockTiles == null || stockTiles.size() == 0) {
-            //TillingResponseDTO tillingResponseDTO = new TillingResponseDTO();
-            //tillingResponseDTO.setReturnCode("2");
             return "2";
         }
 
@@ -206,8 +191,10 @@ public class CutListOptimizerServiceImpl implements CutListOptimizerService {
      * Recalculates possibilities list.
      * Possibilities list will contain the root nodes of every tree on witch tiles will fit.
      */
-    // TODO: should return solution not dto?
     private void compute(List<TileDimensions> tilesToFit, List<TileDimensions> stockTiles, Configuration cfg) {
+
+        // TODO: Currently cannot be singleton
+        stockPanelPicker = new StockPanelPickerImpl();
 
         logger.info("Task[{}] {}", cfg.getTaskId(), cfg.toString());
 
@@ -236,7 +223,7 @@ public class CutListOptimizerServiceImpl implements CutListOptimizerService {
 
         List<GroupedTileDimensions> groups = generateGroups(tilesToFit, cfg);
 
-        HashMap<GroupedTileDimensions, Integer> distincGroupTileDimensions = getDistinctGroupedTileDimensions(groups, cfg);
+        final HashMap<GroupedTileDimensions, Integer> distincGroupTileDimensions = getDistinctGroupedTileDimensions(groups, cfg);
                 // Log groups
         int groupIdx = 0;
         sb.setLength(0);
@@ -252,7 +239,7 @@ public class CutListOptimizerServiceImpl implements CutListOptimizerService {
         List<List<TileDimensions>> placeHolders = getPlaceHolders(groups);
 
 
-        //logger.info("Calculating permutations...");
+        logger.debug("Task[" + cfg.getTaskId() + "] Calculating permutations...");
 
         List<GroupedTileDimensions> DistinctTileDimensions = new ArrayList<>(distincGroupTileDimensions.keySet());
 
@@ -287,8 +274,7 @@ public class CutListOptimizerServiceImpl implements CutListOptimizerService {
         }
 
 
-
-        //logger.info("Sorting tiles according to permutations...");
+        logger.debug("Task[" + cfg.getTaskId() + "] Sorting tiles according to permutations...");
 
         // Create lists sorted according to the calculated permutations
         List<List<TileDimensions>> tilesPermutations = new ArrayList<>();
@@ -343,22 +329,6 @@ public class CutListOptimizerServiceImpl implements CutListOptimizerService {
 //        }
         //logger.info("Task[" + cfg.getTaskId() + "] Number of permutations: " + tilesPermutations.size());
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         List<StockSolution> stockSolutionsToExclude = new ArrayList<>();
 
         int spare = 0;
@@ -379,15 +349,15 @@ public class CutListOptimizerServiceImpl implements CutListOptimizerService {
             float usedArea2 = 1f;
 
             while (usedArea2 > 0.8) {
-                //logger.info("Task[{}] Getting new stock", cfg.getTaskId());
-                tmpStockSolution = stockPanelPicker.getCandidateStockSolutions(tilesToFit, stockTiles, 0f, spare, stockSolutionsToExclude, startWith, cfg.getForceOneBaseTile() == true ? 1 : 10);
+                logger.debug("Task[" + cfg.getTaskId() + "] Getting candidate stock solutions...");
+                tmpStockSolution = stockPanelPicker.getCandidateStockSolutions(tilesToFit, stockTiles, 0f, spare, stockSolutionsToExclude, startWith, cfg.getForceOneBaseTile() == true ? 1 : NBR_MAX_USED_STOCK);
                 if (tmpStockSolution == null) {
                     break;
                 }
                 stockSolution.add(tmpStockSolution);
                 stockSolutionsToExclude.add(tmpStockSolution);
                 usedArea2 = (float) requiredArea / (float) tmpStockSolution.getArea();
-                //logger.info("Task[{}] Candidate stock {} usedArea[{}]", cfg.getTaskId(), tmpStockSolution, usedArea2);
+                logger.debug("Task[{}] Candidate stock {} usedArea[{}]", cfg.getTaskId(), tmpStockSolution, usedArea2);
             }
 
             if (stockSolution.size() == 0) {
@@ -480,8 +450,6 @@ public class CutListOptimizerServiceImpl implements CutListOptimizerService {
         } else {
             logger.info("Task[{}] Task was deliberately stopped. Elapsed time: {} ms", cfg.getTaskId(), elapsedTime);
         }
-
-        //return (new TilingResponseDTOBuilder()).setSolutions(allSolutions.get(0)).setInfo(null).build();
     }
 
     @Override

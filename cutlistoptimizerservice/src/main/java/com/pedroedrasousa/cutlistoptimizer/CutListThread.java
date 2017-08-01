@@ -104,7 +104,12 @@ public class CutListThread implements Runnable {
 
         Set<String> set = new HashSet<>();
         for (Solution solution : solutions) {
-            String str = solution.getMosaics().get(0).getRootTileNode().toStringIdentifier();
+            String str = "";
+
+            for (Mosaic mosaic : solution.getMosaics()) {
+                str = str + mosaic.getRootTileNode().toStringIdentifier();
+            }
+
             if (set.add(str) == false) {
                 solutionsToRemove.add(solution);
                 count++;

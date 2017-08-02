@@ -90,7 +90,11 @@ public class CutListThread implements Runnable {
 
     @Override
     public void run() {
-        computeSolutions();
+        try {
+            computeSolutions();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     /**

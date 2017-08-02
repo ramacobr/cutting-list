@@ -751,11 +751,6 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
 
             var callback = function(data) {
 
-                if (!data && $scope.requestStatus === 0) {
-                    $timeout(poller, 1000);
-                    return;
-                }
-
                 if (data) {
                     $scope.statusMessage = data.statusMessage;
                 }

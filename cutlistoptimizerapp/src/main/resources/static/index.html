@@ -252,42 +252,42 @@
 
             <div id="mosaics" style="margin-bottom: -25px">&nbsp;</div>
 
-            <div class="side-bar-accordion-toggle hidden-print" ng-click="isAdvancedOptionsCollapsed = !isAdvancedOptionsCollapsed">
-            <i class="material-icons md-center">build</i>
-            <span ng-show="isAdvancedOptionsCollapsed" class="glyphicon glyphicon glyphicon-chevron-down pull-right" style="padding-top: 4px"></span>
-            <span ng-hide="isAdvancedOptionsCollapsed" class="glyphicon glyphicon glyphicon-chevron-up pull-right" style="padding-top: 4px"></span>
-            {{ 'OPTIONS2' | translate }}
-            </div>
-            <div class="hidden-print" collapse="isAdvancedOptionsCollapsed">
-            <div class="form-horizontal top-buffer" style="margin: 10px 10px 5px 10px;">
-            <button ng-click="dataToUrl();">dataToURL</button>
-            <div class="form-group">
-            <span class="control-label col-xs-8">discard above</span>
-            <div class="col-xs-4">
-            <input style="" type="number" class="form-control input-xs" ng-model="cfg.accuracyFactor">
-            </div>
-            </div>
-            </div>
-            <div id="priority-table" style="font-size: 13px;">
-            <table class="table table-hover table-condensed table-striped">
-            <thead>
-            <tr>
-            <th>Prioridade</th>
-            <th>Métrica</th>
-            </tr>
-            </thead>
-            <tbody ui-sortable ng-model="cfg.priorities">
-            <tr ng-repeat="item in cfg.priorities" class="item" style="cursor: move;">
-            <td>{{$index}}</td>
-            <td>{{item}}</td>
-            </tr>
-            </tbody>
-            </table>
-            </div>
-            <div class="col-xs-12">
-            <input ng-repeat="item in cfg.priorities" class="form-control input-xs" ng-model="item">
-            </div>
-            </div>
+            <!--<div class="side-bar-accordion-toggle hidden-print" ng-click="isAdvancedOptionsCollapsed = !isAdvancedOptionsCollapsed">-->
+            <!--<i class="material-icons md-center">build</i>-->
+            <!--<span ng-show="isAdvancedOptionsCollapsed" class="glyphicon glyphicon glyphicon-chevron-down pull-right" style="padding-top: 4px"></span>-->
+            <!--<span ng-hide="isAdvancedOptionsCollapsed" class="glyphicon glyphicon glyphicon-chevron-up pull-right" style="padding-top: 4px"></span>-->
+            <!--{{ 'OPTIONS2' | translate }}-->
+            <!--</div>-->
+            <!--<div class="hidden-print" collapse="isAdvancedOptionsCollapsed">-->
+            <!--<div class="form-horizontal top-buffer" style="margin: 10px 10px 5px 10px;">-->
+            <!--<button ng-click="dataToUrl();">dataToURL</button>-->
+            <!--<div class="form-group">-->
+            <!--<span class="control-label col-xs-8">discard above</span>-->
+            <!--<div class="col-xs-4">-->
+            <!--<input style="" type="number" class="form-control input-xs" ng-model="cfg.accuracyFactor">-->
+            <!--</div>-->
+            <!--</div>-->
+            <!--</div>-->
+            <!--<div id="priority-table" style="font-size: 13px;">-->
+            <!--<table class="table table-hover table-condensed table-striped">-->
+            <!--<thead>-->
+            <!--<tr>-->
+            <!--<th>Prioridade</th>-->
+            <!--<th>Métrica</th>-->
+            <!--</tr>-->
+            <!--</thead>-->
+            <!--<tbody ui-sortable ng-model="cfg.priorities">-->
+            <!--<tr ng-repeat="item in cfg.priorities" class="item" style="cursor: move;">-->
+            <!--<td>{{$index}}</td>-->
+            <!--<td>{{item}}</td>-->
+            <!--</tr>-->
+            <!--</tbody>-->
+            <!--</table>-->
+            <!--</div>-->
+            <!--<div class="col-xs-12">-->
+            <!--<input ng-repeat="item in cfg.priorities" class="form-control input-xs" ng-model="item">-->
+            <!--</div>-->
+            <!--</div>-->
         </div>
 
         <div id="main-content" class="col-sm-9">

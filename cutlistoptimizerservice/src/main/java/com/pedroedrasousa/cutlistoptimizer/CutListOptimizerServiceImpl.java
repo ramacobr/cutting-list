@@ -91,6 +91,7 @@ public class CutListOptimizerServiceImpl implements CutListOptimizerService {
         logger.info("Task[{}] TotalNbrTiles[{}] Tiles: {}", cfg.getTaskId(), tilesToFit.size(), sb);
 
 
+
         int splitGreaterThan = tilesToFit.size() / distincTileDimensions.size();
 
         List<GroupedTileDimensions> groups = new ArrayList<>();
@@ -231,7 +232,7 @@ public class CutListOptimizerServiceImpl implements CutListOptimizerService {
             groupIdx++;
             sb.append(" group[" + groupIdx + "/" + distincGroupTileDimensions.size() + ":" + entry.getKey().toBaseTileDimensions() + "*" + entry.getValue() + "]");
         }
-        logger.info("Task[" + cfg.getTaskId() + "]" + sb.toString());
+        //logger.info("Task[" + cfg.getTaskId() + "]" + sb.toString());
 
 
 
@@ -239,7 +240,7 @@ public class CutListOptimizerServiceImpl implements CutListOptimizerService {
         List<List<TileDimensions>> placeHolders = getPlaceHolders(groups);
 
 
-        logger.debug("Task[" + cfg.getTaskId() + "] Calculating permutations...");
+        //logger.debug("Task[" + cfg.getTaskId() + "] Calculating permutations...");
 
         List<GroupedTileDimensions> DistinctTileDimensions = new ArrayList<>(distincGroupTileDimensions.keySet());
 
@@ -274,7 +275,7 @@ public class CutListOptimizerServiceImpl implements CutListOptimizerService {
         }
 
 
-        logger.debug("Task[" + cfg.getTaskId() + "] Sorting tiles according to permutations...");
+        //logger.debug("Task[" + cfg.getTaskId() + "] Sorting tiles according to permutations...");
 
         // Create lists sorted according to the calculated permutations
         List<List<TileDimensions>> tilesPermutations = new ArrayList<>();
@@ -439,16 +440,16 @@ public class CutListOptimizerServiceImpl implements CutListOptimizerService {
 
 
 
-
-        logger.info("Task[{}] Final solution: stock{} nbrCuts[{}]", cfg.getTaskId(), allSolutions.get(0).getBasesAsString(), allSolutions.get(0).getNbrCuts());
+        RunningTasks.Task task2 = runningTasks.getTask(cfg.getTaskId());
+        logger.info("Task[{}] Final solution: stock{} nbrCuts[{}]" + (task2 == null ? " Deliberately stopped" : ""), cfg.getTaskId(), allSolutions.get(0).getBasesAsString(), allSolutions.get(0).getNbrCuts());
 
         //runningTasks.removeTask(cfg.getTaskId());
-        RunningTasks.Task task2 = runningTasks.getTask(cfg.getTaskId());
+
         if (task2 != null) {
             task2.setStatusMessage("Finished");
-            logger.info("Task[{}] Task finished. Elapsed time: {} ms", cfg.getTaskId(), elapsedTime);
+            //logger.info("Task[{}] Task finished. Elapsed time: {} ms", cfg.getTaskId(), elapsedTime);
         } else {
-            logger.info("Task[{}] Task was deliberately stopped. Elapsed time: {} ms", cfg.getTaskId(), elapsedTime);
+            //logger.info("Task[{}] Task was deliberately stopped. Elapsed time: {} ms", cfg.getTaskId(), elapsedTime);
         }
     }
 

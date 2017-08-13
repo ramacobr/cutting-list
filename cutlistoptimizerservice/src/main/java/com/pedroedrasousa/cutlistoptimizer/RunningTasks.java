@@ -3,6 +3,7 @@ package com.pedroedrasousa.cutlistoptimizer;
 import com.pedroedrasousa.cutlistoptimizer.model.TillingResponseDTO;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -56,6 +57,14 @@ public class RunningTasks {
 
         private int nbrTotalThreads;
 
+        private int percentageDone;
+
+        private int iterationsCompleted;
+
+        private int totalIterations;
+
+        private HashMap<Integer, Integer> iterationsProgress;
+
         public Task(String id) {
             this.id = id;
         }
@@ -97,6 +106,14 @@ public class RunningTasks {
             this.runningThreads = runningThreads;
         }
 
+        public int getPercentageDone() {
+            return percentageDone;
+        }
+
+        public void setPercentageDone(int percentageDone) {
+            this.percentageDone = percentageDone;
+        }
+
         public int incrementRunningThreads() {
             return ++this.runningThreads;
         }
@@ -113,12 +130,36 @@ public class RunningTasks {
             this.nbrTotalThreads = nbrTotalThreads;
         }
 
+        public int getIterationsCompleted() {
+            return iterationsCompleted;
+        }
+
+        public void setIterationsCompleted(int iterationsCompleted) {
+            this.iterationsCompleted = iterationsCompleted;
+        }
+
         public int incrementNbrTotalThreads() {
             return ++this.nbrTotalThreads;
         }
 
         public int decrementNbrTotalThreads() {
             return --this.nbrTotalThreads;
+        }
+
+        public int getTotalIterations() {
+            return totalIterations;
+        }
+
+        public void setTotalIterations(int totalIterations) {
+            this.totalIterations = totalIterations;
+        }
+
+        public HashMap<Integer, Integer> getIterationsProgress() {
+            return iterationsProgress;
+        }
+
+        public void setIterationsProgress(HashMap<Integer, Integer> iterationsProgress) {
+            this.iterationsProgress = iterationsProgress;
         }
     }
 }

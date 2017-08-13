@@ -9,27 +9,22 @@
     <title>CutList Optimizer</title>
     <base href="#"/>
 
-    <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">-->
     <link rel="stylesheet" href="bootstrap-3.3.7-dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="styleSheet" href="angular-ui-grid/ui-grid.min.css"/>
     <link rel="styleSheet" href="angular-ui-grid/ui-grid.min.css"/>
     <link rel="styleSheet" href="angular-ui-grid/custom-ui-grid.css"/>
-    <link rel="styleSheet" href="css/navbar.css?v=1.15"/>
-    <link rel="styleSheet" href="css/toggle.css?v=1.15"/>
-    <link rel="styleSheet" href="css/tiling.css?v=1.15"/>
+    <link rel="styleSheet" href="css/navbar.css"/>
+    <link rel="styleSheet" href="css/toggle.css"/>
+    <link rel="styleSheet" href="css/tiling.css"/>
 
 
-    <!--<script data-require="jquery@*" data-semver="3.1.1" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.js"></script>-->
     <script data-require="jquery@*" data-semver="3.1.1" src="js/jquery-3.2.1.min.js"></script>
 
-    <!--<script data-require="jquery-ui@*" data-semver="1.12.2" src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>-->
     <script data-require="jquery-ui@*" data-semver="1.12.1" src="jquery-ui-1.12.1/jquery-ui.min.js"></script>
 
     <script src="angular/angular.min.js"></script>
-    <!--<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular.min.js"></script>-->
 
-    <!--<script data-require="ui-bootstrap@*" data-semver="0.12.0" src="https://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.12.0.min.js"></script>-->
     <script data-require="ui-bootstrap@*" data-semver="0.12.0" src="js/ui-bootstrap-tpls-0.12.0.min.js"></script>
 
     <script type="text/javascript" src="http://canvg.github.io/canvg/rgbcolor.js"></script>
@@ -37,24 +32,20 @@
     <script type="text/javascript" src="http://canvg.github.io/canvg/canvg.js"></script>
     <script type="text/javascript" src="js/html2canvas.min.js"></script>
 
-    <!--<script src="https://cdn.rawgit.com/canvg/canvg/master/canvg.min.js"></script>-->
-    <!--<script src="https://cdn.rawgit.com/canvg/canvg/master/StackBlur.js"></script>-->
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/jspdf/0.9.0rc1/jspdf.min.js"></script>
-    <!--<script src="https://cdn.rawgit.com/canvg/canvg/master/rgbcolor.js"></script>-->
 
-    <!--<script src="https://d3js.org/d3.v4.min.js"></script>-->
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jspdf/0.9.0rc1/jspdf.min.js"></script>
+
     <script src="d3/d3.min.js"></script>
 
-    <script src="js/labels.js?v=1.15"></script>
-    <script src="js/app.js?v=1.15"></script>
-    <script src="js/draw-service.js?v=1.15"></script>
-    <script src="js/tiling-data.js?v=1.15"></script>
+    <script src="js/labels.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/draw-service.js"></script>
+    <script src="js/tiling-data.js"></script>
     <script src="angular-ui-grid/ui-grid.min.js"></script>
 
     <script src="js/min/sortable.min.js"></script>
     <script src="js/min/angular-translate.min.js"></script>
 
-    <!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>-->
     <script src="bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
 
     <!-- Google Analytics -->
@@ -77,14 +68,12 @@
     <img class="splash-loading" src="icon.png" alt="CutList Optimizer">
 </div>
 
-
-
 <div ng-show="isLoading">
     <div class="dim-background"></div>
     <div ng-cloak class="loading-modal" ng-click="cancelTilingRequest()">
         <div class="spinner">
         </div>
-        <div class="loading-message" ng-bind="statusMessage || 'Loading...'"></div>
+        <div class="loading-message" ng-bind="statusMessage || 'Computing...'"></div>
     </div>
 </div>
 
@@ -99,17 +88,6 @@
             <i class="material-icons md-center md-36">play_arrow</i>
         </div>
     </div>
-
-    <!--<div ng-cloak id="floating-action" class="button-default" ng-show="isLoading && tiling.getNbrMosaics() > 0" ng-click="cancelTilingRequest()">-->
-    <!--<div id="floating-action-content">-->
-    <!--<i class="material-icons md-center md-36">stop</i>-->
-    <!--</div>-->
-    <!--</div>-->
-    <!--<div ng-cloak id="floating-action" class="button-danger" ng-show="isLoading && tiling.getNbrMosaics() === 0" ng-click="cancelTilingRequest()">-->
-    <!--<div id="floating-action-content">-->
-    <!--<i class="material-icons md-center md-36">stop</i>-->
-    <!--</div>-->
-    <!--</div>-->
 </div>
 
 <div ng-cloak id="play-floating" class="hidden-xs" ng-show="tiling.getNbrMosaics() === 0 && !isLoading">
@@ -117,7 +95,6 @@
         <img style="" height="70" alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png'/>
     </a>
 </div>
-
 
 <div ng-cloak class="navbar navbar-default navbar-fixed-top hidden-print">
     <div class="navbar-header navbar-brand" style="float: left;" href="#"><i class="material-icons navbar-logo">dashboard</i><div style="float: right;">&nbsp;&nbsp;{{ 'TITLE' | translate }}</div></div>
@@ -127,31 +104,9 @@
     <button ng-show="isLoading && tiling.getNbrMosaics() > 0" class="btn btn-top button-success hidden-xs" style="width: 110px" ng-click="cancelTilingRequest()" href="#"><i class="material-icons md-center hidden-xs">stop</i></span> {{ 'ACCEPT' | translate }}</button>
     <button ng-show="isLoading && tiling.getNbrMosaics() === 0" class="btn btn-top button-danger hidden-xs" style="width: 110px" ng-click="cancelTilingRequest()" href="#"><i class="material-icons md-center hidden-xs">stop</i></span> {{ 'CANCEL' | translate }}</button>
 
-    <!--<button ng-hide="drawService.getIsSvgPannable()" class="btn btn-top button-default hidden-xs" ng-click="drawService.toggleIsSvgPannable()" data-toggle="tooltip" data-placement="top" title="Mostrar dimensões" href="#"><i class="material-icons md-center hidden-xs">open_with</i></span></button>-->
-    <!--<button ng-show="drawService.getIsSvgPannable()" class="btn btn-top button-enabled hidden-xs" ng-click="drawService.toggleIsSvgPannable()" data-toggle="tooltip" data-placement="top" title="Ocultar dimensões" href="#"><i class="material-icons md-center hidden-xs">open_with</i></span></button>-->
-
-    <!--<button ng-disabled="!drawService.isPannedOrZoomed()" class="btn btn-top button-default hidden-xs" ng-click="drawService.reset()" data-toggle="tooltip" data-placement="top" title="Mostrar dimensões" href="#"><i class="material-icons md-center hidden-xs">zoom_out_map</i></span></button>-->
-    <!--<button ng-show="drawService.isPannedOrZoomed()" class="btn btn-top button-enabled hidden-xs" ng-click="drawService.reset()" data-toggle="tooltip" data-placement="top" title="Ocultar dimensões" href="#"><i class="material-icons md-center hidden-xs">zoom_out_map</i></span></button>-->
-
-
-    <!--<button class="btn btn-top button-default hidden-xs" ng-disabled="invalidData" ng-click="print()" data-toggle="tooltip" data-placement="top" title="Ocultar detalhes" href="#"><i class="material-icons md-center hidden-xs">print</i></span></button>-->
-
-
     <div class="navbar-header pull-right">
 
-        <!--<a class="hidden-xs" href='https://play.google.com/store/apps/details?id=com.cutlistoptimizer&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img style="margin-top: -7px; margin-bottom: -13px" height="52" alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png'/></a>-->
-
-
-
-
-        <!--<button class="btn btn-top button-default hidden-xs" ng-click="print()" data-toggle="tooltip" data-placement="top" title="Ocultar detalhes" href="#"><i class="material-icons md-center hidden-xs">print</i></span></button>-->
-
-        <!--<button class="btn btn-top button-default hidden-xs" ng-click="zoomIn()" data-toggle="tooltip" data-placement="top" title="Zoom Out" href="#"><i class="material-icons md-center hidden-xs">zoom_in</i></span></button>-->
-        <!--<button class="btn btn-top button-default hidden-xs" ng-click="zoomOut()" data-toggle="tooltip" data-placement="top" title="Zoom Out" href="#"><i class="material-icons md-center hidden-xs">zoom_out</i></span></button>-->
-
-
         <button ng-disabled="!drawService.isPannedOrZoomed()" class="btn btn-top button-default hidden-xs" ng-click="drawService.reset()" data-toggle="tooltip" data-placement="top" title="Mostrar dimensões" href="#"><i class="material-icons md-center hidden-xs">zoom_out_map</i></span></button>
-        <!--<button ng-show="drawService.isPannedOrZoomed()" class="btn btn-top button-enabled hidden-xs" ng-click="drawService.reset()" data-toggle="tooltip" data-placement="top" title="Ocultar dimensões" href="#"><i class="material-icons md-center hidden-xs">zoom_out_map</i></span></button>-->
 
         <button ng-hide="drawService.getIsSvgPannable()" class="btn btn-top button-default hidden-xs" ng-click="drawService.toggleIsSvgPannable()" data-toggle="tooltip" data-placement="top" title="Toggle zoom and drag" href="#"><i class="material-icons md-center hidden-xs">open_with</i></span></button>
         <button ng-show="drawService.getIsSvgPannable()" class="btn btn-top button-enabled hidden-xs" ng-click="drawService.toggleIsSvgPannable()" data-toggle="tooltip" data-placement="top" title="Toggle zoom and drag" href="#"><i class="material-icons md-center hidden-xs">open_with</i></span></button>
@@ -163,8 +118,6 @@
         <button class="btn btn-top button-default hidden-xs" ng-click="generatePdf()" data-toggle="tooltip" data-placement="top" title="Export to PDF file" href="#"><i class="material-icons md-center">picture_as_pdf</i></span></button>
 
         <button ng-show="drawService.getIsSvgPannable()" ng-disabled="!drawService.isPannedOrZoomed()" type="button" style="color: white;" class="btn btn-transparent hidden-lg hidden-md hidden-sm" ng-click="drawService.reset()" data-toggle="tooltip" data-placement="top" title="Reset zoom" href="#"><i class="material-icons md-center">zoom_out_map</i></span></button>
-        <!--<button type="button" style="color: white;" class="btn btn-transparent hidden-lg hidden-md hidden-sm" ng-click="generatePdf()" data-toggle="tooltip" data-placement="top" title="Ocultar detalhes" href="#"><i class="material-icons md-center">picture_as_pdf</i></span></button>-->
-
 
         <button type="button" style="color: white; padding-right: 15px" class="btn btn-top dropdown-toggle btn-transparent" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <i class="material-icons md-center md-28">menu</i>
@@ -177,22 +130,8 @@
             <li class="divider"></li>
             <li><a ng-click="changeLanguage('en')" href="#"><i class="material-icons md-center">language</i> English</a></li>
             <li><a ng-click="changeLanguage('pt')" href="#"></span><i class="material-icons md-center">language</i> Português</a></li>
-
-
-
         </ul>
 
-        <!--<div class="btn-group hidden-lg hidden-md hidden-sm hidden-print">-->
-        <!--<button ng-show="invalidData && !isLoading" type="button"ng-click="compute()" class="btn-top btn-transparent" style="color: white">-->
-        <!--<i class="material-icons md-center navbar-icon">play_circle_filled</i>-->
-        <!--</button>-->
-        <!--<button ng-show="!invalidData && !isLoading" type="button"ng-click="compute()" class="btn-top btn-transparent" style="color: white">-->
-        <!--<i class="material-icons md-center navbar-icon">play_circle_outline</i>-->
-        <!--</button>-->
-        <!--<button ng-show="isLoading" type="button"ng-click="cancelTilingRequest()" class="btn-top btn-transparent" style="color: white">-->
-        <!--<i class="material-icons md-center navbar-icon">stop</i>-->
-        <!--</button>-->
-        <!--</div>-->
     </div>
 </div>
 
@@ -292,13 +231,6 @@
 
         <div id="main-content" class="col-sm-9">
 
-            <!--<div ng-show="requestStatus == 1" class="alert alert-danger top-buffer">-->
-            <!--<strong>{{ ('ERROR' | translate) + '\! '}}</strong> {{ 'MSG_NO_PANELS' | translate }}-->
-            <!--</div>-->
-            <!--<div ng-show="requestStatus == 2" class="alert alert-danger top-buffer">-->
-            <!--<strong>{{ ('ERROR' | translate) + '\! '}}</strong> {{ 'MSG_NO_STOCK_PANELS' | translate }}-->
-            <!--</div>-->
-
             <div ng-show="errorMessage" class="alert alert-danger top-buffer">
                 <strong>{{ ('ERROR' | translate) + '\! '}}</strong><span style="white-space: pre-line" ng-bind="errorMessage"></span>
             </div>
@@ -309,8 +241,6 @@
                 </div>
 
                 <div ng-show="isTilingInfoVisible" class="col-md-4 hidden-print top-buffer info-container" style="font-size: 13px;" id="DivRightContent">
-
-
 
                     <div ng-show="tiling.getNbrMosaics() > 0" class="panel panel-default">
                         <div class="panel-heading"><h6 class="panel-title" data-toggle="collapse" data-parent="#accordion" data-target="{{'#info'}}" style="cursor: pointer">Info
@@ -437,9 +367,6 @@
 
     </div>
 
-
-
-
     <div id="pdf-info" style="display: none; background-color:#ffffff; width: 500px; max-width: 500px; padding: 50px 100px 0px 50px; font-size: 20px; font-family: Arial, Helvetica, sans-serif;">
         <div ng-repeat="mosaic in tiling.getMosaics() track by $index">
             <table class="table pdf-table">
@@ -472,28 +399,6 @@
             </table>
         </div>
     </div>
-
-        <!--<div ng-show="tiling.getNbrCuts() > 0">-->
-        <!--<h2>{{ 'CUTS' | translate }}</h2>-->
-        <!--<table id="pdf-cut-table" class="table pdf-table">-->
-        <!--<thead>-->
-        <!--<tr>-->
-        <!--<th> </th>-->
-        <!--<th>{{ 'PANEL' | translate }}</th>-->
-        <!--<th>{{ 'CUT' | translate }}</th>-->
-        <!--<th>{{ 'DIM' | translate }}</th>-->
-        <!--</tr>-->
-        <!--</thead>-->
-        <!--<tbody ng-repeat="mosaic in tiling.getMosaics() track by $index" style="font-size: 13px;">-->
-        <!--<tr ng-repeat="cut in tiling.getCuts($index) track by $index" ng-mouseover="drawService.drawCut(mosaic, cut)" ng-mouseleave="drawService.resetSvgOverlayElems()">-->
-        <!--<th ng-bind="$index + 1"></th>-->
-        <!--<td ><span ng-bind="cut.originalWidth"></span><span class="math">&#215;</span><span ng-bind="cut.originalHeight"></span></td>-->
-        <!--<td><span class="math" ng-bind="cut.isHorizontal ? 'x=' : 'y='"></span><span ng-bind="cut.cutCoords"></span></td>-->
-        <!--<td ng-bind="Math.max(cut.x2 - cut.x1, cut.y2 - cut.y1)"></td>-->
-        <!--</tr>-->
-        <!--</tbody>-->
-        <!--</table>-->
-        <!--</div>-->
     </div>
 
 </body>

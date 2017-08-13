@@ -112,7 +112,7 @@ public class TillingRequestDTO {
 
         @Override
         public String toString() {
-            return id + "[" + width + "x" + height + "]x" + count + (enabled ? "" : "-disabled");
+            return "[" + width + "x" + height + "]*" + count + (enabled ? "" : "-disabled");
         }
     }
 }

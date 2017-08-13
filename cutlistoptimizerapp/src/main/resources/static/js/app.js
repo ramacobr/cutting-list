@@ -126,6 +126,11 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
     $scope.isGridReloding = false;
 
     $scope.changeLanguage = function (langKey) {
+
+        if (typeof android !== 'undefined') {
+            android.audit("Change language to " + langKey);
+        }
+
         $translate.use(langKey);
 
         $scope.isGridReloding = true;
@@ -345,7 +350,8 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
             {width: 2440, height: 1222, count: 10, enabled: true, isUsed: false},
             {width: 2500, height: 1250, count: 10, enabled: true, isUsed: false},
             {width: null, height: null, count: null, enabled: true, isUsed: false}]; // TODO: How to add a new one?
-        //resetStockTiles();
+        // $scope.stockTiles = [];
+        // resetStockTiles();
     }
 
     $scope.sort = function(tiles) {
@@ -555,6 +561,11 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
         }
 
         $scope.tiles.forEach(function(tile) {
+
+            // Do not allow decimal places
+            try { tile.width = tile.width ? Math.floor(tile.width) : null; } catch (e) {};
+            try { tile.height = tile.height ? Math.floor(tile.height) : null; } catch (e) {};
+
             if (tile.width && tile.height && !tile.count) {
                 tile.count = 1;
                 tile.isInvalid = false;
@@ -572,6 +583,11 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
         }
 
         $scope.stockTiles.forEach(function(tile) {
+
+            // Do not allow decimal places
+            try { tile.width = tile.width ? Math.floor(tile.width) : null; } catch (e) {};
+            try { tile.height = tile.height ? Math.floor(tile.height) : null; } catch (e) {};
+
             if (tile.width && tile.height && tile.count === null) {
                 tile.count = 1;
                 tile.isInvalid = false;
@@ -869,6 +885,8 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
 
     $scope.generatePdf = function() {
 
+        var margin = 25;
+
         if (!$scope.tiling.getNbrMosaics()) {
             if (typeof android !== 'undefined') {
                 android.showToast("No data");
@@ -908,8 +926,13 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
         var width = doc.internal.pageSize.width;
         var height = doc.internal.pageSize.height;
 
-
-        doc.addImage(imgData, 'JPEG', 25, 25, width-225, 0);
+        if (elemHeight < height) {
+            // Stretch image to fit page with, height will be proportional.
+            doc.addImage(imgData, 'JPEG', margin, margin, width-225, 0);
+        } else {
+            // Stretch image to fit page height, with will be proportional.
+            doc.addImage(imgData, 'JPEG', margin, margin, 0, height - margin);
+        }
 
         var canvas123 = html2canvas(document.getElementById('pdf-info'), {background:'#fff',
             onrendered: function(canvas) {

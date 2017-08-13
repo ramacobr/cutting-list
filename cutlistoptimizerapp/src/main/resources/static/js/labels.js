@@ -10,7 +10,7 @@ var translationsEN = {
     USED: 'Used',
     CUT_THICKNESS: 'Cut thickness',
     ALLOW_TILE_ROTATION:'Allow tile rotation',
-    FORCE_ONE_STOCK_PANEL: 'Force only one stock panel',
+    FORCE_ONE_STOCK_PANEL: 'Use only one panel from stock',
     CALCULATE: 'Calculate',
     ACCEPT: 'Accept',
     PANEL: 'Panel',

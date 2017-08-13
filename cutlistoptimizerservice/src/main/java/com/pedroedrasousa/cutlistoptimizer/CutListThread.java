@@ -22,7 +22,7 @@ public class CutListThread implements Runnable {
         this.runningTasks = runningTasks;
     }
 
-    private String permutationId;
+    private Integer permutationId;
 
     private List<TileDimensions> tiles;
     private List<Solution> solutions;
@@ -32,11 +32,11 @@ public class CutListThread implements Runnable {
 
     private StockSolution stockSolution;
 
-    public String getPermutationId() {
+    public Integer getPermutationId() {
         return permutationId;
     }
 
-    public void setPermutationId(String permutationId) {
+    public void setPermutationId(Integer permutationId) {
         this.permutationId = permutationId;
     }
 
@@ -162,6 +162,8 @@ public class CutListThread implements Runnable {
 
     void computeSolutions() {
 
+        logger.debug("Thread start");
+
         // Calculate permutation priority based on the number of dimensions change while iterating the tile list
         int permutationPriority = Integer.MAX_VALUE;
         String lastTileDimensions = "";
@@ -178,8 +180,38 @@ public class CutListThread implements Runnable {
         stockSolutionClone.setPermutationPriority(permutationPriority);
         solutions.add(stockSolutionClone);
 
+
+        RunningTasks.Task task = runningTasks.getTask(cfg.getTaskId());
+        if (task == null) {
+            // No task, do nothing.
+            return;
+        }
+
+        int nbrTilesProcessed = 0;
+        int percentageDone = 0;
+
         // Loop through all the titles to be fitted
         for (TileDimensions tile : tiles) {
+
+            // Calculate percentage done based on the number of tiles
+            nbrTilesProcessed++;
+            if (nbrTilesProcessed % 10 == 0) {
+                percentageDone = (int) (((float) nbrTilesProcessed / (float) tiles.size()) * 100);
+
+                task.getIterationsProgress().put(permutationId, percentageDone);
+
+                if (task.getSolution() == null) {
+                    if (task.getPercentageDone() < percentageDone) {
+                        task.setPercentageDone(percentageDone);
+                        task.setStatusMessage("Computing initial solution: " + percentageDone + "%");
+                    }
+                } else {
+                    task.setStatusMessage("Searching for best solution...\nIteration " + permutationId + " - " + percentageDone + "%");
+                }
+
+            }
+
+
 
             List<Solution> newSolutions = new ArrayList<>();
             boolean fitted = false;
@@ -224,8 +256,7 @@ public class CutListThread implements Runnable {
 
             solutions.removeAll(solutionsToRemove);
 
-            RunningTasks.Task task = runningTasks.getTask(cfg.getTaskId());
-            if (task == null) {
+            if (runningTasks.getTask(cfg.getTaskId()) == null) {
                 break;
             }
             //task.setSolution((new TilingResponseDTOBuilder()).setSolutions(solutions.get(0)).setInfo(null).build());
@@ -244,7 +275,7 @@ public class CutListThread implements Runnable {
             //break;
         }
 
-        RunningTasks.Task task = runningTasks.getTask(cfg.getTaskId());
+        //RunningTasks.Task task = runningTasks.getTask(cfg.getTaskId());
         if (task != null) {
 
             // Remove unused panels from the final solution
@@ -258,7 +289,7 @@ public class CutListThread implements Runnable {
 
             task.setSolution((new TilingResponseDTOBuilder()).setSolutions(allSolutions.get(0)).setInfo(null).build());
             task.decrementRunningThreads();
-            task.setStatusMessage("Searching for best solution...\nIteration " + permutationId + " on stock " + stockSolution);
+            //task.setStatusMessage("Searching for best solution...\nIteration " + permutationId);
         } else {
             //logger.info("Task[{}] permutation[{}] Task was deliberately stopped", cfg.getTaskId(), permutationId);
             return;

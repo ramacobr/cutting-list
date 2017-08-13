@@ -240,7 +240,7 @@ public class CutListOptimizerServiceImpl implements CutListOptimizerService {
         List<List<TileDimensions>> placeHolders = getPlaceHolders(groups);
 
 
-        //logger.debug("Task[" + cfg.getTaskId() + "] Calculating permutations...");
+        logger.debug("Task[" + cfg.getTaskId() + "] Calculating permutations...");
 
         List<GroupedTileDimensions> DistinctTileDimensions = new ArrayList<>(distincGroupTileDimensions.keySet());
 
@@ -275,7 +275,7 @@ public class CutListOptimizerServiceImpl implements CutListOptimizerService {
         }
 
 
-        //logger.debug("Task[" + cfg.getTaskId() + "] Sorting tiles according to permutations...");
+        logger.debug("Task[" + cfg.getTaskId() + "] Sorting tiles according to permutations...");
 
         // Create lists sorted according to the calculated permutations
         List<List<TileDimensions>> tilesPermutations = new ArrayList<>();
@@ -311,7 +311,7 @@ public class CutListOptimizerServiceImpl implements CutListOptimizerService {
             }
         }
 
-        //logger.info("Removing duplicated permutations...");
+        logger.info("Removing duplicated permutations...");
 
         removeDuplicatedPermutations(tilesPermutations);
 
@@ -386,7 +386,8 @@ public class CutListOptimizerServiceImpl implements CutListOptimizerService {
 
                     CutListThread cutListThread = new CutListThread();
                     cutListThread.setRunningTasks(runningTasks);
-                    cutListThread.setPermutationId((permutationIndex + 1) + " / " + tilesPermutations.size());
+
+                    cutListThread.setPermutationId(permutationIndex + 1);
                     cutListThread.setAllSolutions(allSolutions);
                     cutListThread.setTiles(tilesPermutation);
                     cutListThread.setCfg(cfg);
@@ -398,6 +399,7 @@ public class CutListOptimizerServiceImpl implements CutListOptimizerService {
                     if (task2 != null) {
                         task2.incrementRunningThreads();
                         task2.incrementNbrTotalThreads();
+                        task2.setTotalIterations(tilesPermutations.size());
                     }
                 }
             }

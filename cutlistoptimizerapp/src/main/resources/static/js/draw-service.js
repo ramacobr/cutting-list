@@ -159,10 +159,12 @@ app.factory('DrawService', function(TilingData, $window, $timeout) {
         var canvasHeight = 0;
         angular.forEach(TilingData.getMosaics(), function(mosaic, index) {
 
-            canvasHeight += mosaic.base.height * data.ratio + 60;
+            var horizontalMargin = (isHighDetail ? 100 : 50);
+
+            canvasHeight += mosaic.base.height * data.ratio + horizontalMargin;
 
             if (index > 0) {
-                mosaic.yOffset = TilingData.getMosaics()[index - 1].yOffset + TilingData.getMosaics()[index - 1].base.height * data.ratio + 50;
+                mosaic.yOffset = TilingData.getMosaics()[index - 1].yOffset + TilingData.getMosaics()[index - 1].base.height * data.ratio + horizontalMargin;
             } else {
                 mosaic.yOffset = 0;
             }

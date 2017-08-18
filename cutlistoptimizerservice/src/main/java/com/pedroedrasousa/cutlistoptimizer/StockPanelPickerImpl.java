@@ -63,7 +63,7 @@ public class StockPanelPickerImpl implements StockPanelPicker {
      * @param exclusions Stock solutions to exclude.
      * @return The computed stock solution, null if the specified criterias could not be fulfilled.
      */
-    private StockSolution getCandidateStockSolution(List<TileDimensions> stockTiles, int requiredArea, int requiredMaxDimension, int smallestTilleArea, int nbrTiles, List<StockSolution> exclusions) {
+    private StockSolution getCandidateStockSolution(List<TileDimensions> stockTiles, long requiredArea, int requiredMaxDimension, long smallestTilleArea, int nbrTiles, List<StockSolution> exclusions) {
         List<Integer> stockTilesIndexes = new ArrayList<>();
 
         // Sort base tiles by area, least area first.
@@ -71,7 +71,7 @@ public class StockPanelPickerImpl implements StockPanelPicker {
         //stockTiles.sort(Comparator.comparingInt(TileDimensions::getArea));
         Collections.sort(stockTiles, new Comparator<TileDimensions>() {
             public int compare(TileDimensions td1, TileDimensions td2) {
-                return Integer.compare(td1.getArea(), td2.getArea());
+                return Long.compare(td1.getArea(), td2.getArea());
             }
         });
 
@@ -96,7 +96,7 @@ public class StockPanelPickerImpl implements StockPanelPicker {
     List<Integer> previousReturnedStockTilesIndexes;
     int prevIndexToIterate;
 
-    private StockSolution iterate(List<TileDimensions> stockTiles, int requiredArea, int requiredMaxDimension, int smallestTilleArea, int nbrTiles, List<StockSolution> exclusions, List<Integer> stockTilesIndexes, int indexToIterate) {
+    private StockSolution iterate(List<TileDimensions> stockTiles, long requiredArea, int requiredMaxDimension, long smallestTilleArea, int nbrTiles, List<StockSolution> exclusions, List<Integer> stockTilesIndexes, int indexToIterate) {
         Integer nextSpareTileIndex = null;
 
         //boolean fits = false;
@@ -155,7 +155,7 @@ public class StockPanelPickerImpl implements StockPanelPicker {
             boolean fits = false;
 
             // Check if the current set of stock tiles meet the required area
-            int remainingRequiredArea = requiredArea;
+            long remainingRequiredArea = requiredArea;
             for (Integer sol : stockTilesIndexes) {
                 remainingRequiredArea -= stockTiles.get(sol).getArea();
 
@@ -201,15 +201,15 @@ public class StockPanelPickerImpl implements StockPanelPicker {
         //stockTiles.sort(Comparator.comparingInt(TileDimensions::getArea));
         Collections.sort(stockTiles, new Comparator<TileDimensions>() {
             public int compare(TileDimensions td1, TileDimensions td2) {
-                return Integer.compare(td1.getArea(), td2.getArea());
+                return Long.compare(td1.getArea(), td2.getArea());
             }
         });
 
         int requiredMaxDimension = 0;
-        int smallestTilleArea = Integer.MAX_VALUE;
+        long smallestTilleArea = Long.MAX_VALUE;
 
         // Calculate the required area for fitting every tile.
-        int requiredArea = 0;
+        long requiredArea = 0;
         for (TileDimensions tile : tilesToFit) {
             requiredArea += tile.getArea();
             if (tile.getMaxDimension() > requiredMaxDimension) {

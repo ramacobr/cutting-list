@@ -13,7 +13,7 @@ public class TillingResponseDTO {
 
     private List<NoFitTile> noFitTiles = new ArrayList<>();
 
-    private int unusedArea;
+    private long unusedArea;
 
     private float hvRatio;
 
@@ -49,11 +49,11 @@ public class TillingResponseDTO {
         this.noFitTiles = noFitTiles;
     }
 
-    public int getUnusedArea() {
+    public long getUnusedArea() {
         return unusedArea;
     }
 
-    public void setUnusedArea(int unusedArea) {
+    public void setUnusedArea(long unusedArea) {
         this.unusedArea = unusedArea;
     }
 
@@ -94,7 +94,7 @@ public class TillingResponseDTO {
 
         private List<Cut> cuts = new ArrayList<>();
 
-        private int usedArea;
+        private long usedArea;
 
         private float usedAreaRatio;
 
@@ -104,7 +104,7 @@ public class TillingResponseDTO {
 
         private int nbrWasted;
 
-        private int unusedArea;
+        private long unusedArea;
 
         private float hvRatio;
 
@@ -132,11 +132,11 @@ public class TillingResponseDTO {
             this.cuts = cuts;
         }
 
-        public int getUsedArea() {
+        public long getUsedArea() {
             return usedArea;
         }
 
-        public void setUsedArea(int usedArea) {
+        public void setUsedArea(long usedArea) {
             this.usedArea = usedArea;
         }
 
@@ -180,11 +180,11 @@ public class TillingResponseDTO {
             this.hvRatio = hvRatio;
         }
 
-        public int getUnusedArea() {
+        public long getUnusedArea() {
             return unusedArea;
         }
 
-        public void setUnusedArea(int unusedArea) {
+        public void setUnusedArea(long unusedArea) {
             this.unusedArea = unusedArea;
         }
     }

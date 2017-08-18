@@ -60,8 +60,8 @@ public class Tile {
         return y2 - y1;
     }
 
-    public int getArea() {
-        return getWidth() * getHeight();
+    public long getArea() {
+        return (long)getWidth() * (long)getHeight();
     }
 
     public int getMaxSide() {

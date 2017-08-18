@@ -198,7 +198,7 @@ public class CutListThread implements Runnable {
             if (nbrTilesProcessed % 10 == 0) {
                 percentageDone = (int) (((float) nbrTilesProcessed / (float) tiles.size()) * 100);
 
-                task.getIterationsProgress().put(permutationId, percentageDone);
+                //task.getIterationsProgress().put(permutationId, percentageDone);
 
                 if (task.getSolution() == null) {
                     if (task.getPercentageDone() < percentageDone) {
@@ -469,12 +469,12 @@ public class CutListThread implements Runnable {
      */
     private static Cut splitHorizontally(TileNode tileNode, int w, int cutThickness, int id) {
 
-        int originalWidth = tileNode.getWidth();
-        int originalHeight = tileNode.getHeight();
-
         if (tileNode == null) {
             return null;
         }
+
+        int originalWidth = tileNode.getWidth();
+        int originalHeight = tileNode.getHeight();
 
         TileNode child1 = new TileNode(
                 tileNode.getX1(),
@@ -532,12 +532,12 @@ public class CutListThread implements Runnable {
      */
     private static Cut splitVertically(TileNode tileNode, int h, int cutThickness, int id) {
 
-        int originalWidth = tileNode.getWidth();
-        int originalHeight = tileNode.getHeight();
-
         if (tileNode == null) {
             return null;
         }
+
+        int originalWidth = tileNode.getWidth();
+        int originalHeight = tileNode.getHeight();
 
         TileNode child1 = new TileNode(
                 tileNode.getX1(),
@@ -565,7 +565,7 @@ public class CutListThread implements Runnable {
                 .setY2(tileNode.getY1() + h)
                 .setOriginalWidth(originalWidth)
                 .setOriginalHeight(originalHeight)
-                .setHorizontal(true)
+                .setHorizontal(false)
                 .setCutCoords(h)
                 .setOriginalTileId(tileNode.getId())
                 .setChild1TileId(child1.getId())

@@ -257,7 +257,7 @@
                                         <tbody>
                                         <tr>
                                             <th>{{ 'PANEL' | translate }}</th>
-                                            <td ng-bind="tiling.getMosaics()[visibleTileInfoIdx].base.width + 'x' + tiling.getMosaics()[visibleTileInfoIdx].base.height"></td>
+                                            <td ng-bind="formatDimension(tiling.getMosaics()[visibleTileInfoIdx].base.width * dimfactor) + 'x' + formatDimension(tiling.getMosaics()[visibleTileInfoIdx].base.height * dimfactor)"></td>
                                         </tr>
                                         <tr>
                                             <th>{{ 'USED_AREA' | translate }}</th>
@@ -265,7 +265,7 @@
                                         </tr>
                                         <tr>
                                             <th>{{ 'WASTED_AREA' | translate }}</th>
-                                            <td ng-bind="tiling.getMosaics()[visibleTileInfoIdx].unusedArea"></td>
+                                            <td ng-bind="formatDimension(tiling.getMosaics()[visibleTileInfoIdx].unusedArea * dimfactor * dimfactor)"></td>
                                         </tr>
                                         <tr>
                                             <th>{{ 'PANELS' | translate }}</th>
@@ -309,8 +309,9 @@
                                             <tbody style="font-size: 13px;">
                                             <tr ng-repeat="tile in tiling.getNoFitTiles() track by $index">
                                                 <!--<th ng-bind="$index + 1"></th>-->
-                                                <td><span ng-bind="tile.width"></span><span class="math">&#215;</span><span ng-bind="tile.height"></span></td>
+                                                <td><span ng-bind="formatDimension(tile.width * dimfactor)"></span><span class="math">&#215;</span><span ng-bind="formatDimension(tile.height * dimfactor)"></span></td>
                                                 <td><span ng-bind="tile.qty"></span></td>
+
                                             </tr>
                                             </tbody>
                                         </table>
@@ -319,6 +320,7 @@
                             </div>
                         </div>
                     </div>
+
 
                     <div id="cuts" ng-show="tiling.getNbrCuts() > 0">
                         <div class="panel-group" id="accordion">
@@ -345,9 +347,9 @@
                                             <tbody ng-repeat="mosaic in tiling.getMosaics() track by $index" style="font-size: 13px;">
                                             <tr ng-repeat="cut in tiling.getCuts($index) track by $index" ng-mouseover="drawService.drawCut(mosaic, cut)" ng-mouseleave="drawService.resetSvgOverlayElems()">
                                                 <th ng-bind="$index + 1"></th>
-                                                <td ><span ng-bind="cut.originalWidth"></span><span class="math">&#215;</span><span ng-bind="cut.originalHeight"></span></td>
-                                                <td><span class="math" ng-bind="cut.isHorizontal ? 'x=' : 'y='"></span><span ng-bind="cut.cutCoords"></span></td>
-                                                <td ng-bind="Math.max(cut.x2 - cut.x1, cut.y2 - cut.y1)"></td>
+                                                <td ><span ng-bind="formatDimension(cut.originalWidth * dimfactor)"></span><span class="math">&#215;</span><span ng-bind="formatDimension(cut.originalHeight * dimfactor)"></span></td>
+                                                <td><span class="math" ng-bind="cut.isHorizontal ? 'x=' : 'y='"></span><span ng-bind="formatDimension(cut.cutCoords * dimfactor)"></span></td>
+                                                <td ng-bind="formatDimension(Math.max(cut.x2 - cut.x1, cut.y2 - cut.y1) * dimfactor)"></td>
                                             </tr>
                                             </tbody>
                                         </table>
@@ -373,7 +375,7 @@
                 <tbody>
                 <tr style="background-color: #ddd">
                     <th>{{('PANEL' | translate) + ' ' + ($index + 1) + '/' + tiling.getNbrMosaics()}}</th>
-                    <th ng-bind="mosaic.base.width + 'x' + mosaic.base.height"></th>
+                    <th ng-bind="mosaic.base.width * dimfactor + 'x' + mosaic.base.height * dimfactor"></th>
                 </tr>
                 <tr>
                     <th>{{ 'USED_AREA' | translate }}</th>
@@ -381,7 +383,7 @@
                 </tr>
                 <tr>
                     <th>{{ 'WASTED_AREA' | translate }}</th>
-                    <td ng-bind="mosaic.unusedArea"></td>
+                    <td ng-bind="mosaic.unusedArea * dimfactor * dimfactor"></td>
                 </tr>
                 <tr>
                     <th>{{ 'PANELS' | translate }}</th>

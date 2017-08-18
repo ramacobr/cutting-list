@@ -28,7 +28,7 @@ public class TileNode {
 
     boolean isAreaTotallyUsed = false;
 
-    int totallyUsedArea = 0;
+    long totallyUsedArea = 0;
 
     public TileNode(int x1, int x2, int y1, int y2) {
         this.tile = new Tile(x1, x2, y1, y2);
@@ -222,14 +222,14 @@ public class TileNode {
         }
     }
 
-    public int getUsedArea() {
+    public long getUsedArea() {
 
         // If we know that this tile are is fully used no need to traverse its children
         if (isAreaTotallyUsed) {
             return totallyUsedArea;
         }
 
-        int area = 0;
+        long area = 0;
 
         if (isFinal) {
             area += this.getArea();
@@ -293,12 +293,12 @@ public class TileNode {
         }
     }
 
-    public int getUnusedArea() {
+    public long getUnusedArea() {
         return getArea() - getUsedArea();
     }
 
     public float getUsedAreaRatio() {
-        return (float)this.getUsedArea() / (float)this.getArea();
+        return (float)((double)this.getUsedArea() / (double)this.getArea());
     }
 
     public boolean hasFinal() {
@@ -358,8 +358,8 @@ public class TileNode {
     }
 
 
-    public int getBiggestArea() {
-        int biggestArea = 0;
+    public long getBiggestArea() {
+        long biggestArea = 0;
 
         if (this.getChild1() == null && this.getChild2() == null && !this.isFinal) {
             biggestArea = this.getArea();
@@ -473,8 +473,8 @@ public class TileNode {
         return tile.getHeight();
     }
 
-    public int getArea() {
-        return getWidth() * getHeight();
+    public long getArea() {
+        return (long)getWidth() * (long)getHeight();
     }
 
     public int getMaxSide() {

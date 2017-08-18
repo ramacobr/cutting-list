@@ -80,8 +80,8 @@ public class StockSolution {
         return bases;
     }
 
-    public int getArea() {
-        int area = 0;
+    public long getArea() {
+        long area = 0;
         for (TileDimensions tileDimensions : stockTileDimensions) {
             area += tileDimensions.getArea();
         }

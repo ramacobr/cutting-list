@@ -73,11 +73,11 @@ public class Mosaic {
         return rootTileNode.getDistictTileSet();
     }
 
-    public int getUsedArea() {
+    public long getUsedArea() {
         return rootTileNode.getUsedArea();
     }
 
-    public int getUnusedArea() {
+    public long getUnusedArea() {
         return rootTileNode.getUnusedArea();
     }
 
@@ -121,7 +121,7 @@ public class Mosaic {
         return (float)Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2)) / (float)Math.sqrt(Math.pow(getRootTileNode().getWidth(), 2) + Math.pow(getRootTileNode().getHeight(), 2));
     }
 
-    public int getBiggestArea() {
+    public long getBiggestArea() {
         return rootTileNode.getBiggestArea();
     }
 }

@@ -27,7 +27,7 @@ public class BaseTileDimensions {
         return Math.max(width, height);
     }
 
-    public int getArea() {
+    public long getArea() {
         return width * height;
     }
 

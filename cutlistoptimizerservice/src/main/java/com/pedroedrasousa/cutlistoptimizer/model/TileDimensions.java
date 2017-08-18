@@ -65,8 +65,8 @@ public class TileDimensions {
         return Math.max(width, height);
     }
 
-    public int getArea() {
-        return width * height;
+    public long getArea() {
+        return (long)width * (long)height;
     }
 
     public TileDimensions rotate90() {

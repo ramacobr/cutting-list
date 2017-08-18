@@ -27,10 +27,14 @@ app.service('TilingService', function($http, $location, TilingData, DrawService)
     }
 
     var taskId;
+    var factor = 1;
 
     this.requestTiling = function(tiles, stockTiles, cfg, callback) {
 
-        var data = {tiles: tiles, baseTiles: stockTiles, configuration: cfg};
+        var data = {tiles: JSON.parse(JSON.stringify(tiles)), baseTiles: JSON.parse(JSON.stringify(stockTiles)), configuration: cfg};
+
+
+
 
         // Generate an unique task id
         taskId = "" + new Date().getTime() + JSON.stringify(data).hashCode();
@@ -551,6 +555,18 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
         gridApi.rowEdit.on.saveRow($scope, $scope.saveBaseTileRow);
     };
 
+    function decimalPlaces(number) {
+        // toFixed produces a fixed representation accurate to 20 decimal places
+        // without an exponent.
+        // The ^-?\d*\. strips off any sign, integer portion, and decimal point
+        // leaving only the decimal fraction.
+        // The 0+$ strips off any trailing zeroes.
+        return ((+number).toFixed(20)).replace(/^-?\d*\.?|0+$/g, '').length;
+    }
+
+    var maxDecimalPlaces = 0;
+    $scope.dimfactor = 1;
+
     function validateTilesArray() {
         if ($scope.getNbrUsedTiles(true) > $scope.tiles.length - 1) {
             addNewTile();
@@ -561,11 +577,6 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
         }
 
         $scope.tiles.forEach(function(tile) {
-
-            // Do not allow decimal places
-            try { tile.width = tile.width ? Math.floor(tile.width) : null; } catch (e) {};
-            try { tile.height = tile.height ? Math.floor(tile.height) : null; } catch (e) {};
-
             if (tile.width && tile.height && !tile.count) {
                 tile.count = 1;
                 tile.isInvalid = false;
@@ -583,11 +594,6 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
         }
 
         $scope.stockTiles.forEach(function(tile) {
-
-            // Do not allow decimal places
-            try { tile.width = tile.width ? Math.floor(tile.width) : null; } catch (e) {};
-            try { tile.height = tile.height ? Math.floor(tile.height) : null; } catch (e) {};
-
             if (tile.width && tile.height && tile.count === null) {
                 tile.count = 1;
                 tile.isInvalid = false;
@@ -650,6 +656,47 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
         $scope.invalidData = true;
         TilingService.cancelTiling();
     };
+
+    function getDimMaxDecimalPlaces() {
+
+        var maxDecimalPlaces = 0;
+
+        angular.forEach($scope.tiles, function(tile, key) {
+            //data.tiles.forEach(function(tile) {
+
+            if (!tile.count) {
+                return;
+            }
+
+            if (tile.width.countDecimals() > maxDecimalPlaces) {
+                maxDecimalPlaces = tile.width.countDecimals();
+            }
+
+            if (tile.height.countDecimals() > maxDecimalPlaces) {
+                maxDecimalPlaces = tile.height.countDecimals();
+            }
+        });
+
+        angular.forEach($scope.stockTiles, function(tile, key) {
+            if (!tile.count) {
+                return;
+            }
+
+            if (tile.width.countDecimals() > maxDecimalPlaces) {
+                maxDecimalPlaces = tile.width.countDecimals();
+            }
+
+            if (tile.height.countDecimals() > maxDecimalPlaces) {
+                maxDecimalPlaces = tile.height.countDecimals();
+            }
+        });
+
+        if ($scope.cfg.cutThickness.countDecimals() > maxDecimalPlaces) {
+            maxDecimalPlaces = $scope.cfg.cutThickness.countDecimals();
+        }
+
+        return maxDecimalPlaces;
+    }
 
     function requestTilling() {
 
@@ -758,7 +805,36 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
         $scope.isLoading = true;
 
 
-        TilingService.requestTiling($scope.tiles, $scope.stockTiles, $scope.cfg, function(response) {
+
+        var tiles = JSON.parse(JSON.stringify($scope.tiles));
+        var stockTiles = JSON.parse(JSON.stringify($scope.stockTiles));
+
+        var maxDecimalPlaces = getDimMaxDecimalPlaces();
+
+        angular.forEach(tiles, function(tile, key) {
+            if (!tile.count) {
+                return;
+            }
+            tile.width = tile.width * Math.pow(10, maxDecimalPlaces);
+            tile.height = tile.height * Math.pow(10, maxDecimalPlaces);
+        });
+
+        angular.forEach(stockTiles, function(tile, key) {
+            if (!tile.count) {
+                return;
+            }
+            tile.width = tile.width * Math.pow(10, maxDecimalPlaces);
+            tile.height = tile.height * Math.pow(10, maxDecimalPlaces);
+        });
+
+        $scope.dimfactor = 1 / Math.pow(10, maxDecimalPlaces);
+
+        // Copy configuration for making the request
+        var cfg = JSON.parse(JSON.stringify($scope.cfg));
+        cfg.cutThickness = cfg.cutThickness * Math.pow(10, maxDecimalPlaces);
+
+
+        TilingService.requestTiling(tiles, stockTiles, cfg, function(response) {
             $scope.requestStatus = response;
         });
 
@@ -828,7 +904,7 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
 
                     angular.forEach($scope.stockTiles, function (stockTile) {
                         //stockTile.isUsed = false;
-                        if (stockTile.width == tile.width && stockTile.height == tile.height) {
+                        if (stockTile.width == tile.width * $scope.dimfactor && stockTile.height == tile.height * $scope.dimfactor) {
                             stockTile.isUsed = true;
                         }
                     });
@@ -840,7 +916,7 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
         $scope.visibleTileInfoIdx = 0;
 
         $timeout(function() {
-            DrawService.init();
+            DrawService.init(false, $scope.dimfactor);
             DrawService.renderTiles();
         });
     }
@@ -961,6 +1037,10 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
 
         document.getElementById( 'pdf-info' ).style.display = 'none';
     };
+
+    $scope.formatDimension = function(dimension) {
+        return Math.round(dimension  * 100) / 100;
+    };
 });
 
 String.prototype.hashCode = function() {
@@ -972,4 +1052,9 @@ String.prototype.hashCode = function() {
         hash |= 0; // Convert to 32bit integer
     }
     return hash;
+};
+
+Number.prototype.countDecimals = function () {
+    if(Math.floor(this.valueOf()) === this.valueOf()) return 0;
+    return this.toString().split(".")[1].length || 0;
 };

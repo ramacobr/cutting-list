@@ -336,7 +336,7 @@ public class CutListOptimizerServiceImpl implements CutListOptimizerService {
         int startWith = 1;
 
         // Calculate the required area for fitting every tile.
-        int requiredArea = 0;
+        long requiredArea = 0;
         for (TileDimensions tile : tilesToFit) {
             requiredArea += tile.getArea();
         }
@@ -357,7 +357,7 @@ public class CutListOptimizerServiceImpl implements CutListOptimizerService {
                 }
                 stockSolution.add(tmpStockSolution);
                 stockSolutionsToExclude.add(tmpStockSolution);
-                usedArea2 = (float) requiredArea / (float) tmpStockSolution.getArea();
+                usedArea2 = (float)((double)requiredArea / (double)tmpStockSolution.getArea());
                 logger.debug("Task[{}] Candidate stock {} usedArea[{}]", cfg.getTaskId(), tmpStockSolution, usedArea2);
             }
 
@@ -375,7 +375,7 @@ public class CutListOptimizerServiceImpl implements CutListOptimizerService {
 
                 for (StockSolution stockSolution1 : stockSolution) {
 
-                    float usedArea = (float) requiredArea / (float) stockSolution1.getArea();
+                    float usedArea = (float)((double)requiredArea / (double) stockSolution1.getArea());
                     int discardAbove = (int) (200.0f * Math.pow(usedArea, 3.0f));
                     discardAbove = Math.max(discardAbove, 100);
 

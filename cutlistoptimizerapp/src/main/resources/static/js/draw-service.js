@@ -3,6 +3,7 @@ app.factory('DrawService', function(TilingData, $window, $timeout) {
     var self = this;
 
     var isHighDetail = false;
+    var dimFactor = 1;
 
     var isSvgPannable = $window.innerWidth >= 768 ? true : false;
 
@@ -119,9 +120,10 @@ app.factory('DrawService', function(TilingData, $window, $timeout) {
     }
 
 
-    function init(isHighDetail) {
+    function init(isHighDetail, dimFactor) {
 
         self.isHighDetail = isHighDetail;
+        self.dimFactor = dimFactor ? dimFactor : 1;
 
         // Reset zoom
         zoom = 1;
@@ -447,7 +449,7 @@ app.factory('DrawService', function(TilingData, $window, $timeout) {
                         .attr("fill", "#000000")
                         .attr('text-anchor', 'middle')
                         .style("font-size", fontSize)
-                        .text(tile.width);
+                        .text(Math.round(tile.width * self.dimFactor * 100) / 100);
 
                     dimensionsSvgElems.push(textWidth);
 
@@ -455,7 +457,7 @@ app.factory('DrawService', function(TilingData, $window, $timeout) {
                         .attr("fill", "#000000")
                         .attr('text-anchor', 'middle')
                         .style("font-size", fontSize)
-                        .text(tile.height)
+                        .text(Math.round(tile.height * self.dimFactor * 100) / 100)
                         .attr("transform", function (d, i) {
                             return "translate(" + ((tile.x) * data.ratio + textMargin) + " , " + (getTileY2(mosaic.base.height, tile.y + tile.height / 2) + mosaic.yOffset) + ") rotate(270)";
                         });
@@ -530,7 +532,7 @@ app.factory('DrawService', function(TilingData, $window, $timeout) {
             .attr("fill", color1)
             .attr('text-anchor', 'middle')
             .style("font-size", fontSize)
-            .text(x2 - x1);
+            .text(Math.round((x2 - x1) * self.dimFactor * 100) / 100);
 
         tmpSvgOverlayElems.push(svgElement);
     };
@@ -584,7 +586,7 @@ app.factory('DrawService', function(TilingData, $window, $timeout) {
             .attr("fill", color1)
             .attr('text-anchor', 'middle')
             .style("font-size", fontSize)
-            .text(y2 - y1)
+            .text(Math.round((y2 - y1) * self.dimFactor * 100) / 100)
             .attr("transform", function (d, i) {
                 return "translate(" + (mosaic.base.width * data.ratio + dimensionsOffset + textMargin) + " , " + (getTileY2(mosaic.base.height, (y1 + ((y2 - y1) / 2))) + mosaic.yOffset) + ") rotate(270)";
             });

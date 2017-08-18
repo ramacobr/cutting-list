@@ -119,7 +119,7 @@ public class Solution {
         //Collections.sort(mosaics, Comparator.comparingInt(Mosaic::getUnusedArea));
         Collections.sort(mosaics, new Comparator<Mosaic>() {
             public int compare(Mosaic m1, Mosaic m2) {
-                return Integer.compare(m1.getUnusedArea(), m2.getUnusedArea());
+                return Long.compare(m1.getUnusedArea(), m2.getUnusedArea());
             }
         });
     }
@@ -214,8 +214,8 @@ public class Solution {
         return usedArea;
     }
 
-    public int getUnusedArea() {
-        int unusedArea = 0;
+    public long getUnusedArea() {
+        long unusedArea = 0;
         for (Mosaic tileNode : mosaics) {
             unusedArea += tileNode.getRootTileNode().getUnusedArea();
         }
@@ -266,8 +266,8 @@ public class Solution {
         return tilesDimensions;
     }
 
-    public int getMostUnusedPanelArea() {
-        int biggestUnusedArea = 0;
+    public long getMostUnusedPanelArea() {
+        long biggestUnusedArea = 0;
         for (Mosaic mosaic : mosaics) {
             if (biggestUnusedArea < mosaic.getUnusedArea()) {
                 biggestUnusedArea = mosaic.getUnusedArea();
@@ -286,8 +286,8 @@ public class Solution {
         return centerOfMassDistToOrigin / (float)getNbrMosaics();
     }
 
-    public int getBiggestArea() {
-        int biggestTileArea = 0;
+    public long getBiggestArea() {
+        long biggestTileArea = 0;
         for (Mosaic mosaic : mosaics) {
                 biggestTileArea = Math.max(mosaic.getBiggestArea(), biggestTileArea);
         }

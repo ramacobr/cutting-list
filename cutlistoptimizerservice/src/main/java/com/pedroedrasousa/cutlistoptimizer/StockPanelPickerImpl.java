@@ -136,7 +136,8 @@ public class StockPanelPickerImpl implements StockPanelPicker {
 //                    stockTilesIndexes.set(indexToIterate + 1, j + 1);   // Reset the index ahead
 
                     // Set indexes ahead to the next size
-                    for (int a = indexToIterate; a < stockTilesIndexes.size(); a++) {
+                    //for (int a = indexToIterate; a < stockTilesIndexes.size(); a++) { TODO: check
+                    for (int a = indexToIterate; a < stockTilesIndexes.size() && j < stockTiles.size(); a++) {
                         stockTilesIndexes.set(a, j++);       // Next index
                     }
 

@@ -119,6 +119,7 @@ app.factory('DrawService', function(TilingData, $window, $timeout) {
         renderTiles();
     }
 
+    var breakPoint = [];
 
     function init(isHighDetail, dimFactor) {
 
@@ -157,6 +158,7 @@ app.factory('DrawService', function(TilingData, $window, $timeout) {
         // Cap ration at 0.5
         //data.ratio = Math.max(data.ratio, 0.5);
 
+        breakPoint.length = 0;
         // Find offset
         var canvasHeight = 0;
         angular.forEach(TilingData.getMosaics(), function(mosaic, index) {
@@ -167,8 +169,13 @@ app.factory('DrawService', function(TilingData, $window, $timeout) {
 
             if (index > 0) {
                 mosaic.yOffset = TilingData.getMosaics()[index - 1].yOffset + TilingData.getMosaics()[index - 1].base.height * data.ratio + horizontalMargin;
+
+                breakPoint.push(mosaic.yOffset);
+
             } else {
+                // No offset for the first mosaic
                 mosaic.yOffset = 0;
+                breakPoint.push(0);
             }
         });
 
@@ -775,6 +782,7 @@ app.factory('DrawService', function(TilingData, $window, $timeout) {
         init: init,
         reset: reset,
         drawCut: drawCut,
-        toggleFontSize: toggleFontSize
+        toggleFontSize: toggleFontSize,
+        breakPoint: breakPoint
     }
 });

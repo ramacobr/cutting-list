@@ -5,7 +5,7 @@ var translationsEN = {
     OPTIONS: 'Options',
     OPTIONS2: 'Advanced Options',
     WIDTH: 'Width',
-    HEIGHT: 'Height',
+    HEIGHT: 'Length',
     QUANTITY: 'Qty',
     USED: 'Used',
     CUT_THICKNESS: 'Cut thickness',
@@ -31,7 +31,13 @@ var translationsEN = {
     DELETE_ALL: "Delete all",
     SORT: "Sort",
     UNABLE_TO_FIT: "Unable to fit",
-    NO_SOLUTION: "No possible solution."
+    NO_SOLUTION: "No possible solution.",
+
+    ALLOW_ZOOM: "Allow image zoom",
+    EXPORT_PDF: "Export to PDF",
+    RESET_DATA: "Reset data",
+
+    SEND_FEEDBACK: "Send feedback"
 };
 
 var translationsPT= {
@@ -41,12 +47,12 @@ var translationsPT= {
     OPTIONS: 'Opções',
     OPTIONS2: 'Opções avançadas',
     WIDTH: 'Largura',
-    HEIGHT: 'Altura',
+    HEIGHT: 'Comprimento',
     QUANTITY: 'Qtd',
     USED: 'Utilizados',
     CUT_THICKNESS: 'Espessura de corte',
     ALLOW_TILE_ROTATION:'Permitir rodar paineis',
-    FORCE_ONE_STOCK_PANEL: 'Forçar apenas um painel',
+    FORCE_ONE_STOCK_PANEL: 'Utilizar apenas uma unidade de stock',
     CALCULATE: 'Calcular',
     ACCEPT: 'Aceitar',
     PANEL: 'Painel',
@@ -67,5 +73,11 @@ var translationsPT= {
     DELETE_ALL: "Eliminar todos",
     SORT: "Ordenar",
     UNABLE_TO_FIT: "Paineis em falta",
-    NO_SOLUTION: "Sem solução possível."
+    NO_SOLUTION: "Sem solução possível.",
+
+    ALLOW_ZOOM: "Permitir zoom",
+    EXPORT_PDF: "Exportar para PDF",
+    RESET_DATA: "Repor todos os dados",
+
+    SEND_FEEDBACK: "Enviar feedback"
 };

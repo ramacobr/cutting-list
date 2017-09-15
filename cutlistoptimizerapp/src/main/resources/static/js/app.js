@@ -95,9 +95,17 @@ app.service('TilingService', function($http, $location, TilingData, DrawService)
 
 app.controller('Tiling', function(TilingService, TilingData, DrawService, $window, $scope, $location, $http, $timeout, $q, $translate, $interval, $anchorScroll, uiGridConstants) {
 
+    // Indicates whether if localstorage is being cleared to avoid saving data on page unload
+    var isResetingData = false;
+
+    // Save data to localsorage on page unload
+    $(window).on('beforeunload', function() {
+        if (!isResetingData) {
+            saveDataLocalStorage();
+        }
+    });
 
     $timeout(function() {
-        //document.getElementById('splash').style.display = 'none';
         $("#splash").fadeOut();
     }, 0);
 
@@ -120,6 +128,7 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
     $scope.invalidData = true;
 
     $scope.isLoading = false;
+    $scope.isBlocked = false;
 
     $scope.visibleTileInfoIdx = 0;
 
@@ -171,15 +180,55 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
         render();
     });
 
-    $scope.isTilesGridVisible = false;
-    $scope.isStockGridVisible = false;
+    if (!$scope.isTilesGridCollapsed) {
+        $scope.isTilesGridCollapsed = false;
+        $timeout( function() {  // Timeout for avoiding problems with grid rendering
+            $scope.isTilesGridCollapsed = angular.fromJson($window.localStorage.getItem("isTilesGridCollapsed" + localStorageKeySuffix));
+            if ($scope.isTilesGridCollapsed === null) {
+                $scope.isTilesGridCollapsed = false;
+            }
+        });
+    }
 
-    $scope.isBaseOptionsCollapsed = false;
-    $scope.isAdvancedOptionsCollapsed = $window.innerWidth < 768? true : true;
+    if (!$scope.isStockGridCollapsed) {
+        $scope.isStockGridCollapsed = false;
+        $timeout( function() {  // Timeout for avoiding problems with grid rendering
+            $scope.isStockGridCollapsed = angular.fromJson($window.localStorage.getItem("isStockGridCollapsed" + localStorageKeySuffix));
+            if ($scope.isStockGridCollapsed === null) {
+                $scope.isStockGridCollapsed = false;
+            }
+        });
+    }
 
-    $scope.isTilingInfoVisible = true;
+    if (!$scope.isBaseOptionsCollapsed) {
+        $scope.isBaseOptionsCollapsed = angular.fromJson($window.localStorage.getItem("isBaseOptionsCollapsed" + localStorageKeySuffix));
+        if ($scope.isBaseOptionsCollapsed === null) {
+            $scope.isBaseOptionsCollapsed = false;
+        }
+    }
 
-    $scope.isCutListCollapsed = false;
+    if (!$scope.isAdvancedOptionsCollapsed) {
+        $scope.isAdvancedOptionsCollapsed = angular.fromJson($window.localStorage.getItem("isAdvancedOptionsCollapsed" + localStorageKeySuffix));
+        if ($scope.isAdvancedOptionsCollapsed === null) {
+            $timeout( function() {  // Timeout for avoiding problems with grid rendering
+                $scope.isAdvancedOptionsCollapsed = false;
+            });
+        }
+    }
+
+    if (!$scope.isTilingInfoVisible) {
+        $scope.isTilingInfoVisible = angular.fromJson($window.localStorage.getItem("isTilingInfoVisible" + localStorageKeySuffix));
+        if ($scope.isTilingInfoVisible === null) {
+            $scope.isTilingInfoVisible = true;
+        }
+    }
+
+    if (!$scope.isCutListCollapsed) {
+        $scope.isCutListCollapsed = angular.fromJson($window.localStorage.getItem("isCutListCollapsed" + localStorageKeySuffix));
+        if ($scope.isCutListCollapsed === null) {
+            $scope.isCutListCollapsed = false;
+        }
+    }
 
 
     $scope.toggleIsTilingInfoVisible = function() {
@@ -188,6 +237,22 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
             render();
         });
     };
+
+    $scope.$watch('cfg.allowTileRotation',function(newValue, oldValue) {
+        if (newValue !== oldValue) {
+            if (typeof android !== 'undefined') {
+                android.audit("Toggle force one stock unit: " + !$scope.cfg.allowTileRotation);
+            }
+        }
+    }, true);
+
+    $scope.$watch('cfg.forceOneBaseTile',function(newValue, oldValue) {
+        if (newValue !== oldValue) {
+            if (typeof android !== 'undefined') {
+                android.audit("Toggle force one stock unit: " + !$scope.cfg.forceOneBaseTile);
+            }
+        }
+    }, true);
 
 
     // Try to load cfg from url params
@@ -339,23 +404,23 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
         addNewStockTile();
     };
     if ($scope.stockTiles === null) {
-        $scope.stockTiles = [
-            {width: 600, height: 300, count: 10, enabled: true, isUsed: false},
-            {width: 600, height: 400, count: 10, enabled: true, isUsed: false},
-            {width: 800, height: 300, count: 10, enabled: true, isUsed: false},
-            {width: 800, height: 400, count: 10, enabled: true, isUsed: false},
-            {width: 1200, height: 300, count: 10, enabled: true, isUsed: false},
-            {width: 1200, height: 400, count: 10, enabled: true, isUsed: false},
-            {width: 1200, height: 600, count: 10, enabled: true, isUsed: false},
-            {width: 1200, height: 800, count: 10, enabled: true, isUsed: false},
-            {width: 2440, height: 400, count: 10, enabled: true, isUsed: false},
-            {width: 2440, height: 600, count: 10, enabled: true, isUsed: false},
-            {width: 2440, height: 800, count: 10, enabled: true, isUsed: false},
-            {width: 2440, height: 1222, count: 10, enabled: true, isUsed: false},
-            {width: 2500, height: 1250, count: 10, enabled: true, isUsed: false},
-            {width: null, height: null, count: null, enabled: true, isUsed: false}]; // TODO: How to add a new one?
-        // $scope.stockTiles = [];
-        // resetStockTiles();
+//        $scope.stockTiles = [
+//            {width: 600, height: 300, count: 10, enabled: true, isUsed: false},
+//            {width: 600, height: 400, count: 10, enabled: true, isUsed: false},
+//            {width: 800, height: 300, count: 10, enabled: true, isUsed: false},
+//            {width: 800, height: 400, count: 10, enabled: true, isUsed: false},
+//            {width: 1200, height: 300, count: 10, enabled: true, isUsed: false},
+//            {width: 1200, height: 400, count: 10, enabled: true, isUsed: false},
+//            {width: 1200, height: 600, count: 10, enabled: true, isUsed: false},
+//            {width: 1200, height: 800, count: 10, enabled: true, isUsed: false},
+//            {width: 2440, height: 400, count: 10, enabled: true, isUsed: false},
+//            {width: 2440, height: 600, count: 10, enabled: true, isUsed: false},
+//            {width: 2440, height: 800, count: 10, enabled: true, isUsed: false},
+//            {width: 2440, height: 1222, count: 10, enabled: true, isUsed: false},
+//            {width: 2500, height: 1250, count: 10, enabled: true, isUsed: false},
+//            {width: null, height: null, count: null, enabled: true, isUsed: false}]; // TODO: How to add a new one?
+        $scope.stockTiles = [];
+        resetStockTiles();
     }
 
     $scope.sort = function(tiles) {
@@ -455,8 +520,8 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
         ];
 
         $scope.gridOptions.columnDefs = [
-            { name: 'width', displayName: $translate.instant('WIDTH'), enableCellEdit: true, type: 'number',  width: '26%'},
             { name: 'height', displayName: $translate.instant('HEIGHT'), enableCellEdit: true, type: 'number',  width: '26%'},
+            { name: 'width', displayName: $translate.instant('WIDTH'), enableCellEdit: true, type: 'number',  width: '26%'},
             { name: 'count', displayName: $translate.instant('QUANTITY'), enableCellEdit: true, type: 'number',  width: '18%'},
             { name: ' ', displayName: ' ', width: '30%', allowCellFocus : false, enableCellEdit: false, cellTemplate: 'template/tile-options-cell-template.html'}
         ];
@@ -521,8 +586,8 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
         ];
 
         $scope.stockGridOptions.columnDefs = [
-            { name: 'width', displayName: $translate.instant('WIDTH'), enableCellEdit: true, enableColumnMenu: false, type: 'number',  width: '26%'},
             { name: 'height', displayName: $translate.instant('HEIGHT'), enableCellEdit: true, enableColumnMenu: false, type: 'number',  width: '26%'},
+            { name: 'width', displayName: $translate.instant('WIDTH'), enableCellEdit: true, enableColumnMenu: false, type: 'number',  width: '26%'},
             { name: 'count', displayName: $translate.instant('QUANTITY'), enableCellEdit: true, type: 'number',  width: '18%' },
             { name: ' ', displayName: ' ', width: '30%', allowCellFocus : false, enableCellEdit: false, enableColumnMenu: false, enableSorting: false, cellTemplate: 'template/stock-tile-options-cell-template.html'}
         ];
@@ -567,21 +632,33 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
     var maxDecimalPlaces = 0;
     $scope.dimfactor = 1;
 
+    var nbrMinTilesArray = 5;
+
     function validateTilesArray() {
         if ($scope.getNbrUsedTiles(true) > $scope.tiles.length - 1) {
             addNewTile();
         }
 
-        while ($scope.tiles.length < 5) {
+        while ($scope.tiles.length < nbrMinTilesArray) {
             addNewTile();
         }
 
-        $scope.tiles.forEach(function(tile) {
+        $scope.tiles.forEach(function(tile, i) {
             if (tile.width && tile.height && !tile.count) {
                 tile.count = 1;
                 tile.isInvalid = false;
             }
+
+            // Remove unused rows
+            if (i > nbrMinTilesArray && tile.width === null && tile.height === null && tile.count === null
+                && $scope.tiles[i + 1]) { // Leave, at least, one empty row.
+                $scope.tiles.splice(i, 1);
+            }
         });
+
+        // Resize the container to fit all
+        var gridContainerHeight = 34 + 26 * $scope.tiles.length;
+        $('#tiles-grid').animate({height: gridContainerHeight}, 100);
     }
 
     function validateStockTilesArray() {
@@ -593,12 +670,22 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
             addNewStockTile();
         }
 
-        $scope.stockTiles.forEach(function(tile) {
+        $scope.stockTiles.forEach(function(tile, i) {
             if (tile.width && tile.height && tile.count === null) {
                 tile.count = 1;
                 tile.isInvalid = false;
             }
+
+            // Remove unused rows
+            if (i > nbrMinTilesArray && tile.width === null && tile.height === null && tile.count === null
+                && $scope.tiles[i + 1]) { // Leave, at least, one empty row.
+                $scope.tiles.splice(i, 1);
+            }
         });
+
+        // Resize the container to fit all
+        var gridContainerHeight = 34 + 26 * $scope.stockTiles.length;
+        $('#stock-tiles-grid').animate({height: gridContainerHeight}, 100);
     }
 
     $scope.removeTile = function(tile) {
@@ -649,13 +736,47 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
         TilingData.setData(null);
         requestTilling();
 
+
     };
 
     $scope.cancelTilingRequest = function() {
         $scope.isLoading = false;
         $scope.invalidData = true;
         TilingService.cancelTiling();
+
+        gridDisappearWorkaround();
     };
+
+
+
+
+    function gridDisappearWorkaround() {
+        // Workaround to avoid grid disappearing
+
+        // Store grid status and disable collapsing
+        var previousIsTilesGridCollapsed = $scope.isTilesGridCollapsed;
+        var previousIsStockGridCollapsed = $scope.isStockGridCollapsed;
+        $scope.isTilesGridCollapsed = false;
+        $scope.isStockGridCollapsed = false;
+
+        $scope.isGridReloding = true;
+        setupTilesGrid();
+        setupStockTilesGrid();
+
+        $timeout(function() {
+            $scope.isGridReloding = false;
+        }, 0);
+
+        $timeout(function() {
+            $scope.isTilesGridCollapsed = previousIsTilesGridCollapsed;
+            $scope.isStockGridCollapsed = previousIsStockGridCollapsed;
+        }, 0);
+
+        // Workaround end
+    }
+
+
+
 
     function getDimMaxDecimalPlaces() {
 
@@ -853,7 +974,14 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
                     $timeout(function() { $scope.invalidData = false; }, 100);
 
 
-                    $scope.scrollTo('main-content');
+
+                    gridDisappearWorkaround();
+
+
+                    // Wait a secont for the grid collapsing
+                    $timeout(function() {
+                        $scope.scrollTo('main-content');
+                    }, 1000);
                 }
 
                 if ($scope.statusMessage && $window.innerWidth < 768 && $scope.tiling.getNbrMosaics() > 0) {
@@ -885,6 +1013,12 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
         $window.localStorage.setItem("tiles" + localStorageKeySuffix, angular.toJson($scope.tiles));
         $window.localStorage.setItem("baseTiles" + localStorageKeySuffix, angular.toJson($scope.stockTiles));
         $window.localStorage.setItem("cfg" + localStorageKeySuffix, angular.toJson($scope.cfg));
+
+        $window.localStorage.setItem("isTilesGridCollapsed" + localStorageKeySuffix, angular.toJson($scope.isTilesGridCollapsed));
+        $window.localStorage.setItem("isStockGridCollapsed" + localStorageKeySuffix, angular.toJson($scope.isStockGridCollapsed));
+        $window.localStorage.setItem("isBaseOptionsCollapsed" + localStorageKeySuffix, angular.toJson($scope.isBaseOptionsCollapsed));
+        $window.localStorage.setItem("isAdvancedOptionsCollapsed" + localStorageKeySuffix, angular.toJson($scope.isAdvancedOptionsCollapsed));
+        $window.localStorage.setItem("isTilingInfoVisible" + localStorageKeySuffix, angular.toJson($scope.isTilingInfoVisible));
     }
 
     function render() {
@@ -935,6 +1069,8 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
             $window.location.reload(true);
             $location.search('tiles', null);
             $location.search('stockTiles', null);
+
+            isResetingData = true;
         }
     };
 
@@ -960,8 +1096,17 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
     };
 
     $scope.generatePdf = function() {
+        $scope.isBlocked = true;
+        $scope.statusMessage = "Exporting to PDF...";
+        $timeout(
+            function () { generatePdf2(); }
+        );
+    }
+
+    function generatePdf2() {
 
         var margin = 25;
+        var bottomMargin = 50;
 
         if (!$scope.tiling.getNbrMosaics()) {
             if (typeof android !== 'undefined') {
@@ -972,19 +1117,14 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
             return;
         }
 
-        if (typeof android !== 'undefined') {
-            android.showToast("Creating PDF file...");
-        }
-
         DrawService.reset(true);
 
         window.scrollTo(0, 0);
-        document.getElementById('pdf-info').style.display = 'block';
-        var elemWidth = document.getElementById('pdf-info').offsetWidth;
-        var elemHeight = document.getElementById('pdf-info').offsetHeight;
 
         // Get svg markup as string
         var svg = document.getElementById('svg-canvas').innerHTML;
+        var svgWidth = document.getElementById('svg-canvas').firstChild.getAttribute("width");
+        var svgHeight = document.getElementById('svg-canvas').firstChild.getAttribute("height");
 
         if (svg) {
             svg = svg.replace(/\r?\n|\r/g, '').trim();
@@ -995,52 +1135,136 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
         canvg(canvas, svg);
 
 
-        var imgData = canvas.toDataURL('image/jpeg');
+        function getClippedRegion(image, x, y, width, height) {
+            var canvas = document.createElement('canvas'), ctx = canvas.getContext('2d');
+            canvas.width = width;
+            canvas.height = height;
+            ctx.drawImage(image, x, y, width, height,  0, 0, width, height);
+            return canvas;
+        }
 
         // Generate PDF
         var doc = new jsPDF('p', 'pt', 'a4');
-        var width = doc.internal.pageSize.width;
+        var pdfWidth = doc.internal.pageSize.width;
         var height = doc.internal.pageSize.height;
 
-        if (elemHeight < height) {
-            // Stretch image to fit page with, height will be proportional.
-            doc.addImage(imgData, 'JPEG', margin, margin, width-225, 0);
-        } else {
-            // Stretch image to fit page height, with will be proportional.
-            doc.addImage(imgData, 'JPEG', margin, margin, 0, height - margin);
+        var infoImgData = [];
+        var infoImgWidth = [];
+        var infoImgHeight = [];
+
+        var diagramImageData = [];
+        var diagramImgWidth = [];
+        var diagramImgHeight = [];
+
+        var clip;
+        var imgData;
+
+        // Create promises to be resolved once all images are rendered
+        var promises = [];
+        var deferreds = [];
+        for (i = 0; i < DrawService.breakPoint.length; i += $scope.nbrDiagramsPerPag) {
+            var deferred = $q.defer();
+            promises.push(deferred.promise);
+            deferreds.push(deferred);
         }
 
-        var canvas123 = html2canvas(document.getElementById('pdf-info'), {background:'#fff',
-            onrendered: function(canvas) {
-                var imgData2 = canvas.toDataURL('image/jpeg');
-                doc.addImage(imgData2, 'JPEG', width-200, 25, 200, elemHeight * 200 / elemWidth);
+        resolvedPromiseIndex = -1;
+        for (i = 0; i < DrawService.breakPoint.length; i += $scope.nbrDiagramsPerPag) {
+            clipY = DrawService.breakPoint[i];
+            clipHeight = DrawService.breakPoint[i + $scope.nbrDiagramsPerPag] - clipY;
+            if (isNaN(clipHeight)) {
+                clipHeight = svgHeight - clipY;
+            }
+            clip = getClippedRegion(canvas, 0, clipY, svgWidth, clipHeight ? clipHeight : svgHeight);
+            imgData = clip.toDataURL('image/jpeg');
 
-                if (typeof android !== 'undefined') {
-                    var pdfData = doc.output('dataurlstring');
-                    android.savePdf(pdfData);
+            diagramImageData.push(imgData);
+            diagramImgWidth.push(parseInt(clip.getAttribute("width")));
+            diagramImgHeight.push(parseInt(clip.getAttribute("height")));
+
+            var infoElement = document.getElementById('pdf-info-' + i / $scope.nbrDiagramsPerPag);
+            infoElement.style.display = 'block';
+
+            infoImgWidth.push(infoElement.offsetWidth);
+            infoImgHeight.push(infoElement.offsetHeight);
+
+            // Store PDF info table image
+            resolvedPromiseIndex++;
+            html2canvas(document.getElementById('pdf-info-' + i / $scope.nbrDiagramsPerPag), {
+                background: '#fff',
+                onrendered: function(resolvedPromiseIndex) { return function (canvas) {
+                    if (resolvedPromiseIndex > 0) {
+                        promises[resolvedPromiseIndex - 1].then(function() {
+                            // Wait for previous render
+                            var imgData2 = canvas.toDataURL('image/jpeg');
+                            infoImgData.push(imgData2);
+                            deferreds[resolvedPromiseIndex].resolve();
+                        });
+                    } else {
+                        var imgData2 = canvas.toDataURL('image/jpeg');
+                        infoImgData.push(imgData2);
+                        deferreds[resolvedPromiseIndex].resolve();
+                    }
+                }}(resolvedPromiseIndex)
+            });
+        }
+
+        // Execute after all images were rendered
+        $q.all(promises).then(function() {
+            infoImgData.forEach(function(infoImgDataElem, i) {
+                if (diagramImgWidth[i] >= diagramImgHeight[i] / 2) {
+                    doc.addImage(diagramImageData[i], 'JPEG', margin, margin, pdfWidth-225, 0);
                 } else {
-                    var today = new Date();
-                    var filename = 'cutlist-optimizer_';
-                    filename += today.getFullYear().toString();
-                    filename += '-' + ("0" + (today.getMonth()+1).toString()).slice(-2);
-                    filename += '-' + ("0" + today.getDate().toString()).slice(-2);
-                    filename += '_' + ("0" + today.getHours().toString()).slice(-2);
-                    filename += '-' + ("0" + today.getMinutes().toString()).slice(-2);
-                    filename += '-' + ("0" + today.getSeconds().toString()).slice(-2);
-                    filename += '.pdf';
-                    doc.save(filename);
+                    // Stretch image to fit page height, with will be proportional.
+                    doc.addImage(diagramImageData[i], 'JPEG', margin, margin, 0, height - bottomMargin);
                 }
 
-                DrawService.reset(false);
+                doc.addImage(infoImgDataElem, 'JPEG', pdfWidth-200, 25, 200, infoImgHeight[i] * 200 / infoImgWidth[i]);
+                if (i < infoImgData.length - 1) {
+                    doc.addPage();
+                }
+            });
+
+            if (typeof android !== 'undefined') {
+                var pdfData = doc.output('dataurlstring');
+                android.savePdf(pdfData);
+            } else {
+                var today = new Date();
+                var filename = 'cutlist-optimizer_';
+                filename += today.getFullYear().toString();
+                filename += '-' + ("0" + (today.getMonth() + 1).toString()).slice(-2);
+                filename += '-' + ("0" + today.getDate().toString()).slice(-2);
+                filename += '_' + ("0" + today.getHours().toString()).slice(-2);
+                filename += '-' + ("0" + today.getMinutes().toString()).slice(-2);
+                filename += '-' + ("0" + today.getSeconds().toString()).slice(-2);
+                filename += '.pdf';
+                doc.save(filename);
             }
+
+            DrawService.reset(false);
+
+            // Hide info tables
+            for (i = 0; i < DrawService.breakPoint.length; i += $scope.nbrDiagramsPerPag) {
+                document.getElementById('pdf-info-' + i / $scope.nbrDiagramsPerPag).style.display = 'none';
+            }
+
+            $scope.statusMessage = null;
+            $scope.isBlocked = false;
         });
 
-        document.getElementById( 'pdf-info' ).style.display = 'none';
+
+
     };
 
     $scope.formatDimension = function(dimension) {
         return Math.round(dimension  * 100) / 100;
     };
+
+    $scope.range = function(n) {
+        return new Array(n);
+    };
+
+    $scope.nbrDiagramsPerPag = 4;
 });
 
 String.prototype.hashCode = function() {

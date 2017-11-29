@@ -10,14 +10,14 @@
     <base href="#"/>
 
     <link rel="stylesheet" href="bootstrap-3.3.7-dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <!--<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">-->
     <link rel="styleSheet" href="angular-ui-grid/ui-grid.min.css"/>
     <link rel="styleSheet" href="angular-ui-grid/ui-grid.min.css"/>
     <link rel="styleSheet" href="angular-ui-grid/custom-ui-grid.css"/>
     <link rel="styleSheet" href="css/navbar.css"/>
     <link rel="styleSheet" href="css/toggle.css"/>
     <link rel="styleSheet" href="css/tiling.css"/>
-
+    <link rel="styleSheet" href="material-icons/material-icons.css"/>
 
     <script data-require="jquery@*" data-semver="3.1.1" src="js/jquery-3.2.1.min.js"></script>
 
@@ -96,6 +96,8 @@
         <!--<img style="" height="70" alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png'/>-->
     <!--</a>-->
 <!--</div>-->
+
+
 
 <div id="navbar" ng-cloak class="navbar navbar-default navbar-fixed-top hidden-print">
     <div class="navbar-header navbar-brand" style="float: left;" href="#"><i class="material-icons navbar-logo">dashboard</i><div style="float: right;">&nbsp;&nbsp;{{ 'TITLE' | translate }}</div></div>
@@ -233,6 +235,17 @@
         </div>
 
         <div id="main-content" class="col-sm-9">
+
+            <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+            <!-- cutlistoptimizer -->
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-8842771397553828"
+                 data-ad-slot="8178697603"
+                 data-ad-format="auto"></ins>
+            <script>
+                (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
 
             <div ng-show="errorMessage" class="alert alert-danger top-buffer">
                 <strong>{{ ('ERROR' | translate) + '\! '}}</strong><span style="white-space: pre-line" ng-bind="errorMessage"></span>
@@ -481,6 +494,8 @@
         <!--</div>-->
     <!--</div>-->
     </div>
+
+
 
 </body>
 </html>

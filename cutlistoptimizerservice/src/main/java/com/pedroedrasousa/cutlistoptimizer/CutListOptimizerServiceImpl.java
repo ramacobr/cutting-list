@@ -376,8 +376,10 @@ public class CutListOptimizerServiceImpl implements CutListOptimizerService {
                 for (StockSolution stockSolution1 : stockSolution) {
 
                     float usedArea = (float)((double)requiredArea / (double) stockSolution1.getArea());
-                    int discardAbove = (int) (200.0f * Math.pow(usedArea, 3.0f));
-                    discardAbove = Math.max(discardAbove, 100);
+                    int discardAbove = (int) (100.0f * Math.pow(usedArea, 3.0f));
+                    discardAbove = Math.max(discardAbove, 80);
+
+                    logger.debug("Task[" + cfg.getTaskId() + "] discardAbove " + discardAbove);
 
                     // TODO: Only for debug purposes
                     if (cfg.getAccuracyFactor() > 0) {

@@ -404,23 +404,23 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
         addNewStockTile();
     };
     if ($scope.stockTiles === null) {
-       $scope.stockTiles = [
-           {width: 600, height: 300, count: 10, enabled: true, isUsed: false},
-           {width: 600, height: 400, count: 10, enabled: true, isUsed: false},
-           {width: 800, height: 300, count: 10, enabled: true, isUsed: false},
-           {width: 800, height: 400, count: 10, enabled: true, isUsed: false},
-           {width: 1200, height: 300, count: 10, enabled: true, isUsed: false},
-           {width: 1200, height: 400, count: 10, enabled: true, isUsed: false},
-           {width: 1200, height: 600, count: 10, enabled: true, isUsed: false},
-           {width: 1200, height: 800, count: 10, enabled: true, isUsed: false},
-           {width: 2440, height: 400, count: 10, enabled: true, isUsed: false},
-           {width: 2440, height: 600, count: 10, enabled: true, isUsed: false},
-           {width: 2440, height: 800, count: 10, enabled: true, isUsed: false},
-           {width: 2440, height: 1222, count: 10, enabled: true, isUsed: false},
-           {width: 2500, height: 1250, count: 10, enabled: true, isUsed: false},
-           {width: null, height: null, count: null, enabled: true, isUsed: false}]; // TODO: How to add a new one?
-        // $scope.stockTiles = [];
-        // resetStockTiles();
+//        $scope.stockTiles = [
+//            {width: 600, height: 300, count: 10, enabled: true, isUsed: false},
+//            {width: 600, height: 400, count: 10, enabled: true, isUsed: false},
+//            {width: 800, height: 300, count: 10, enabled: true, isUsed: false},
+//            {width: 800, height: 400, count: 10, enabled: true, isUsed: false},
+//            {width: 1200, height: 300, count: 10, enabled: true, isUsed: false},
+//            {width: 1200, height: 400, count: 10, enabled: true, isUsed: false},
+//            {width: 1200, height: 600, count: 10, enabled: true, isUsed: false},
+//            {width: 1200, height: 800, count: 10, enabled: true, isUsed: false},
+//            {width: 2440, height: 400, count: 10, enabled: true, isUsed: false},
+//            {width: 2440, height: 600, count: 10, enabled: true, isUsed: false},
+//            {width: 2440, height: 800, count: 10, enabled: true, isUsed: false},
+//            {width: 2440, height: 1222, count: 10, enabled: true, isUsed: false},
+//            {width: 2500, height: 1250, count: 10, enabled: true, isUsed: false},
+//            {width: null, height: null, count: null, enabled: true, isUsed: false}]; // TODO: How to add a new one?
+        $scope.stockTiles = [];
+        resetStockTiles();
     }
 
     $scope.sort = function(tiles) {

@@ -244,8 +244,11 @@
                  data-ad-slot="8178697603"
                  data-ad-format="auto"></ins>
             <script>
-                (adsbygoogle = window.adsbygoogle || []).push({});
+                //                    (adsbygoogle = window.adsbygoogle || []).push({});
+                $(document).ready(function(){(adsbygoogle = window.adsbygoogle || []).push({})})
             </script>
+
+
 
             <div ng-show="errorMessage" class="alert alert-danger top-buffer">
                 <strong>{{ ('ERROR' | translate) + '\! '}}</strong><span style="white-space: pre-line" ng-bind="errorMessage"></span>
@@ -459,6 +462,52 @@
             </div>
         </div>
     </div>
+
+    <div ng-repeat="a in range(Math.ceil(tiling.getMosaics().length/nbrDiagramsPerPag)) track by $index">
+        <div id="pdf-cuts-{{$index}}" style="display: none; background-color:#ffffff; width: 500px; max-width: 500px; padding: 50px 100px 0px 50px; font-size: 20px; font-family: Arial, Helvetica, sans-serif;">
+            <div ng-repeat="mosaic in tiling.getMosaics().slice($index * nbrDiagramsPerPag, Math.min($index * nbrDiagramsPerPag + nbrDiagramsPerPag, tiling.getMosaics().length)) track by $index">
+                <table class="table pdf-table">
+                    <thead>
+                    <tr style="background-color: #ddd">
+                        <th> </th>
+                        <th>{{ 'PANEL' | translate }}</th>
+                        <th>{{ 'CUT' | translate }}</th>
+                        <th>{{ 'DIM' | translate }}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="cut in tiling.getCuts($index) track by $index">
+                        <th ng-bind="$index + 1"></th>
+                        <td ><span ng-bind="formatDimension(cut.originalWidth * dimfactor)"></span><span class="math">&#215;</span><span ng-bind="formatDimension(cut.originalHeight * dimfactor)"></span></td>
+                        <td><span class="math" ng-bind="cut.isHorizontal ? 'x=' : 'y='"></span><span ng-bind="formatDimension(cut.cutCoords * dimfactor)"></span></td>
+                        <td ng-bind="formatDimension(Math.max(cut.x2 - cut.x1, cut.y2 - cut.y1) * dimfactor)"></td>
+                    </tr>
+                    <!--<tr>-->
+                        <!--<th>{{ 'USED_AREA' | translate }}</th>-->
+                        <!--<td ng-bind="Math.round(mosaic.usedAreaRatio * 100) + '%'"></td>-->
+                    <!--</tr>-->
+                    <!--<tr>-->
+                        <!--<th>{{ 'WASTED_AREA' | translate }}</th>-->
+                        <!--<td ng-bind="mosaic.unusedArea * dimfactor * dimfactor"></td>-->
+                    <!--</tr>-->
+                    <!--<tr>-->
+                        <!--<th>{{ 'PANELS' | translate }}</th>-->
+                        <!--<td ng-bind="mosaic.nbrHorizontal + mosaic.nbrVertical"></td>-->
+                    <!--</tr>-->
+                    <!--<tr>-->
+                        <!--<th>{{ 'WASTED_PANELS' | translate }}</th>-->
+                        <!--<td ng-bind="mosaic.nbrWasted"></td>-->
+                    <!--</tr>-->
+                    <!--<tr>-->
+                        <!--<th>{{ 'CUTS' | translate }}</th>-->
+                        <!--<td ng-bind="mosaic.cuts.length"></td>-->
+                    <!--</tr>-->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
 </div>
 
     <!--<div id="pdf-info" style="display: none; background-color:#ffffff; width: 500px; max-width: 500px; padding: 50px 100px 0px 50px; font-size: 20px; font-family: Arial, Helvetica, sans-serif;">-->

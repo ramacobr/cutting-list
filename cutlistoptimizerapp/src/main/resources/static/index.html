@@ -482,26 +482,6 @@
                         <td><span class="math" ng-bind="cut.isHorizontal ? 'x=' : 'y='"></span><span ng-bind="formatDimension(cut.cutCoords * dimfactor)"></span></td>
                         <td ng-bind="formatDimension(Math.max(cut.x2 - cut.x1, cut.y2 - cut.y1) * dimfactor)"></td>
                     </tr>
-                    <!--<tr>-->
-                        <!--<th>{{ 'USED_AREA' | translate }}</th>-->
-                        <!--<td ng-bind="Math.round(mosaic.usedAreaRatio * 100) + '%'"></td>-->
-                    <!--</tr>-->
-                    <!--<tr>-->
-                        <!--<th>{{ 'WASTED_AREA' | translate }}</th>-->
-                        <!--<td ng-bind="mosaic.unusedArea * dimfactor * dimfactor"></td>-->
-                    <!--</tr>-->
-                    <!--<tr>-->
-                        <!--<th>{{ 'PANELS' | translate }}</th>-->
-                        <!--<td ng-bind="mosaic.nbrHorizontal + mosaic.nbrVertical"></td>-->
-                    <!--</tr>-->
-                    <!--<tr>-->
-                        <!--<th>{{ 'WASTED_PANELS' | translate }}</th>-->
-                        <!--<td ng-bind="mosaic.nbrWasted"></td>-->
-                    <!--</tr>-->
-                    <!--<tr>-->
-                        <!--<th>{{ 'CUTS' | translate }}</th>-->
-                        <!--<td ng-bind="mosaic.cuts.length"></td>-->
-                    <!--</tr>-->
                     </tbody>
                 </table>
             </div>

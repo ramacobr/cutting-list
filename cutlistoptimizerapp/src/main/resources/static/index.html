@@ -130,10 +130,11 @@
             <li><a class="hidden-lg hidden-md hidden-sm" ng-click="generatePdf()" href="#"></span><i class="material-icons md-center">insert_drive_file</i> {{ 'EXPORT_PDF' | translate }}</a></li>
             <li><a ng-click="reset()" href="#"><i class="material-icons md-center">cached</i> {{ 'RESET_DATA' | translate }}</a></li>
             <li><a href="mailto:pedroedrasousa@gmail.com?subject=CutList Optimizer feedback"><i class="material-icons md-center">feedback</i> {{ 'SEND_FEEDBACK' | translate }}</a></li>
-            <li><a href="./privacy-policy/privacy_policy.html"><i class="material-icons md-center">lock</i> Privacy policy</a></li>
+            <li><a href="privacy_policy.html"><i class="material-icons md-center">lock</i> Privacy policy</a></li>
             <li class="divider"></li>
             <li><a ng-click="changeLanguage('en')" href="#"><i class="material-icons md-center">language</i> English</a></li>
             <li><a ng-click="changeLanguage('pt')" href="#"></span><i class="material-icons md-center">language</i> Português</a></li>
+            <li><a ng-click="changeLanguage('fa')" href="#"></span><i class="material-icons md-center">language</i> Persian</a></li>
 
         </ul>
 
@@ -236,17 +237,36 @@
 
         <div id="main-content" class="col-sm-9">
 
+
+
+
             <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-            <!-- cutlistoptimizer -->
+            <!-- cutlistoptimizer-1 -->
             <ins class="adsbygoogle"
                  style="display:block"
                  data-ad-client="ca-pub-8842771397553828"
-                 data-ad-slot="8178697603"
+                 data-ad-slot="1598046617"
                  data-ad-format="auto"></ins>
             <script>
-                //                    (adsbygoogle = window.adsbygoogle || []).push({});
                 $(document).ready(function(){(adsbygoogle = window.adsbygoogle || []).push({})})
             </script>
+
+
+
+
+
+
+            <!--<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>-->
+            <!--&lt;!&ndash; cutlistoptimizer &ndash;&gt;-->
+            <!--<ins class="adsbygoogle"-->
+                 <!--style="display:block"-->
+                 <!--data-ad-client="ca-pub-8842771397553828"-->
+                 <!--data-ad-slot="8178697603"-->
+                 <!--data-ad-format="auto"></ins>-->
+            <!--<script>-->
+                <!--//                    (adsbygoogle = window.adsbygoogle || []).push({});-->
+                <!--$(document).ready(function(){(adsbygoogle = window.adsbygoogle || []).push({})})-->
+            <!--</script>-->
 
 
 
@@ -429,7 +449,9 @@
 
 <div >
     <div ng-repeat="a in range(Math.ceil(tiling.getMosaics().length/nbrDiagramsPerPag)) track by $index">
-        <div id="pdf-info-{{$index}}" style="display: none; background-color:#ffffff; width: 500px; max-width: 500px; padding: 50px 100px 0px 50px; font-size: 20px; font-family: Arial, Helvetica, sans-serif;">
+        <!--<div id="pdf-info-{{$index}}" style="display: none; background-color:#ffffff; width: 500px; max-width: 500px; padding: 50px 100px 0px 50px; font-size: 20px; font-family: Arial, Helvetica, sans-serif;">-->
+            <div id="pdf-info-{{$index}}" style="display: none; background-color:#ffffff; width: 500px; max-width: 500px; padding: 50px 100px 0px 50px; font-size: 20px; font-family: Arial, Helvetica, sans-serif;">
+
             <div ng-repeat="mosaic in tiling.getMosaics().slice($index * nbrDiagramsPerPag, Math.min($index * nbrDiagramsPerPag + nbrDiagramsPerPag, tiling.getMosaics().length)) track by $index">
                 <table class="table pdf-table">
                     <tbody>
@@ -443,7 +465,8 @@
                     </tr>
                     <tr>
                         <th>{{ 'WASTED_AREA' | translate }}</th>
-                        <td ng-bind="mosaic.unusedArea * dimfactor * dimfactor"></td>
+                        <td ng-bind="formatDimension(mosaic.unusedArea * dimfactor * dimfactor)"></td>
+
                     </tr>
                     <tr>
                         <th>{{ 'PANELS' | translate }}</th>
@@ -457,31 +480,31 @@
                         <th>{{ 'CUTS' | translate }}</th>
                         <td ng-bind="mosaic.cuts.length"></td>
                     </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
 
-    <div ng-repeat="a in range(Math.ceil(tiling.getMosaics().length/nbrDiagramsPerPag)) track by $index">
-        <div id="pdf-cuts-{{$index}}" style="display: none; background-color:#ffffff; width: 500px; max-width: 500px; padding: 50px 100px 0px 50px; font-size: 20px; font-family: Arial, Helvetica, sans-serif;">
-            <div ng-repeat="mosaic in tiling.getMosaics().slice($index * nbrDiagramsPerPag, Math.min($index * nbrDiagramsPerPag + nbrDiagramsPerPag, tiling.getMosaics().length)) track by $index">
-                <table class="table pdf-table">
-                    <thead>
-                    <tr style="background-color: #ddd">
-                        <th> </th>
-                        <th>{{ 'PANEL' | translate }}</th>
-                        <th>{{ 'CUT' | translate }}</th>
-                        <th>{{ 'DIM' | translate }}</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr ng-repeat="cut in tiling.getCuts($index) track by $index">
-                        <th ng-bind="$index + 1"></th>
-                        <td ><span ng-bind="formatDimension(cut.originalWidth * dimfactor)"></span><span class="math">&#215;</span><span ng-bind="formatDimension(cut.originalHeight * dimfactor)"></span></td>
-                        <td><span class="math" ng-bind="cut.isHorizontal ? 'x=' : 'y='"></span><span ng-bind="formatDimension(cut.cutCoords * dimfactor)"></span></td>
-                        <td ng-bind="formatDimension(Math.max(cut.x2 - cut.x1, cut.y2 - cut.y1) * dimfactor)"></td>
-                    </tr>
+
+
+                    <table class="table pdf-table">
+                        <thead>
+                        <tr style="background-color: #ddd">
+                            <th> </th>
+                            <th>{{ 'PANEL' | translate }}</th>
+                            <th>{{ 'CUT' | translate }}</th>
+                            <th>{{ 'DIM' | translate }}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <!--<tbody ng-repeat="mosaic in tiling.getMosaics() track by $index" style="font-size: 13px;">-->
+                        <tr ng-repeat="cut in tiling.getCuts($parent.$index * nbrDiagramsPerPag + $index) track by $index">
+                            <th ng-bind="$index + 1"></th>
+                            <!--<th ng-bind="$parent.$parent.$index * nbrDiagramsPerPag + $parent.$index + 1"></th>-->
+                            <td ><span ng-bind="formatDimension(cut.originalWidth * dimfactor)"></span><span class="math">&#215;</span><span ng-bind="formatDimension(cut.originalHeight * dimfactor)"></span></td>
+                            <td><span class="math" ng-bind="cut.isHorizontal ? 'x=' : 'y='"></span><span ng-bind="formatDimension(cut.cutCoords * dimfactor)"></span></td>
+                            <td ng-bind="formatDimension(Math.max(cut.x2 - cut.x1, cut.y2 - cut.y1) * dimfactor)"></td>
+                        </tr>
+                        </tbody>
+                        <!--</tbody>-->
+                    </table>
+
                     </tbody>
                 </table>
             </div>

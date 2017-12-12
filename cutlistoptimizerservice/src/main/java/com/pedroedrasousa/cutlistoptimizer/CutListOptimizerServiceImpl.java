@@ -379,7 +379,7 @@ public class CutListOptimizerServiceImpl implements CutListOptimizerService {
                     int discardAbove = (int) (100.0f * Math.pow(usedArea, 3.0f));
                     discardAbove = Math.max(discardAbove, 80);
 
-                    logger.debug("Task[" + cfg.getTaskId() + "] discardAbove " + discardAbove);
+                    //logger.debug("Task[" + cfg.getTaskId() + "] discardAbove " + discardAbove);
 
                     // TODO: Only for debug purposes
                     if (cfg.getAccuracyFactor() > 0) {

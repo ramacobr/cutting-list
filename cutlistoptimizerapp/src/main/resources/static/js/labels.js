@@ -41,7 +41,7 @@ var translationsEN = {
 };
 
 var translationsPT= {
-    TITLE: 'Servicorte',
+    TITLE: 'CutList Optimizer',
     PANELS: 'Paineis',
     STOCK: 'Stock',
     OPTIONS: 'Opções',
@@ -80,4 +80,43 @@ var translationsPT= {
     RESET_DATA: "Repor todos os dados",
 
     SEND_FEEDBACK: "Enviar feedback"
+};
+
+var translationsFA= {
+    TITLE: 'بهینه ساز لیست برش',
+    PANELS: 'صفحه ها',
+    STOCK: 'موجودی',
+    OPTIONS: 'گزینه ها',
+    OPTIONS2: 'گزینه های پیشرفته',
+    WIDTH: 'عرض',
+    HEIGHT: 'طول',
+    QUANTITY: 'تعداد',
+    USED: 'مصرف شده',
+    CUT_THICKNESS: 'ضخامت برش',
+    ALLOW_TILE_ROTATION: 'اجازه برای چرخش',
+    FORCE_ONE_STOCK_PANEL: 'تنها یک صفحه از موجودی استفاده بشود',
+    CALCULATE: 'محاسبه کردن',
+    ACCEPT: 'پذیرفتن',
+    PANEL: 'صفحه',
+    USED_AREA: 'مساحت استفاده شده',
+    WASTED_AREA: 'مساحت تلف شده',
+    PANELS: 'صفحه ها',
+    WASTED_PANELS: 'صفحه های هدر رفته',
+    CUTS: 'برش ها',
+    CUT: 'برش',
+    DIM: 'مبهم',
+    ERROR: 'اخطار',
+    CANCEL: 'لغو',
+    MSG_NO_PANELS: 'هیچ صفحه ای تعیین نشده',
+    MSG_NO_STOCK_PANELS: 'هیچ صفحه از موجودی تعیین نشده',
+    SELECT_ALL: 'انتخاب همه',
+    SELECT_NONE: 'انتخاب هیچکدام',
+    DELETE_ALL: 'حذف همه',
+    SORT: 'مرتب سازی',
+    UNABLE_TO_FIT: 'ناتوان در تناسب',
+    NO_SOLUTION: 'هیچ نتیجه ای اکان پذیر نیست',
+    ALLOW_ZOOM: 'اجازه بزرگنمایی تصویر',
+    EXPORT_PDF: 'Pdf ارسال به',
+    RESET_DATA: 'تنظیم مجدد داده ها',
+    SEND_FEEDBACK: 'ارسال بازخورد'
 };

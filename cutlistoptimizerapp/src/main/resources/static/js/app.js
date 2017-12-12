@@ -13,6 +13,7 @@ app.config(['$translateProvider', '$windowProvider', '$locationProvider', functi
 
     $translateProvider.translations('en', translationsEN);
     $translateProvider.translations('pt', translationsPT);
+    $translateProvider.translations('fa', translationsFA);
     $translateProvider.preferredLanguage(language);
     $translateProvider.fallbackLanguage('en');
 
@@ -1101,7 +1102,7 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
         $timeout(
             function () { generatePdf2(); }
         );
-    }
+    };
 
     function generatePdf2() {
 
@@ -1152,6 +1153,10 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
         var infoImgWidth = [];
         var infoImgHeight = [];
 
+        var cutsImgData = [];
+        var cutsImgWidth = [];
+        var cutsImgHeight = [];
+
         var diagramImageData = [];
         var diagramImgWidth = [];
         var diagramImgHeight = [];
@@ -1163,9 +1168,13 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
         var promises = [];
         var deferreds = [];
         for (i = 0; i < DrawService.breakPoint.length; i += $scope.nbrDiagramsPerPag) {
-            var deferred = $q.defer();
+            var deferred;
+            deferred = $q.defer();
             promises.push(deferred.promise);
             deferreds.push(deferred);
+            // deferred = $q.defer();
+            // promises.push(deferred.promise);
+            // deferreds.push(deferred);
         }
 
         resolvedPromiseIndex = -1;
@@ -1207,6 +1216,33 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
                     }
                 }}(resolvedPromiseIndex)
             });
+
+
+            // var cutsElement = document.getElementById('pdf-cuts-' + i / $scope.nbrDiagramsPerPag);
+            // cutsElement.style.display = 'block';
+            //
+            // cutsImgWidth.push(cutsElement.offsetWidth);
+            // cutsImgHeight.push(cutsElement.offsetHeight);
+            //
+            // // Store PDF info table image
+            // resolvedPromiseIndex++;
+            // html2canvas(document.getElementById('pdf-cuts-' + i / $scope.nbrDiagramsPerPag), {
+            //     background: '#fff',
+            //     onrendered: function(resolvedPromiseIndex) { return function (canvas) {
+            //         if (resolvedPromiseIndex > 0) {
+            //             promises[resolvedPromiseIndex - 1].then(function() {
+            //                 // Wait for previous render
+            //                 var imgData2 = canvas.toDataURL('image/jpeg');
+            //                 cutsImgData.push(imgData2);
+            //                 deferreds[resolvedPromiseIndex].resolve();
+            //             });
+            //         } else {
+            //             var imgData2 = canvas.toDataURL('image/jpeg');
+            //             cutsImgData.push(imgData2);
+            //             deferreds[resolvedPromiseIndex].resolve();
+            //         }
+            //     }}(resolvedPromiseIndex)
+            // });
         }
 
         // Execute after all images were rendered
@@ -1219,11 +1255,17 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
                     doc.addImage(diagramImageData[i], 'JPEG', margin, margin, 0, height - bottomMargin);
                 }
 
-                doc.addImage(infoImgDataElem, 'JPEG', pdfWidth-200, 25, 200, infoImgHeight[i] * 200 / infoImgWidth[i]);
+                doc.addImage(infoImgData[i], 'JPEG', pdfWidth-200, 25, 200, infoImgHeight[i] * 200 / infoImgWidth[i]);
+
+                //doc.addImage(cutsImgData[i], 'JPEG', pdfWidth-200, 25, 200, cutsImgHeight[i] * 200 / cutsImgWidth[i]);
+
                 if (i < infoImgData.length - 1) {
                     doc.addPage();
                 }
             });
+
+
+
 
             if (typeof android !== 'undefined') {
                 var pdfData = doc.output('dataurlstring');

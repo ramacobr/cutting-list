@@ -162,7 +162,7 @@ public class CutListThread implements Runnable {
 
     void computeSolutions() {
 
-        logger.debug("Thread start");
+        //logger.debug("Thread start");
 
         // Calculate permutation priority based on the number of dimensions change while iterating the tile list
         int permutationPriority = Integer.MAX_VALUE;

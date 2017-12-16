@@ -224,7 +224,10 @@
     border-top: 0px;
 }
 
-
+.pdf-table {
+    font-size: 80%;
+    margin-bottom: 10px;
+}
 
 .pdf-table >tbody>tr>td {
     padding:0px;

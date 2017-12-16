@@ -1306,7 +1306,7 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
         return new Array(n);
     };
 
-    $scope.nbrDiagramsPerPag = 4;
+    $scope.nbrDiagramsPerPag = 2;
 });
 
 String.prototype.hashCode = function() {

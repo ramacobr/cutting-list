@@ -114,8 +114,8 @@ app.factory('DrawService', function(TilingData, $window, $timeout) {
     }
 
 
-    function reset(isHighDetail) {
-        init(isHighDetail);
+    function reset(isHighDetail, dimFactor) {
+        init(isHighDetail, dimFactor);
         renderTiles();
     }
 
@@ -473,7 +473,7 @@ app.factory('DrawService', function(TilingData, $window, $timeout) {
                 }
             });
         });
-    };
+    }
 
     function cleanTmpSvgOverlayElems() {
         angular.forEach(tmpSvgOverlayElems, function (svg, index) {

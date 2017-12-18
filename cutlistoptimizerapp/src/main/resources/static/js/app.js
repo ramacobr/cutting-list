@@ -1118,7 +1118,7 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
             return;
         }
 
-        DrawService.reset(true);
+        DrawService.reset(true, $scope.dimfactor);
 
         window.scrollTo(0, 0);
 
@@ -1264,9 +1264,6 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
                 }
             });
 
-
-
-
             if (typeof android !== 'undefined') {
                 var pdfData = doc.output('dataurlstring');
                 android.savePdf(pdfData);
@@ -1283,7 +1280,7 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
                 doc.save(filename);
             }
 
-            DrawService.reset(false);
+            DrawService.reset(false, $scope.dimfactor);
 
             // Hide info tables
             for (i = 0; i < DrawService.breakPoint.length; i += $scope.nbrDiagramsPerPag) {
@@ -1296,7 +1293,7 @@ app.controller('Tiling', function(TilingService, TilingData, DrawService, $windo
 
 
 
-    };
+    }
 
     $scope.formatDimension = function(dimension) {
         return Math.round(dimension  * 100) / 100;

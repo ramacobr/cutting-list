@@ -679,7 +679,6 @@ button:focus {
     margin: auto;
     display: block;
     position: fixed;
-    background-image: url("icon.png");
 }
 
 

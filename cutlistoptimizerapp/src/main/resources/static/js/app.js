@@ -12,8 +12,10 @@ app.config(['$translateProvider', '$windowProvider', '$locationProvider', functi
     }
 
     $translateProvider.translations('en', translationsEN);
+    $translateProvider.translations('de', translationsDE);
     $translateProvider.translations('pt', translationsPT);
     $translateProvider.translations('fa', translationsFA);
+    $translateProvider.translations('ua', translationsUA);
     $translateProvider.preferredLanguage(language);
     $translateProvider.fallbackLanguage('en');
 

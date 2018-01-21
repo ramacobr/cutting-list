@@ -40,6 +40,49 @@ var translationsEN = {
     SEND_FEEDBACK: "Send feedback"
 };
 
+
+var translationsDE = {
+    TITLE: 'CutList Optimizer',
+    PANELS: 'Kacheln',
+    STOCK: 'Bestand',
+    OPTIONS: 'Optionen',
+    OPTIONS2: 'Erweiterte Optionen',
+    WIDTH: 'Breite',
+    HEIGHT: 'Länge',
+    QUANTITY: 'Stückzahl',
+    USED: 'Benutzt',
+    CUT_THICKNESS: 'Schnittbreite',
+    ALLOW_TILE_ROTATION:'Rotation von Kacheln erlauben',
+    FORCE_ONE_STOCK_PANEL: 'Nur eine Kachel aus dem Bestand nutzen',
+    CALCULATE: 'Berechnen',
+    ACCEPT: 'Akzeptieren',
+    PANEL: 'Kachel',
+    USED_AREA: 'Genutzte Fläche',
+    WASTED_AREA: 'Verschwendete Fläche',
+    PANELS: 'Kacheln',
+    WASTED_PANELS: 'Verschwendete Kacheln',
+    CUTS: 'Schnitte',
+    CUT: 'Schneiden',
+    DIM: 'Verdunkeln',
+    ERROR: 'Fehler',
+    CANCEL: 'Abbrechen',
+    MSG_NO_PANELS: 'Keine Kacheln angegeben',
+    MSG_NO_STOCK_PANELS: 'Keine Betandskacheln angegeben',
+
+    SELECT_ALL: 'Alle auswählen',
+    SELECT_NONE: 'Keine auswählen',
+    DELETE_ALL: 'Alle löschen',
+    SORT: 'Sortieren',
+    UNABLE_TO_FIT: 'Kann nicht passen',
+    NO_SOLUTION: 'Keine mögliche Lösung.',
+
+    ALLOW_ZOOM: 'Bildzoom erlauben',
+    EXPORT_PDF: 'Als PDF exportieren',
+    RESET_DATA: 'Daten zurücksetzen',
+
+    SEND_FEEDBACK: 'Feedback senden'
+};
+
 var translationsPT= {
     TITLE: 'CutList Optimizer',
     PANELS: 'Paineis',
@@ -119,4 +162,46 @@ var translationsFA= {
     EXPORT_PDF: 'Pdf ارسال به',
     RESET_DATA: 'تنظیم مجدد داده ها',
     SEND_FEEDBACK: 'ارسال بازخورد'
+};
+
+var translationsUA = {
+    TITLE: 'CutList Optimizer',
+    PANELS: 'Плити',
+    STOCK: 'Склад',
+    OPTIONS: 'Опції',
+    OPTIONS2: 'Розширені опції',
+    WIDTH: 'Ширина',
+    HEIGHT: 'Довжина',
+    QUANTITY: 'Кількість',
+    USED: 'Використовується',
+    CUT_THICKNESS: 'Товщина пропилу',
+    ALLOW_TILE_ROTATION:'Крутити плитою',
+    FORCE_ONE_STOCK_PANEL: 'Використовуйте лише одну плиту із складу',
+    CALCULATE: 'Порахувати',
+    ACCEPT: 'Прийняти',
+    PANEL: 'Плита',
+    USED_AREA: 'Використана площа',
+    WASTED_AREA: 'Залишок',
+    PANELS: 'Плити',
+    WASTED_PANELS: 'Відходи',
+    CUTS: 'Пропили',
+    CUT: 'Пропил',
+    DIM: 'тьмяний',
+    ERROR: 'Помилка',
+    CANCEL: 'Віміна',
+    MSG_NO_PANELS: 'Не вказано жодних плит',
+    MSG_NO_STOCK_PANELS: 'Не вказано запасних плит',
+
+    SELECT_ALL: 'Виділити все',
+    SELECT_NONE: 'Не вибирати ніодного',
+    DELETE_ALL: 'Очистити все',
+    SORT: 'Сортувати',
+    UNABLE_TO_FIT: 'Не вдалося встановити',
+    NO_SOLUTION: 'Немає можливих рішень',
+
+    ALLOW_ZOOM: 'Дозволити збільшення зображення',
+    EXPORT_PDF: 'Експорт в PDF',
+    RESET_DATA: 'Скинути дані',
+
+    SEND_FEEDBACK: 'Надіслати відгук'
 };
